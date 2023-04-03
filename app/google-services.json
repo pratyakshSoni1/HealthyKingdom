@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "666036658796",
+    "project_id": "healthy-kingdom",
+    "storage_bucket": "healthy-kingdom.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:666036658796:android:ad3ed07c8de6fc5d5fae49",
+        "android_client_info": {
+          "package_name": "com.pratyaksh.healthykingdom"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "666036658796-m2jq7hopffhsb4cserv83cj4hicj8rf5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxypzu4-ZZNsgODhU-JQ_FYsJflPre484"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "666036658796-m2jq7hopffhsb4cserv83cj4hicj8rf5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
