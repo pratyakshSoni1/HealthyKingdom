@@ -1,7 +1,7 @@
 package com.pratyaksh.healthykingdom.domain.repository
 
 import com.pratyaksh.healthykingdom.domain.model.Hospital
-import org.osmdroid.util.GeoPoint
+import com.google.firebase.firestore.GeoPoint
 
 interface RemoteFirebaseRepo {
 

@@ -2,7 +2,7 @@ package com.pratyaksh.healthykingdom.data.repositories.remote
 
 import com.pratyaksh.healthykingdom.domain.model.Hospital
 import com.pratyaksh.healthykingdom.domain.repository.RemoteFirebaseRepo
-import org.osmdroid.util.GeoPoint
+import com.google.firebase.firestore.GeoPoint
 
 class FirebaseRepoImpl :RemoteFirebaseRepo {
     override suspend fun getAllHospitals(): List<Hospital> {

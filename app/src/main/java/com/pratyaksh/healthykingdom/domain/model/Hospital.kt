@@ -1,6 +1,7 @@
 package com.pratyaksh.healthykingdom.domain.model
 
-import org.osmdroid.util.GeoPoint
+import com.google.firebase.firestore.GeoPoint
+
 
 data class Hospital(
     val name: String,
