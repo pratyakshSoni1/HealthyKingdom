@@ -5,5 +5,6 @@ import com.google.firebase.firestore.GeoPoint
 
 data class Hospital(
     val name: String,
-    val location: GeoPoint
+    val location: GeoPoint,
+    val id: String
 )
