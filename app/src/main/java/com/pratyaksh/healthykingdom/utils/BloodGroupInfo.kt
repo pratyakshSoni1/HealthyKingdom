@@ -75,3 +75,21 @@ enum class BloodGroups{
     AB_NEGATIVE
 
 }
+
+fun List<BloodGroupInterface>.getOnlyGroup(): List<BloodGroups>{
+    return this.map {
+        when(it){
+
+            BloodGroupsInfo.A_POSITIVE -> BloodGroups.A_POSITIVE
+            BloodGroupsInfo.A_NEGATIVE -> BloodGroups.A_NEGATIVE
+            BloodGroupsInfo.AB_POSITIVE -> BloodGroups.AB_POSITIVE
+            BloodGroupsInfo.AB_NEGATIVE -> BloodGroups.AB_NEGATIVE
+            BloodGroupsInfo.O_POSITIVE -> BloodGroups.O_POSITIVE
+            BloodGroupsInfo.O_NEGATIVE -> BloodGroups.O_NEGATIVE
+            BloodGroupsInfo.B_POSITIVE -> BloodGroups.B_POSITIVE
+            BloodGroupsInfo.B_NEGATIVE -> BloodGroups.B_NEGATIVE
+            else -> BloodGroups.O_NEGATIVE
+
+        }
+    }
+}

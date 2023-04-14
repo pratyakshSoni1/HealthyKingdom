@@ -35,3 +35,16 @@ interface Plasma{
         val canDonateTo: List<Plasma>
         val canReceiveFrom: List<Plasma>
 }
+
+fun BloodGroups.toPlasma(): Plasma{
+    return when(this){
+        BloodGroups.A_POSITIVE -> PlasmaGroupInfo.PLASMA_A
+        BloodGroups.A_NEGATIVE -> PlasmaGroupInfo.PLASMA_A
+        BloodGroups.AB_POSITIVE -> PlasmaGroupInfo.PLASMA_AB
+        BloodGroups.AB_NEGATIVE -> PlasmaGroupInfo.PLASMA_AB
+        BloodGroups.B_POSITIVE -> PlasmaGroupInfo.PLASMA_B
+        BloodGroups.B_NEGATIVE -> PlasmaGroupInfo.PLASMA_B
+        BloodGroups.O_POSITIVE -> PlasmaGroupInfo.PLASMA_B
+        BloodGroups.O_NEGATIVE -> PlasmaGroupInfo.PLASMA_B
+    }
+}

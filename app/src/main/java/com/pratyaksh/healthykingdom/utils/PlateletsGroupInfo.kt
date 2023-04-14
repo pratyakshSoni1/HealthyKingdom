@@ -61,3 +61,23 @@ interface Platelets{
     val canDonateTo: List<BloodGroups>
     val canReceiveFrom: List<BloodGroups>
 }
+
+
+fun List<Platelets>.getOnlyGroup(): List<BloodGroups>{
+    return this.map {
+        when(it){
+
+            PlateletsGroupInfo.A_POSITIVE -> BloodGroups.A_POSITIVE
+            PlateletsGroupInfo.A_NEGATIVE -> BloodGroups.A_NEGATIVE
+            PlateletsGroupInfo.AB_POSITIVE -> BloodGroups.AB_POSITIVE
+            PlateletsGroupInfo.AB_NEGATIVE -> BloodGroups.AB_NEGATIVE
+            PlateletsGroupInfo.O_POSITIVE -> BloodGroups.O_POSITIVE
+            PlateletsGroupInfo.O_NEGATIVE -> BloodGroups.O_NEGATIVE
+            PlateletsGroupInfo.B_POSITIVE -> BloodGroups.B_POSITIVE
+            PlateletsGroupInfo.B_NEGATIVE -> BloodGroups.B_NEGATIVE
+            else -> BloodGroups.O_NEGATIVE
+
+        }
+    }
+}
+

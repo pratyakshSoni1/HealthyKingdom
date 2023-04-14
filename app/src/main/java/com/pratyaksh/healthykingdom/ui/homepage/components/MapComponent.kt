@@ -41,7 +41,7 @@ fun MapComponent(
 
             Log.d("ComposeLogs", "Re-composed MapComponent")
             it.setTileSource(TileSourceFactory.MAPNIK)
-            it.controller.zoomTo(3, 2500L)
+            it.controller.zoomTo(5, 2500L)
 
             val rotationalGestOverlay = RotationGestureOverlay(it)
             it.setMultiTouchControls(true)
