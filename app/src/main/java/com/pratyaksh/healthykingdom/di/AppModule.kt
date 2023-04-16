@@ -19,8 +19,8 @@ object AppModule {
     fun provideFirebaseRepo(
         firestore: FirebaseFirestore
     ): RemoteFirebaseRepo{
-//        return FirebaseRepoImpl(firestore) // Production data will be fetched from here
-        return TestRepositoryImpl() //Providing test data
+        return FirebaseRepoImpl(firestore) // Production data will be fetched from here
+//        return TestRepositoryImpl() //Providing test data
     }
 
     @Provides

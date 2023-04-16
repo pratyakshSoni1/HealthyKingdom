@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,30 +24,53 @@ import com.pratyaksh.healthykingdom.utils.BloodGroups
 import com.pratyaksh.healthykingdom.utils.LifeFluids
 import com.pratyaksh.healthykingdom.utils.Plasma
 import com.pratyaksh.healthykingdom.utils.getOnlyGroup
+import com.pratyaksh.healthykingdom.ui.utils.IconButton
 
 @Composable
 fun MarkerDetailsSheet(
-    uiState: MarkerDetailSheetUiState
+    uiState: MarkerDetailSheetUiState,
+    onCloseClick:()->Unit
 ){
 
     Column(
         modifier= Modifier
             .fillMaxWidth()
             .background(Color.White)
-            .padding(vertical = 16.dp, horizontal = 14.dp),
+            .padding(bottom = 16.dp, top = 8.dp, start = 14.dp, end = 14.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.Start
     ){
+        Box(modifier=Modifier.fillMaxWidth(), contentAlignment = Alignment.Center){
+            Box(
+                Modifier
+                    .width(64.dp)
+                    .height(4.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Color.LightGray))
+
+            Box(
+                Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                IconButton(
+                    icon = Icons.Rounded.Close,
+                    onClick = { onCloseClick() },
+                    iconColor = Color.LightGray
+                )
+            }
+        }
         if(uiState.isLoading){
             LinearProgressIndicator(
                 modifier = Modifier
-                    .fillMaxWidth(0.7f)
-                    .padding(top = 32.dp),
+                    .fillMaxWidth()
+                    .padding(top = 18.dp, bottom = 26.dp, start= 14.dp, end= 14.dp),
                 color= Color.Blue
             )
         }else{
             Row(
-                modifier=Modifier.fillMaxWidth(),
+                modifier= Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ){
 
@@ -83,7 +108,7 @@ fun MarkerDetailsSheet(
             FluidGroupList(type = LifeFluids.PLATELETS, fluidsAvailable = uiState.availPlateletsTypes.getOnlyGroup() )
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround){
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
                 Button(
                     onClick={  },
                     modifier= Modifier.fillMaxWidth(0.45f),

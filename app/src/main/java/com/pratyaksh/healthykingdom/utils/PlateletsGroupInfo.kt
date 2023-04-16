@@ -54,6 +54,13 @@ sealed class PlateletsGroupInfo {
     }
 
 
+    object ERROR_TYPE: Platelets{
+        override val type: BloodGroups = BloodGroups.ERROR_TYPE
+        override val canDonateTo: List<BloodGroups> = listOf<BloodGroups>()
+        override val canReceiveFrom: List<BloodGroups> = listOf<BloodGroups>()
+    }
+
+
 }
 
 interface Platelets{

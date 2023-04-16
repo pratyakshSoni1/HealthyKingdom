@@ -2,7 +2,11 @@ package com.pratyaksh.healthykingdom.ui.utils
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -41,15 +45,18 @@ fun GroupLabel(
             BloodGroups.B_POSITIVE -> "B+"
             BloodGroups.B_NEGATIVE -> "B-"
             BloodGroups.AB_POSITIVE -> "AB+"
-            BloodGroups.AB_NEGATIVE -> "AB+"
+            BloodGroups.AB_NEGATIVE -> "AB-"
             BloodGroups.O_POSITIVE -> "O+"
             BloodGroups.O_NEGATIVE -> "O-"
+            BloodGroups.ERROR_TYPE -> "!"
+
 
         }
 
     Box(
-        modifier=Modifier.size(20.dp)
+        modifier=Modifier.height(20.dp).wrapContentWidth()
             .clip(RoundedCornerShape(4.dp))
+            .padding(2.dp)
             .background(color = bgColor),
         contentAlignment = Alignment.Center
     ){
@@ -70,14 +77,12 @@ fun GroupLabel(
     val bgColor = Color(0xFFD89918)
 
     val text: String = when(plasma){
-
             PlasmaGroupInfo.PLASMA_A -> "A"
             PlasmaGroupInfo.PLASMA_B -> "B"
             PlasmaGroupInfo.PLASMA_AB -> "AB"
             PlasmaGroupInfo.PLASMA_O -> "O"
-        else -> "ERROR"
-
-        }
+        else -> { "!" }
+    }
 
     Box(
         modifier=Modifier.size(20.dp)

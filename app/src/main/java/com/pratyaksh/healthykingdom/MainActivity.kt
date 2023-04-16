@@ -16,7 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.google.firebase.FirebaseApp
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.pratyaksh.healthykingdom.ui.homepage.HomeScreen
+import com.pratyaksh.healthykingdom.ui.hospital_registration.RegisterHospital
 import com.pratyaksh.healthykingdom.ui.theme.HealthyKingdomTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,6 +32,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        FirebaseApp.initializeApp(applicationContext)
+        val firebaseAppCheck = FirebaseAppCheck.getInstance()
+        firebaseAppCheck.installAppCheckProviderFactory(
+            PlayIntegrityAppCheckProviderFactory.getInstance()
+        )
 
         permissionContract = registerForActivityResult(
                 androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions()
@@ -50,7 +60,7 @@ class MainActivity : ComponentActivity() {
                         askPermissions()
                     })
 
-                    HomeScreen()
+                    RegisterHospital(activity = this)
                 }
             }
         }

@@ -2,15 +2,17 @@ package com.pratyaksh.healthykingdom.ui.homepage
 
 import com.pratyaksh.healthykingdom.domain.model.Hospital
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.Marker
 
 data class HomeScreenUiState(
 
     val searchText: String= "",
     val hospitals: List<Hospital> = emptyList(),
     val mapUiState: MapMarkersUiState = MapMarkersUiState( emptyList() ),
-    val mapActionButtonsUiState: MapActionButtonsUiState = MapActionButtonsUiState(
-        true, false
-    )
+    val markersWithInfoWindow: List<Marker> = emptyList(),
+    val mapActionButtonsUiState: MapActionButtonsUiState = MapActionButtonsUiState(true, false),
+    val isLoading: Boolean = false,
+    val isError: Boolean = false
 
 ){
 

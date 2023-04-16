@@ -27,6 +27,12 @@ class PlasmaGroupInfo {
         override val canReceiveFrom: List<Plasma> = listOf<Plasma>(PLASMA_AB)
     }
 
+    object ERROR_TYPE: Plasma{
+        override val type: String = "ERROR_TYPE"
+        override val canDonateTo: List<Plasma> = listOf<Plasma>()
+        override val canReceiveFrom: List<Plasma> = listOf<Plasma>()
+    }
+
 
 }
 
@@ -36,15 +42,16 @@ interface Plasma{
         val canReceiveFrom: List<Plasma>
 }
 
-fun BloodGroups.toPlasma(): Plasma{
-    return when(this){
-        BloodGroups.A_POSITIVE -> PlasmaGroupInfo.PLASMA_A
-        BloodGroups.A_NEGATIVE -> PlasmaGroupInfo.PLASMA_A
-        BloodGroups.AB_POSITIVE -> PlasmaGroupInfo.PLASMA_AB
-        BloodGroups.AB_NEGATIVE -> PlasmaGroupInfo.PLASMA_AB
-        BloodGroups.B_POSITIVE -> PlasmaGroupInfo.PLASMA_B
-        BloodGroups.B_NEGATIVE -> PlasmaGroupInfo.PLASMA_B
-        BloodGroups.O_POSITIVE -> PlasmaGroupInfo.PLASMA_B
-        BloodGroups.O_NEGATIVE -> PlasmaGroupInfo.PLASMA_B
-    }
-}
+
+//fun BloodGroups.toPlasma(): Plasma{
+//    return when(this){
+//        BloodGroups.A_POSITIVE -> PlasmaGroupInfo.PLASMA_A
+//        BloodGroups.A_NEGATIVE -> PlasmaGroupInfo.PLASMA_A
+//        BloodGroups.AB_POSITIVE -> PlasmaGroupInfo.PLASMA_AB
+//        BloodGroups.AB_NEGATIVE -> PlasmaGroupInfo.PLASMA_AB
+//        BloodGroups.B_POSITIVE -> PlasmaGroupInfo.PLASMA_B
+//        BloodGroups.B_NEGATIVE -> PlasmaGroupInfo.PLASMA_B
+//        BloodGroups.O_POSITIVE -> PlasmaGroupInfo.PLASMA_B
+//        BloodGroups.O_NEGATIVE -> PlasmaGroupInfo.PLASMA_B
+//    }
+//}

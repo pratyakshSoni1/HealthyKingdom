@@ -15,19 +15,22 @@ import androidx.core.view.forEach
 import com.pratyaksh.healthykingdom.R
 import com.pratyaksh.healthykingdom.data.dto.toMapsGeopoint
 import com.pratyaksh.healthykingdom.domain.model.Hospital
+import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.ITileSource
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.compass.CompassOverlay
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
 
 @Composable
 fun MapComponent(
-    mapMarkers: SnapshotStateList<Hospital>,
-    mapAndroidVew: State<MapView>
+    mapAndroidVew: State<MapView>,
+    onMapSingleClick:()->Unit
 ){
 
     Box(
@@ -48,6 +51,17 @@ fun MapComponent(
             it.overlays.add(rotationalGestOverlay)
             it.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
 
+//            val clickListeners = MapEventsOverlay(object: MapEventsReceiver{
+//                override fun singleTapConfirmedHelper(geoPoint: GeoPoint?): Boolean {
+//                    onMapSingleClick()
+//                    return true
+//                }
+//
+//                override fun longPressHelper(p: GeoPoint?): Boolean {
+//                    return false
+//                }
+//            })
+//            it.overlays.add(clickListeners)
         }
 
     }

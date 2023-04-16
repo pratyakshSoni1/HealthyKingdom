@@ -53,6 +53,12 @@ sealed class BloodGroupsInfo {
         override val canReceiveFrom: List<BloodGroups> = listOf<BloodGroups>(BloodGroups.AB_NEGATIVE, BloodGroups.A_NEGATIVE, BloodGroups.B_NEGATIVE, BloodGroups.O_NEGATIVE)
     }
 
+    object ERROR_TYPE: BloodGroupInterface{
+        override val type: BloodGroups = BloodGroups.ERROR_TYPE
+        override val canDonateTo: List<BloodGroups> = listOf<BloodGroups>()
+        override val canReceiveFrom: List<BloodGroups> = listOf<BloodGroups>()
+    }
+
 
 
 
@@ -72,7 +78,8 @@ enum class BloodGroups{
     O_POSITIVE,
     O_NEGATIVE,
     AB_POSITIVE,
-    AB_NEGATIVE
+    AB_NEGATIVE,
+    ERROR_TYPE
 
 }
 
