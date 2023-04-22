@@ -4,7 +4,7 @@ object Constants{
 
     object Collections{
         val HOSPITALS_COLLECTION = "hospitals"
-        val LIFE_FLUIDS = "lifeFluids"
+        val AMBLANCE_DRIVERS = "ambulanceDrivers"
     }
 
 }

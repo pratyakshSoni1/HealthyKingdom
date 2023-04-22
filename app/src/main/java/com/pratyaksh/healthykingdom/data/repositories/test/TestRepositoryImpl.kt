@@ -45,6 +45,19 @@ class TestRepositoryImpl: RemoteFirebaseRepo {
         )
     }
 
+    override suspend fun getHospitalById(id: String): HospitalsDto? {
+        return HospitalsDto(
+            name = "Second Hospital",
+            location = GeoPoint(26.9279849, 81.1907074),
+            id = "secondHospital",
+            mail = "firstHosp@gmail.com",
+            phone="+91 0000000000",
+            availBloods = listOf( "A+", "A-", "B+", "B-", "O+", "O-", "AB-", "AB+" ),
+            availPlasma = listOf("A", "B", "AB", "O"),
+            availPlatelets = listOf("A+", "AB-", "O+", "O-")
+        )
+    }
+
     override suspend fun getHospitalByLocation(geoPoint: GeoPoint): Hospital {
         TODO("Not yet implemented")
     }

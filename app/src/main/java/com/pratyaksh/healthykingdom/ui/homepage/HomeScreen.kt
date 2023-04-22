@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.pratyaksh.healthykingdom.R
 import com.pratyaksh.healthykingdom.data.dto.toMapsGeopoint
 import com.pratyaksh.healthykingdom.domain.model.Hospital
@@ -26,6 +27,7 @@ import com.pratyaksh.healthykingdom.ui.homepage.components.MapActionButtons
 import com.pratyaksh.healthykingdom.ui.homepage.components.MapComponent
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_detail_sheet.MarkerDetailsSheet
 import com.pratyaksh.healthykingdom.ui.utils.HospitalsCustomWindow
+import com.pratyaksh.healthykingdom.utils.Routes
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -36,7 +38,8 @@ import org.osmdroid.views.overlay.Marker
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
-    viewModel: HomeScreenViewModel = hiltViewModel()
+    viewModel: HomeScreenViewModel = hiltViewModel(),
+    navController: NavHostController
 ){
     val context = LocalContext.current
     val mapView = remember{
@@ -76,7 +79,10 @@ fun HomeScreen(
                 }
                 sheetPeekHeight.value = 0.dp
                 closeAllInfoWindow(viewModel)
-            } )
+            },
+            onDetailsClick = {
+                navController.navigate(Routes.HOSPITAL_DETAILS_SCREEN.route+"/$it")
+            })
                        },
         sheetPeekHeight = sheetPeekHeight.value,
         sheetElevation = 12.dp,

@@ -11,5 +11,6 @@ interface RemoteFirebaseRepo {
     suspend fun getAllHospitals(): List<HospitalsDto>
     suspend fun getHospitalByLocation(geoPoint: GeoPoint): Hospital
     suspend fun getHospitalsNearby(geoPoint: GeoPoint): List<Hospital>
+    suspend fun getHospitalById(id: String): HospitalsDto?
 
 }

@@ -5,6 +5,7 @@ import com.pratyaksh.healthykingdom.utils.*
 data class MarkerDetailSheetUiState (
     val isLoading: Boolean,
     val hospitalName: String = "",
+    val hospitalId: String = "",
     val availBloodTypes: List<BloodGroupInterface> = listOf(),
     val availPlasmaTypes: List<Plasma> = listOf(),
     val availPlateletsTypes: List<Platelets> = listOf()

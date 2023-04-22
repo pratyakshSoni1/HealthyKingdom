@@ -27,9 +27,10 @@ class HomeScreenViewModel @Inject constructor(
 
     val detailSheetUiState = mutableStateOf( MarkerDetailSheetUiState(
         isLoading = false,
-        hospitalName = "First",
-        listOf(BloodGroupsInfo.B_NEGATIVE, BloodGroupsInfo.B_NEGATIVE),
-        listOf(PlasmaGroupInfo.PLASMA_O, PlasmaGroupInfo.PLASMA_AB),
+        hospitalName = "",
+        hospitalId = "",
+        listOf(),
+        listOf(),
         listOf(),
     ) )
 
@@ -79,6 +80,7 @@ class HomeScreenViewModel @Inject constructor(
             detailSheetUiState.value = detailSheetUiState.value.copy(
                 isLoading = false,
                 hospital.name,
+                hospital.id,
                 hospital.availBloods,
                 hospital.availPlasma,
                 hospital.availPlatelets

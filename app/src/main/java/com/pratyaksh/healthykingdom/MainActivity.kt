@@ -19,9 +19,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
+import com.pratyaksh.healthykingdom.ui.Navigation
 import com.pratyaksh.healthykingdom.ui.homepage.HomeScreen
 import com.pratyaksh.healthykingdom.ui.hospital_registration.RegisterHospital
 import com.pratyaksh.healthykingdom.ui.theme.HealthyKingdomTheme
+import com.pratyaksh.healthykingdom.utils.Routes
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -60,7 +62,7 @@ class MainActivity : ComponentActivity() {
                         askPermissions()
                     })
 
-                    RegisterHospital(activity = this)
+                    Navigation(startDestination = Routes.HOSPITAL_REGITER_SCREEN, activity = this)
                 }
             }
         }

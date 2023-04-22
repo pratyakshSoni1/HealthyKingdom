@@ -29,6 +29,7 @@ import com.pratyaksh.healthykingdom.ui.utils.IconButton
 @Composable
 fun MarkerDetailsSheet(
     uiState: MarkerDetailSheetUiState,
+    onDetailsClick:(hospitalId: String)->Unit,
     onCloseClick:()->Unit
 ){
 
@@ -119,7 +120,7 @@ fun MarkerDetailsSheet(
                 }
 
                 Button(
-                    onClick={  },
+                    onClick={ onDetailsClick(uiState.hospitalId) },
                     modifier= Modifier.fillMaxWidth(0.45f),
                     colors = ButtonDefaults.buttonColors(Color(0xFF00A5F0) )
                 ){
