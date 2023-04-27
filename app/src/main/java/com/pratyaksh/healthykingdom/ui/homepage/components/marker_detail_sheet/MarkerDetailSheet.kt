@@ -64,7 +64,7 @@ fun MarkerDetailsSheet(
             LinearProgressIndicator(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 18.dp, bottom = 26.dp, start= 14.dp, end= 14.dp),
+                    .padding(top = 18.dp, bottom = 26.dp, start = 14.dp, end = 14.dp),
                 color= Color.Blue
             )
         }else{
@@ -109,19 +109,20 @@ fun MarkerDetailsSheet(
             FluidGroupList(type = LifeFluids.PLATELETS, fluidsAvailable = uiState.availPlateletsTypes.getOnlyGroup() )
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
+            Row(Modifier.fillMaxWidth()){
                 Button(
                     onClick={  },
-                    modifier= Modifier.fillMaxWidth(0.45f),
+                    modifier= Modifier.fillMaxWidth(0.4f),
                     colors = ButtonDefaults.buttonColors(Color.Transparent ),
                     elevation = ButtonDefaults.elevation(0.dp, pressedElevation = 0.dp)
                 ){
                     Text( text= "Close", color= Color.Red )
                 }
+                Spacer(modifier = Modifier.width(6.dp))
 
                 Button(
                     onClick={ onDetailsClick(uiState.hospitalId) },
-                    modifier= Modifier.fillMaxWidth(0.45f),
+                    modifier= Modifier.fillMaxWidth(0.4f),
                     colors = ButtonDefaults.buttonColors(Color(0xFF00A5F0) )
                 ){
                     Text( text= "Details", color= Color.White  )

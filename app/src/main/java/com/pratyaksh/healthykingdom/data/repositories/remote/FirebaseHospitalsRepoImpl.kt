@@ -1,17 +1,21 @@
 package com.pratyaksh.healthykingdom.data.repositories.remote
 
-import com.google.firebase.firestore.FirebaseFirestore
 import com.pratyaksh.healthykingdom.domain.model.Hospital
 import com.pratyaksh.healthykingdom.domain.repository.RemoteFirebaseRepo
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.GeoPoint
 import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
+import com.pratyaksh.healthykingdom.utils.Constants
 import com.pratyaksh.healthykingdom.utils.Constants.Collections
+import com.pratyaksh.healthykingdom.utils.Resource
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
-class FirebaseHospitalsRepoImpl(private val firebase: FirebaseFirestore): RemoteFirebaseRepo {
+class FirebaseHospitalsRepoImpl(private val fireStore: FirebaseFirestore): RemoteFirebaseRepo {
     override suspend fun getAllHospitals(): List<HospitalsDto> {
 
-        val results = firebase.collection(Collections.HOSPITALS_COLLECTION)
+        val results = fireStore.collection(Collections.HOSPITALS_COLLECTION)
                     .get().await()
                     .toObjects(HospitalsDto::class.java)
 
@@ -29,6 +33,25 @@ class FirebaseHospitalsRepoImpl(private val firebase: FirebaseFirestore): Remote
         return null
     }
 
+    override suspend fun getHospitalByPhone(phone: String, password: String): HospitalsDto? {
+        return getAllHospitals().find {
+                it.phone == phone && it.password == password
+            }
+    }
+
+    override suspend fun addHospital(hospital: HospitalsDto) = flow{
+
+        try{
+            val task = fireStore.collection(Constants.Collections.HOSPITALS_COLLECTION)
+                .document().set(hospital)
+            task.await()
+            emit(Resource.Success(true))
+        }catch(e: FirebaseFirestoreException){
+            e.printStackTrace()
+            emit(Resource.Error<Boolean>(e.message))
+        }
+
+    }
     override suspend fun getHospitalByLocation(geoPoint: GeoPoint): Hospital {
         TODO("Not yet implemented")
     }
@@ -36,4 +59,6 @@ class FirebaseHospitalsRepoImpl(private val firebase: FirebaseFirestore): Remote
     override suspend fun getHospitalsNearby(geoPoint: GeoPoint): List<Hospital> {
         TODO("Not yet implemented")
     }
+
+
 }

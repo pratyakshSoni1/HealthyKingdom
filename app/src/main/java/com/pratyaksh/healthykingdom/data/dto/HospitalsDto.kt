@@ -17,6 +17,7 @@ data class HospitalsDto (
     val availBloods: List<String>? = null,
     val availPlasma: List<String>? = null,
     val availPlatelets: List<String>? = null,
+    val password: String? = null
 )
 
 fun HospitalsDto.toHospital(): Hospital {
@@ -73,6 +74,12 @@ fun HospitalsDto.toHospital(): Hospital {
 
 fun GeoPoint.toMapsGeopoint(): org.osmdroid.util.GeoPoint{
     return org.osmdroid.util.GeoPoint(
+        latitude,
+        longitude
+    )
+}
+fun org.osmdroid.util.GeoPoint.toFBGeopoint(): GeoPoint{
+    return GeoPoint(
         latitude,
         longitude
     )

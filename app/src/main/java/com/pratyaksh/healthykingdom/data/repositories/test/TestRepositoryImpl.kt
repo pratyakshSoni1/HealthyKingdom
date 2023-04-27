@@ -4,7 +4,9 @@ import com.google.firebase.firestore.GeoPoint
 import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
 import com.pratyaksh.healthykingdom.domain.model.Hospital
 import com.pratyaksh.healthykingdom.domain.repository.RemoteFirebaseRepo
+import com.pratyaksh.healthykingdom.utils.Resource
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 
 class TestRepositoryImpl: RemoteFirebaseRepo {
     override suspend fun getAllHospitals(): List<HospitalsDto> {
@@ -56,6 +58,14 @@ class TestRepositoryImpl: RemoteFirebaseRepo {
             availPlasma = listOf("A", "B", "AB", "O"),
             availPlatelets = listOf("A+", "AB-", "O+", "O-")
         )
+    }
+
+    override suspend fun getHospitalByPhone(phone: String, password: String): HospitalsDto? {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun addHospital(hospital: HospitalsDto): Flow<Resource<Boolean>> {
+        TODO("Not yet implemented")
     }
 
     override suspend fun getHospitalByLocation(geoPoint: GeoPoint): Hospital {

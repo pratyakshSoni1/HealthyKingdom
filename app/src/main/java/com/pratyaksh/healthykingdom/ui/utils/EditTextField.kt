@@ -38,7 +38,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.pratyaksh.healthykingdom.ui.hospital_registration.RegistrationTextFieldsState
 import kotlin.math.max
 
 @Composable
@@ -65,7 +64,7 @@ fun AppTextField(
             .wrapContentHeight()
             .clip(RoundedCornerShape(8.dp))
             .background(Color(0xFFE6E6E6))
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .padding(horizontal = 12.dp, vertical = 2.dp),
         colors = TextFieldDefaults.textFieldColors(
             textColor = Color.Black,
             backgroundColor = Color.Transparent,

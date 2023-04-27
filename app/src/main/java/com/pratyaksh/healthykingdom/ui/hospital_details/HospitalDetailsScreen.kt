@@ -14,14 +14,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.pratyaksh.healthykingdom.R
@@ -73,6 +77,42 @@ fun HospitalDetailsScreen(
                             modifier = Modifier.size(64.dp)
                         )
                         Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = viewModel.hospital.value!!.name,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color= Color.Black
+                        )
+                    }
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+                        Image(
+                            imageVector = Icons.Default.Call,
+                            contentDescription = null,
+                            modifier = Modifier.size(64.dp),
+                            colorFilter = ColorFilter.tint(Color.Blue)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = viewModel.hospital.value!!.phone,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color= Color.Black
+                        )
+                    }
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+                        Image(
+                            imageVector = Icons.Default.Email,
+                            contentDescription = null,
+                            modifier = Modifier.size(64.dp),
+                            colorFilter = ColorFilter.tint(Color.Blue)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = viewModel.hospital.value!!.mail,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color= Color.Black
+                        )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -83,6 +123,7 @@ fun HospitalDetailsScreen(
                         location = viewModel.hospital.value!!.location.toMapsGeopoint(),
                         name = viewModel.hospital.value!!.name
                     )
+
                 }else{
                     Text("Not Found :(")
                 }

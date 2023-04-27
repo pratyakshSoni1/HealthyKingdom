@@ -53,4 +53,47 @@ class OtpSendUseCase @Inject constructor(
                 .build()
             PhoneAuthProvider.verifyPhoneNumber(options)
         }
+
+    operator fun invoke(
+        phone:String,
+        activity: Activity,
+        resendToken: PhoneAuthProvider.ForceResendingToken,
+        onVerificationComplete:(credential: PhoneAuthCredential) -> Unit,
+        onVerificationFailed:(exception: FirebaseException) -> Unit,
+        onCodeSent:(verId: String, resendToken: PhoneAuthProvider.ForceResendingToken) -> Unit,
+    ) {
+        val callBacks = object: PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                override fun onVerificationCompleted(p0: PhoneAuthCredential) {
+                    Log.d("FBVerification_Completed_LOGS", "${p0.smsCode}")
+                    onVerificationComplete(p0)
+                }
+
+                override fun onVerificationFailed(p0: FirebaseException) {
+                    onVerificationFailed(p0)
+                    p0.printStackTrace()
+                    Log.d("FBVerification_Completed_LOGS", "${p0.message}")
+                }
+
+                override fun onCodeSent(p0: String, p1: PhoneAuthProvider.ForceResendingToken) {
+                    onCodeSent(
+                        p0,
+                        p1
+                    )
+                    Log.d("CodeSent_LOGS", p0)
+                }
+            }
+
+            val options = PhoneAuthOptions.newBuilder(fbAuth)
+                .setPhoneNumber("+$phone")       // Phone number to verify
+                .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                .setActivity(activity)                 // Activity (for callback binding)
+                .setCallbacks(callBacks)          // OnVerificationStateChangedCallbacks
+                .setForceResendingToken(resendToken) //resend token
+                .build()
+            PhoneAuthProvider.verifyPhoneNumber(options)
+        }
+
+
+
+
 }

@@ -10,7 +10,8 @@ data class AmbulanceDto(
     val driverAge: Int = 0,
     val driverGender: String = "",
     val isVacant: Boolean = false,
-    val isOnline: Boolean = false
+    val isOnline: Boolean = false,
+    val password: String? = null
 )
 
 fun AmbulanceDto.toAmbulance(): Ambulance{

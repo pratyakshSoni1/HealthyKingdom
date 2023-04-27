@@ -8,3 +8,12 @@ object Constants{
     }
 
 }
+
+enum class LoginSignupStatus{
+
+    LOGIN_SUCCESS,
+    INVALID_PASSWORD,
+    INVALID_PHONE,
+    INVALID_NAME_OR_LOCATION,
+
+}

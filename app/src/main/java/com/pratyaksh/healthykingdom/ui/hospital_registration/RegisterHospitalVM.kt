@@ -47,25 +47,6 @@ class RegisterHospitalVM @Inject constructor(
         )
     }
 
-    fun setToValidationStep(){
-//        isValidationStep.value = true
-
-        uiState = uiState.copy(
-            isValidationStep = true
-        )
-
-    }
-
-
-    fun onCodeValueChange(newValue: String){
-//        textFieldState.code.value = newValue
-
-        uiState = uiState.copy(
-            code = newValue
-        )
-
-    }
-
     fun onPhoneValueChange(newValue: String){
 //        textFieldState.phone.value = newValue
 
@@ -96,10 +77,30 @@ class RegisterHospitalVM @Inject constructor(
 
     }
 
+    fun onPassValueChange(newValue: String){
+//        textFieldState.mail.value = newValue
+
+        uiState = uiState.copy(
+            password = newValue
+        )
+
+    }
+
+    fun onConfirmPassValueChange(newValue: String){
+//        textFieldState.mail.value = newValue
+
+        uiState = uiState.copy(
+            confirmPassword = newValue
+        )
+
+    }
+
     fun onLocationValueChange(newValue: GeoPoint){
         uiState = uiState.copy(
             location = newValue
         )
     }
+
+
 
 }

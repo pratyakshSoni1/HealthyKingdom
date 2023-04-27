@@ -2,6 +2,7 @@ package com.pratyaksh.healthykingdom
 
 import android.app.Instrumentation.ActivityResult
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultCallback
@@ -62,14 +63,14 @@ class MainActivity : ComponentActivity() {
                         askPermissions()
                     })
 
-                    Navigation(startDestination = Routes.HOSPITAL_REGITER_SCREEN, activity = this)
+                    Navigation(startDestination = Routes.SIGNUP_NAVGRAPH, activity = this)
                 }
             }
         }
     }
 
     private fun askPermissions(){
-
+        Log.d("Heelo","I'm a log")
         permissionContract?.launch(
             arrayOf(
                 android.Manifest.permission.ACCESS_COARSE_LOCATION,
