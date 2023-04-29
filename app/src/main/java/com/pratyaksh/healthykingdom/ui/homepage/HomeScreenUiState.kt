@@ -1,11 +1,13 @@
 package com.pratyaksh.healthykingdom.ui.homepage
 
 import com.pratyaksh.healthykingdom.domain.model.Hospital
+import com.pratyaksh.healthykingdom.utils.AccountTypes
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
 
 data class HomeScreenUiState(
 
+    val accountType: AccountTypes = AccountTypes.PUBLIC_USER,
     val searchText: String= "",
     val hospitals: List<Hospital> = emptyList(),
     val mapUiState: MapMarkersUiState = MapMarkersUiState( emptyList() ),

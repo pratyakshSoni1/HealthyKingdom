@@ -30,11 +30,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.pratyaksh.healthykingdom.R
 import com.pratyaksh.healthykingdom.data.dto.toMapsGeopoint
-import com.pratyaksh.healthykingdom.domain.model.Hospital
-import com.pratyaksh.healthykingdom.domain.repository.RemoteFirebaseRepo
 import com.pratyaksh.healthykingdom.ui.utils.IconButton
 import com.pratyaksh.healthykingdom.ui.utils.MapLocationPreview
-import javax.inject.Inject
 
 @Composable
 fun HospitalDetailsScreen(

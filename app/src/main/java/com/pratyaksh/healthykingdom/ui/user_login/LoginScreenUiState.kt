@@ -10,6 +10,7 @@ data class LoginScreenUiState (
     val password: String = "",
     val accountType: AccountTypes = AccountTypes.PUBLIC_USER,
     val isAccMenuExpanded: Boolean = false,
-    val loginStatus: Flow<Resource<Boolean>>? = null
+    val loginStatus: Flow<Resource<String?>>? = null,
+    val isLoading: Boolean = false
 
     )

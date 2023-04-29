@@ -2,17 +2,10 @@ package com.pratyaksh.healthykingdom
 
 import android.app.Activity
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.google.firebase.auth.PhoneAuthProvider
@@ -22,12 +15,15 @@ import com.pratyaksh.healthykingdom.ui.hospital_details.HospitalDetailsScreen
 import com.pratyaksh.healthykingdom.ui.hospital_registration.OtpVerifyScreen
 import com.pratyaksh.healthykingdom.ui.hospital_registration.RegisterHospital
 import com.pratyaksh.healthykingdom.ui.user_login.LoginScreen
+import com.pratyaksh.healthykingdom.utils.Resource
 import com.pratyaksh.healthykingdom.utils.Routes
+import kotlinx.coroutines.flow.Flow
 
 fun NavGraphBuilder.registrationNavgraph(
     startDestination: Routes,
     activity: Activity,
-    navController: NavHostController
+    navController: NavHostController,
+    updateCurrentLoggedUser: (userId: String) -> Flow<Resource<Boolean>>
 ){
 
     navigation(
@@ -41,7 +37,11 @@ fun NavGraphBuilder.registrationNavgraph(
         composable(
             route = Routes.LOGIN_SCREEN.route
         ){
-            LoginScreen(navController = navController, activity = activity)
+            LoginScreen(
+                navController = navController,
+                activity = activity,
+                updateCurrentLoggedUser= updateCurrentLoggedUser
+            )
         }
 
         composable(
@@ -83,7 +83,8 @@ fun NavGraphBuilder.registrationNavgraph(
 }
 
 fun NavGraphBuilder.homeScreenNavGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    currentLoggedUser: Flow<Resource<String?>>
 ){
 
     navigation(

@@ -1,7 +1,7 @@
 package com.pratyaksh.healthykingdom.data.repositories.remote
 
 import com.pratyaksh.healthykingdom.domain.model.Hospital
-import com.pratyaksh.healthykingdom.domain.repository.RemoteFirebaseRepo
+import com.pratyaksh.healthykingdom.domain.repository.RemoteHospitalFbRepo
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.GeoPoint
@@ -12,7 +12,7 @@ import com.pratyaksh.healthykingdom.utils.Resource
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
-class FirebaseHospitalsRepoImpl(private val fireStore: FirebaseFirestore): RemoteFirebaseRepo {
+class HospitalFbHospitalsRepoImpl(private val fireStore: FirebaseFirestore): RemoteHospitalFbRepo {
     override suspend fun getAllHospitals(): List<HospitalsDto> {
 
         val results = fireStore.collection(Collections.HOSPITALS_COLLECTION)

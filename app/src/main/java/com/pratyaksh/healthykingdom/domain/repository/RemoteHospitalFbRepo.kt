@@ -6,7 +6,7 @@ import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
 import com.pratyaksh.healthykingdom.utils.Resource
 import kotlinx.coroutines.flow.Flow
 
-interface RemoteFirebaseRepo {
+interface RemoteHospitalFbRepo {
 
     suspend fun getAllHospitals(): List<HospitalsDto>
     suspend fun getHospitalByLocation(geoPoint: GeoPoint): Hospital

@@ -4,6 +4,7 @@ import com.google.firebase.firestore.GeoPoint
 import com.pratyaksh.healthykingdom.utils.BloodGroupInterface
 import com.pratyaksh.healthykingdom.utils.Plasma
 import com.pratyaksh.healthykingdom.utils.Platelets
+import java.io.Serializable
 
 
 data class Hospital(
@@ -15,4 +16,6 @@ data class Hospital(
     val availBloods: List<BloodGroupInterface>,
     val availPlasma: List<Plasma>,
     val availPlatelets: List<Platelets>,
-)
+): Serializable{
+
+}

@@ -8,7 +8,18 @@ import kotlinx.coroutines.tasks.await
 
 class FirebaseAmbulanceRepoImpl(
     val firestore: FirebaseFirestore
-):  RemoteAmbulanceFbRepo{
+): RemoteAmbulanceFbRepo{
+    override suspend fun addAmbulance(ambulanceDto: AmbulanceDto): Boolean {
+        try {
+            firestore.collection(Constants.Collections.AMBLANCE_DRIVERS)
+                .document().set(ambulanceDto)
+                .await()
+            return true
+        }catch(e: Exception){
+            throw e
+        }
+
+    }
 
     override suspend fun getAllAmbulances(): List<AmbulanceDto> =
         firestore.collection(Constants.Collections.AMBLANCE_DRIVERS)
@@ -56,7 +67,7 @@ class FirebaseAmbulanceRepoImpl(
             .get().await()
             .toObjects(AmbulanceDto::class.java)
             .find {
-                it.vehicleNumber == vehicleNum
+                it.ambulanceNumber == vehicleNum
             }
     }
 }

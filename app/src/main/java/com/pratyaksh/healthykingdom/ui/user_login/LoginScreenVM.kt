@@ -4,15 +4,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.pratyaksh.healthykingdom.domain.repository.RemoteFirebaseRepo
 import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetHospitalByPhoneUseCase
 import com.pratyaksh.healthykingdom.utils.AccountTypes
 import com.pratyaksh.healthykingdom.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -44,15 +41,21 @@ class LoginScreenVM @Inject constructor(
         )
     }
 
+    fun toggleLoadingCmp(setToVisible: Boolean? = null){
+        uiState = uiState.copy(
+            isLoading = setToVisible ?: !uiState.isLoading
+        )
+    }
+
 
     fun onLogin(){
         uiState = uiState.copy(
             loginStatus = flow {
-                emit(Resource.Loading(true, "Logging in..."))
-                delay(1000L)
+                emit(Resource.Loading("loading", "Logging in..."))
+                delay(3000L)
 
                 val res = hospitalByPhoneUseCase(uiState.phone, uiState.password)
-                if(res != null) emit(Resource.Success(true))
+                if(res != null) emit(Resource.Success(res.id))
                 else emit(Resource.Error("Login Failed"))
             }
         )

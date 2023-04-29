@@ -3,12 +3,12 @@ package com.pratyaksh.healthykingdom.data.repositories.test
 import com.google.firebase.firestore.GeoPoint
 import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
 import com.pratyaksh.healthykingdom.domain.model.Hospital
-import com.pratyaksh.healthykingdom.domain.repository.RemoteFirebaseRepo
+import com.pratyaksh.healthykingdom.domain.repository.RemoteHospitalFbRepo
 import com.pratyaksh.healthykingdom.utils.Resource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 
-class TestRepositoryImpl: RemoteFirebaseRepo {
+class TestRepositoryImpl: RemoteHospitalFbRepo {
     override suspend fun getAllHospitals(): List<HospitalsDto> {
         delay(700L)
         return listOf(

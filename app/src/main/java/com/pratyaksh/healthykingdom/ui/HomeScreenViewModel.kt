@@ -3,10 +3,13 @@ package com.pratyaksh.healthykingdom.ui
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
 import com.pratyaksh.healthykingdom.domain.model.Hospital
-import com.pratyaksh.healthykingdom.domain.use_case.get_all_hospitals.GetAllHospitalsUseCase
+import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetAllHospitalsUseCase
 import com.pratyaksh.healthykingdom.ui.homepage.HomeScreenUiState
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_detail_sheet.MarkerDetailSheetUiState
 import com.pratyaksh.healthykingdom.utils.*
@@ -20,10 +23,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    val getAllHospitalsUseCase: GetAllHospitalsUseCase
+    val getAllHospitalsUseCase: GetAllHospitalsUseCase,
+    private val saveState: SavedStateHandle
 ): ViewModel() {
 
     val homeScreenUiState = mutableStateOf( HomeScreenUiState() )
+
+    @OptIn(SavedStateHandleSaveableApi::class)
+    var user by saveState.saveable { mutableStateOf<String>("") }
+        private set
 
     val detailSheetUiState = mutableStateOf( MarkerDetailSheetUiState(
         isLoading = false,

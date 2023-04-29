@@ -3,9 +3,11 @@ package com.pratyaksh.healthykingdom.di
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pratyaksh.healthykingdom.data.repositories.remote.FirebaseAmbulanceRepoImpl
-import com.pratyaksh.healthykingdom.data.repositories.remote.FirebaseHospitalsRepoImpl
+import com.pratyaksh.healthykingdom.data.repositories.remote.HospitalFbHospitalsRepoImpl
+import com.pratyaksh.healthykingdom.data.repositories.remote.PublicUserFbRepoImpl
 import com.pratyaksh.healthykingdom.domain.repository.RemoteAmbulanceFbRepo
-import com.pratyaksh.healthykingdom.domain.repository.RemoteFirebaseRepo
+import com.pratyaksh.healthykingdom.domain.repository.RemoteHospitalFbRepo
+import com.pratyaksh.healthykingdom.domain.repository.RemotePublicUserFbRepo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,8 +22,8 @@ object AppModule {
     @Singleton
     fun provideFirebaseHospitalRepo(
         firestore: FirebaseFirestore
-    ): RemoteFirebaseRepo{
-        return FirebaseHospitalsRepoImpl(firestore) // Production data will be fetched from here
+    ): RemoteHospitalFbRepo{
+        return HospitalFbHospitalsRepoImpl(firestore) // Production data will be fetched from here
 //        return TestRepositoryImpl() //Providing test data
     }
 
@@ -44,6 +46,13 @@ object AppModule {
         firestore: FirebaseFirestore
     ): RemoteAmbulanceFbRepo{
         return FirebaseAmbulanceRepoImpl(firestore = firestore )
+    }
+    @Provides
+    @Singleton
+    fun provideFBPublicUserRepo(
+        firestore: FirebaseFirestore
+    ): RemotePublicUserFbRepo{
+        return PublicUserFbRepoImpl(firestore)
     }
 
 
