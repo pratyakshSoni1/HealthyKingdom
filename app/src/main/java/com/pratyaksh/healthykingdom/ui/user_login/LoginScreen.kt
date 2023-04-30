@@ -36,10 +36,12 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.pratyaksh.healthykingdom.R
 import com.pratyaksh.healthykingdom.ui.utils.AppTextField
+import com.pratyaksh.healthykingdom.ui.utils.ErrorDialog
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
 import com.pratyaksh.healthykingdom.utils.AccountTypes
 import com.pratyaksh.healthykingdom.utils.Resource
@@ -54,7 +56,6 @@ import kotlinx.coroutines.withContext
 @Composable
 fun LoginScreen(
     navController: NavController,
-    activity: Activity,
     viewModel: LoginScreenVM = hiltViewModel(),
     updateCurrentLoggedUser: (userId: String) -> Flow<Resource<Boolean>>
 ) {
@@ -156,7 +157,9 @@ fun LoginScreen(
                     addStyle(SpanStyle(color = Color.LightGray), 0, 10)
                 },
                 modifier = Modifier.clickable {
-                    navController.navigate(Routes.HOSPITAL_REGITER_SCREEN.route)
+                    navController.navigate(Routes.HOSPITAL_REGITER_SCREEN.route){
+                        launchSingleTop = true
+                    }
                 }
             )
             Spacer(Modifier.height(8.dp))
@@ -208,9 +211,23 @@ fun LoginScreen(
         }
 
         if( viewModel.uiState.isLoading ){
-            LoadingComponent(modifier = Modifier.fillMaxSize().background(Color(0x37000000)) )
+            LoadingComponent(
+                modifier = Modifier
+                    .fillMaxSize(0.5f)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.White),
+                text= "Please Wait"
+            )
         }
 
+        if(viewModel.uiState.showError) {
+            ErrorDialog(
+                text = viewModel.uiState.errorText,
+                onClose= {
+                    viewModel.toggleErrorDialog(true)
+                }
+            )
+        }
     }
 
 }

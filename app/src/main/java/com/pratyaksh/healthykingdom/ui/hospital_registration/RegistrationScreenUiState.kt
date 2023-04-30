@@ -11,6 +11,9 @@ data class RegistrationScreenUiState (
     val verificationId: String? = null,
     val resendToken: PhoneAuthProvider.ForceResendingToken? = null,
     val showLocationChooser: Boolean = false,
+    val showError: Boolean = false,
+    val errorText: String= "",
+    val isLoading: Boolean = false,
 
     val name: String = "",
     val phone: String = "",
@@ -27,7 +30,11 @@ data class OtpValidationUiState(
     val isResendAvail: Boolean = false,
     val verificationId: String = "",
     val resendToken: PhoneAuthProvider.ForceResendingToken? = null,
-    val resendTimeout: Int = 30,
+    val resendTimeout: Int = 0,
     val isTimoutRunning: Boolean = false,
-    val hospitalDto:HospitalsDto?= null
-)
+    val hospitalDto:HospitalsDto?= null,
+    val showError: Boolean = false,
+    val errorText: String= "",
+    val isLoading: Boolean = false,
+
+    )

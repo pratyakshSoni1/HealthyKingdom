@@ -60,11 +60,11 @@ class TestRepositoryImpl: RemoteHospitalFbRepo {
         )
     }
 
-    override suspend fun getHospitalByPhone(phone: String, password: String): HospitalsDto? {
+    override suspend fun getHospitalByPhone(phone: String): HospitalsDto? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun addHospital(hospital: HospitalsDto): Flow<Resource<Boolean>> {
+    override suspend fun addHospital(hospital: HospitalsDto): Boolean {
         TODO("Not yet implemented")
     }
 

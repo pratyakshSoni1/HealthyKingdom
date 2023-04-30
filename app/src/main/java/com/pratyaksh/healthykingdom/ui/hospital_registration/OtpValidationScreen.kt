@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
@@ -27,14 +28,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.firebase.FirebaseException
+import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.PhoneAuthProvider
 import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
+import com.pratyaksh.healthykingdom.ui.utils.ErrorDialog
+import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
 import com.pratyaksh.healthykingdom.ui.utils.OtpTextField
 
 @Composable
@@ -52,92 +58,112 @@ fun OtpVerifyScreen(
         viewModel.initScreen( verificationId, phone, resendToken, hospitalDto )
     }
 
-    Column(
-        Modifier.fillMaxSize()
-            .padding(vertical= 16.dp, horizontal = 12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){
-
-        Text(
-            text= "Otp Sent to ${viewModel.uiState.phone}",
-            textAlign = TextAlign.Center,
-            fontWeight= FontWeight.Bold
-        )
-
-        Box(
+    Box(Modifier.fillMaxSize()) {
+        Column(
             Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            contentAlignment = Alignment.Center
-        ){
+                .fillMaxSize()
+                .padding(vertical = 16.dp, horizontal = 12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Otp Sent to ${viewModel.uiState.phone}",
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold
+            )
 
-            Box{
-                OtpTextField(
-                    text = viewModel.uiState.code
-                )
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                contentAlignment = Alignment.Center
+            ) {
 
-                TextField(
-                    value = viewModel.uiState.code,
-                    onValueChange = { viewModel.onCodeChange(it) },
-                    modifier= Modifier
-                        .matchParentSize()
-                        .alpha(0f),
-                )
+                Box {
+                    OtpTextField(
+                        text = viewModel.uiState.code
+                    )
+
+                    TextField(
+                        value = viewModel.uiState.code,
+                        onValueChange = { viewModel.onCodeChange(it) },
+                        modifier = Modifier
+                            .matchParentSize()
+                            .alpha(0f),
+                    )
+                }
+
             }
 
-        }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-        Row(
-            modifier= Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ){
+                Text(
+                    text = "Resend",
+                    color = if (viewModel.uiState.isResendAvail) Color.Blue else Color.LightGray,
+                    modifier = Modifier.clickable {
+                        viewModel.otpSignInUseCase(
+                            viewModel.uiState.phone,
+                            activity,
+                            resendToken = viewModel.uiState.resendToken!!,
+                            onVerificationComplete = {
+                                viewModel.addHospitalToFB()
+                                onVerify()
+                            },
+                            onVerificationFailed = {
+                                Log.d("VerificationLogs", "Can't verify otp${it.message}")
+                                viewModel.toggleErrorDialog(true, "Failed to verify")
+                            },
+                            onCodeSent = viewModel::updateVerificationIdAndToken
+                        )
+                    },
+                    textAlign = TextAlign.Center
+                )
+                Spacer(Modifier.width(8.dp))
 
-            Text(
-                text= "Resend",
-                color= if(viewModel.uiState.isResendAvail) Color.Blue else Color.LightGray,
-                modifier= Modifier.clickable {
-                    viewModel.otpSignInUseCase(
-                        viewModel.uiState.phone,
-                        activity,
-                        resendToken= viewModel.uiState.resendToken!!,
-                        onVerificationComplete = {
-                            viewModel.addHospitalToFB()
-                            onVerify()
-                                                 },
-                        onVerificationFailed = {
-                            Log.d("VerificationLogs", "Can't verify otp request ${it.message}")
-                        },
-                        onCodeSent = viewModel::updateVerificationIdAndToken
-                    )
+                CircularProgressIndicator(
+                    progress = viewModel.uiState.resendTimeout / 60f,
+                    modifier = Modifier.size(36.dp),
+                    strokeWidth = 4.dp,
+                    color = Color.Blue
+                )
+
+            }
+
+            Button(
+                onClick = {
+                    viewModel.addHospitalToFB()
+                    onVerify()
                 },
-                textAlign = TextAlign.Center
-            )
-            Spacer(Modifier.width(8.dp))
-
-            CircularProgressIndicator(
-                progress= viewModel.uiState.resendTimeout / 60f,
-                modifier= Modifier.size(28.dp),
-                strokeWidth = 4.dp
-            )
-
+                modifier = Modifier.fillMaxWidth(0.75f)
+            ) {
+                Text(
+                    text = "Verify"
+                )
+            }
         }
 
-        Button(
-            onClick={
-                viewModel.addHospitalToFB()
-                onVerify()
-            },
-            modifier = Modifier.fillMaxWidth(0.75f)
-        ){
-            Text(
-                text = "Verify"
+        if(viewModel.uiState.showError){
+            ErrorDialog(
+                text = viewModel.uiState.errorText,
+                onClose= {
+                    viewModel.toggleErrorDialog(true)
+                }
             )
         }
 
-
+        if(viewModel.uiState.isLoading){
+            LoadingComponent(
+                modifier = Modifier
+                    .fillMaxSize(0.5f)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.White),
+                text= "Please Wait"
+            )
+        }
 
     }
-
 }

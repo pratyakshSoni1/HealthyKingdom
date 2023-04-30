@@ -14,41 +14,51 @@ import kotlinx.coroutines.tasks.await
 
 class HospitalFbHospitalsRepoImpl(private val fireStore: FirebaseFirestore): RemoteHospitalFbRepo {
     override suspend fun getAllHospitals(): List<HospitalsDto> {
-
-        val results = fireStore.collection(Collections.HOSPITALS_COLLECTION)
-                    .get().await()
-                    .toObjects(HospitalsDto::class.java)
-
-        return results
-
+        try{
+            return fireStore.collection(Collections.HOSPITALS_COLLECTION)
+                .get().await()
+                .toObjects(HospitalsDto::class.java)
+        }catch(e: Exception){
+            e.printStackTrace()
+            throw e
+        }
     }
 
     override suspend fun getHospitalById(id: String): HospitalsDto? {
-        getAllHospitals()
-            .forEach {
-                if(it.id == id){
-                    return it
+        try{
+            getAllHospitals()
+                .forEach {
+                    if(it.id == id){
+                        return it
+                    }
                 }
-            }
-        return null
+            return null
+        }catch(e: Exception){
+            e.printStackTrace()
+            throw e
+        }
     }
 
     override suspend fun getHospitalByPhone(phone: String): HospitalsDto? {
-        return getAllHospitals().find {
+        try{
+            return getAllHospitals().find {
                 it.phone == phone
             }
+        }catch(e: Exception){
+            e.printStackTrace()
+            throw e
+        }
     }
 
-    override suspend fun addHospital(hospital: HospitalsDto) = flow{
+    override suspend fun addHospital(hospital: HospitalsDto): Boolean{
 
         try{
-            val task = fireStore.collection(Constants.Collections.HOSPITALS_COLLECTION)
-                .document().set(hospital)
-            task.await()
-            emit(Resource.Success(true))
+            fireStore.collection(Constants.Collections.HOSPITALS_COLLECTION)
+                .document().set(hospital).await()
+            return true
         }catch(e: FirebaseFirestoreException){
             e.printStackTrace()
-            emit(Resource.Error<Boolean>(e.message))
+            throw e
         }
 
     }

@@ -12,6 +12,7 @@ import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
 import com.pratyaksh.healthykingdom.domain.use_case.add_hospital.AddHospitalUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.number_verification.OtpSendUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.number_verification.OtpSignInUseCase
+import com.pratyaksh.healthykingdom.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -44,7 +45,7 @@ class OtpValidationVM @Inject constructor(
     }
 
     fun activateTimeout(){
-        uiState = uiState.copy(resendTimeout = 0)
+        uiState = uiState.copy(resendTimeout = 0, isTimoutRunning = true, isResendAvail = false)
 
         viewModelScope.launch{
             while(uiState.isTimoutRunning){
@@ -60,7 +61,7 @@ class OtpValidationVM @Inject constructor(
     }
 
     fun deactivateTimeout(){
-        uiState = uiState.copy(isTimoutRunning = false)
+        uiState = uiState.copy(isTimoutRunning = false, resendTimeout = 0, isResendAvail = true)
     }
 
     fun updateVerificationIdAndToken(verId:String, resToken: PhoneAuthProvider.ForceResendingToken){
@@ -72,11 +73,37 @@ class OtpValidationVM @Inject constructor(
 
     }
 
+    fun toggleErrorDialog(setToVisible: Boolean, text: String= "Something went wrong, try later"){
+        uiState = uiState.copy(
+            errorText = text,
+            showError = setToVisible,
+            isLoading = false,
+        )
+    }
+
+    fun toggleLoadingCmp(setToVisible: Boolean?){
+        uiState = uiState.copy(
+            isLoading = setToVisible ?: !uiState.isLoading
+        )
+    }
+
     fun addHospitalToFB(){
         viewModelScope.launch {
             addHospitalUseCase(uiState.hospitalDto!!)
                 .collectLatest {
-                    Log.d("VMLOGS","Adding hospital: success - ${it.data}")
+                    when(it){
+                        is Resource.Error -> {
+                            toggleLoadingCmp(false)
+                            toggleErrorDialog(true, it.msg!!)
+                        }
+                        is Resource.Loading -> {
+                            toggleLoadingCmp(true)
+                        }
+                        is Resource.Success -> {
+                            toggleLoadingCmp(false)
+                            Log.d("VMLOGS","Adding hospital: success - ${it.data}")
+                        }
+                    }
                 }
         }
     }

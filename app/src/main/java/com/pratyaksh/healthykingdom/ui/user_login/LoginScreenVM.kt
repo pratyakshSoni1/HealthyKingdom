@@ -36,11 +36,27 @@ class LoginScreenVM @Inject constructor(
             password = newValue
         )
     }
+
+    fun onErrTxtChange(newValue: String){
+        uiState = uiState.copy(
+            errorText = newValue
+        )
+    }
+
+    fun toggleErrorDialog(setToVisible: Boolean, text: String = "Something went wrong"){
+        uiState = uiState.copy(
+                showError = setToVisible,
+                errorText = text
+            )
+
+    }
+
     fun onAccChange(newValue: AccountTypes){
         uiState = uiState.copy(
             accountType = newValue
         )
     }
+
     fun toggleAccMenu(expand: Boolean? = null){
         uiState = uiState.copy(
             isAccMenuExpanded = expand ?: !uiState.isAccMenuExpanded
@@ -52,7 +68,6 @@ class LoginScreenVM @Inject constructor(
             isLoading = setToVisible ?: !uiState.isLoading
         )
     }
-
 
     fun onLogin(){
         viewModelScope.launch {
