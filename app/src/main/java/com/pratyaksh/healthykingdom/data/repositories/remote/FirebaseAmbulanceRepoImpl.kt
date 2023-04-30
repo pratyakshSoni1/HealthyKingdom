@@ -1,5 +1,6 @@
 package com.pratyaksh.healthykingdom.data.repositories.remote
 
+import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pratyaksh.healthykingdom.data.dto.AmbulanceDto
 import com.pratyaksh.healthykingdom.domain.repository.RemoteAmbulanceFbRepo
@@ -19,6 +20,15 @@ class FirebaseAmbulanceRepoImpl(
             throw e
         }
 
+    }
+
+    override suspend fun getAmbulanceByPhone(phone: String): AmbulanceDto? {
+        return firestore.collection(Constants.Collections.AMBLANCE_DRIVERS)
+            .get().await()
+            .toObjects(AmbulanceDto::class.java)
+            .find {
+                it.phone == phone
+            }
     }
 
     override suspend fun getAllAmbulances(): List<AmbulanceDto> =

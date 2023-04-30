@@ -107,7 +107,7 @@ class MainActivity : ComponentActivity() {
 
     private fun updateLoggedUser(newUserId: String) = flow<Resource<Boolean>>{
         CoroutineScope(Dispatchers.IO).launch {
-            emit(Resource.Loading(true, "Updating current logged user"))
+            emit(Resource.Loading( "Updating current logged user"))
             try {
                 val userLoggedPrefKey = stringPreferencesKey(Constants.USER_LOGGED_KEY)
                 baseContext.userLoggedDS.edit { userDS ->
@@ -124,7 +124,7 @@ class MainActivity : ComponentActivity() {
 
     private fun readLoggedUser() = flow<Resource<String?>>{
         try {
-            emit(Resource.Loading("", "Getting current login info"))
+            emit(Resource.Loading( "Getting current login info"))
             val userLoggedPreKey = stringPreferencesKey(Constants.USER_LOGGED_KEY)
             emit(Resource.Success(baseContext.userLoggedDS.data.first()[userLoggedPreKey]))
         }catch(e: Exception){

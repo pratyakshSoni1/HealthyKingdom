@@ -33,9 +33,9 @@ class HospitalFbHospitalsRepoImpl(private val fireStore: FirebaseFirestore): Rem
         return null
     }
 
-    override suspend fun getHospitalByPhone(phone: String, password: String): HospitalsDto? {
+    override suspend fun getHospitalByPhone(phone: String): HospitalsDto? {
         return getAllHospitals().find {
-                it.phone == phone && it.password == password
+                it.phone == phone
             }
     }
 

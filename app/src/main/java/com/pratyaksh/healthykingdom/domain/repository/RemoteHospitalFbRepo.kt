@@ -12,7 +12,7 @@ interface RemoteHospitalFbRepo {
     suspend fun getHospitalByLocation(geoPoint: GeoPoint): Hospital
     suspend fun getHospitalsNearby(geoPoint: GeoPoint): List<Hospital>
     suspend fun getHospitalById(id: String): HospitalsDto?
-    suspend fun getHospitalByPhone(phone: String, password: String): HospitalsDto?
+    suspend fun getHospitalByPhone(phone: String): HospitalsDto?
     suspend fun addHospital(hospital: HospitalsDto): Flow<Resource<Boolean>>
 
 }

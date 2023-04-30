@@ -4,17 +4,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetHospitalByPhoneUseCase
+import androidx.lifecycle.viewModelScope
+import com.pratyaksh.healthykingdom.domain.use_case.add_ambulance.LoginAmbulanceUseCase
+import com.pratyaksh.healthykingdom.domain.use_case.getHospital.HospitalLoginUseCase
+import com.pratyaksh.healthykingdom.domain.use_case.get_public_user.PublicUserLoginUseCase
 import com.pratyaksh.healthykingdom.utils.AccountTypes
 import com.pratyaksh.healthykingdom.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginScreenVM @Inject constructor(
-    private val hospitalByPhoneUseCase: GetHospitalByPhoneUseCase
+    private val hospitalLoginUseCase: HospitalLoginUseCase,
+    private val ambulanceLoginUseCase: LoginAmbulanceUseCase,
+    private val publicUserLoginUseCase: PublicUserLoginUseCase,
 ): ViewModel() {
 
     var uiState by mutableStateOf(LoginScreenUiState())
@@ -49,17 +55,15 @@ class LoginScreenVM @Inject constructor(
 
 
     fun onLogin(){
-        uiState = uiState.copy(
-            loginStatus = flow {
-                emit(Resource.Loading("loading", "Logging in..."))
-                delay(3000L)
-
-                val res = hospitalByPhoneUseCase(uiState.phone, uiState.password)
-                if(res != null) emit(Resource.Success(res.id))
-                else emit(Resource.Error("Login Failed"))
-            }
-        )
-
+        viewModelScope.launch {
+            uiState = uiState.copy(
+                loginStatus = when(uiState.accountType){
+                     AccountTypes.HOSPITAL -> hospitalLoginUseCase(uiState.phone, uiState.password)
+                     AccountTypes.PUBLIC_USER -> publicUserLoginUseCase(uiState.phone, uiState.password)
+                     AccountTypes.AMBULANCE -> ambulanceLoginUseCase(uiState.phone, uiState.password)
+                }
+            )
+        }
     }
 
 

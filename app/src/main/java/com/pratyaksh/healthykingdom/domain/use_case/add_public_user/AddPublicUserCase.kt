@@ -16,7 +16,7 @@ class AddPublicUserCase @Inject constructor(
 ) {
 
     operator fun invoke(user: PublicUser): Flow<Resource<Boolean>> = flow{
-        emit(Resource.Loading(true, "Adding ambulance"))
+        emit(Resource.Loading( "Adding ambulance"))
         try{
             if(fbUserRepo.addUser(user.toPublicUserDto()))
                 emit(Resource.Success(true))

@@ -11,6 +11,7 @@ interface RemoteAmbulanceFbRepo {
     suspend fun getAllOnlineAmbulances(): List<AmbulanceDto>
     suspend fun getAllOfflineAmbulances(): List<AmbulanceDto>
     suspend fun getAmbulanceByNumber( vehicleNum: String ): AmbulanceDto?
+    suspend fun getAmbulanceByPhone( phone: String ): AmbulanceDto?
     suspend fun addAmbulance( ambulanceDto: AmbulanceDto ): Boolean
 
 

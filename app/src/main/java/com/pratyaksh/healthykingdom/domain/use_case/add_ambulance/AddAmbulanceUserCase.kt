@@ -13,7 +13,7 @@ class AddAmbulanceUserCase @Inject constructor(
 ) {
 
     operator fun invoke(ambulance: Ambulance): Flow<Resource<Boolean>> = flow{
-        emit(Resource.Loading(true, "Adding ambulance"))
+        emit(Resource.Loading( "Adding ambulance"))
         try{
             if(fbAmbulanceRepo.addAmbulance(ambulance.toAmbulanceDto()))
                 emit(Resource.Success(true))
