@@ -38,7 +38,7 @@ fun ErrorDialog(
                 .fillMaxWidth(0.9f)
                 .clip(RoundedCornerShape(12.dp))
                 .background(Color.White)
-                .padding(vertical = 8.dp, horizontal = 12.dp),
+                .padding(vertical = 2.dp, horizontal = 4.dp),
         ) {
             Box(
                 Modifier.fillMaxSize()
@@ -57,7 +57,7 @@ fun ErrorDialog(
             Icon(
                 imageVector = Icons.Rounded.Warning,
                 tint = Color.Red,
-                modifier = Modifier.fillMaxSize(0.3f),
+                modifier = Modifier.fillMaxSize(0.4f),
                 contentDescription = text
             )
             Spacer(Modifier.height(4.dp))

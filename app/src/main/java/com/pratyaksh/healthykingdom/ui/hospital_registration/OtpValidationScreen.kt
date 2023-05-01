@@ -105,7 +105,7 @@ fun OtpVerifyScreen(
                     text = "Resend",
                     color = if (viewModel.uiState.isResendAvail) Color.Blue else Color.LightGray,
                     modifier = Modifier.clickable {
-                        viewModel.otpSignInUseCase(
+                        viewModel.otpSendUseCase(
                             viewModel.uiState.phone,
                             activity,
                             resendToken = viewModel.uiState.resendToken!!,
@@ -135,8 +135,21 @@ fun OtpVerifyScreen(
 
             Button(
                 onClick = {
-                    viewModel.addHospitalToFB()
-                    onVerify()
+                    viewModel.otpSignInUseCase(
+                        activity,
+                        PhoneAuthProvider.getCredential(viewModel.uiState.verificationId, viewModel.uiState.code),
+                        onVerifySuccess= {
+                            viewModel.addHospitalToFB()
+                            onVerify()
+                        },
+                        onVerificationFailed = {
+                            viewModel.toggleErrorDialog(true, "Verification failed, try later")
+                        },
+                        onInvalidCoe= {
+                            viewModel.toggleErrorDialog(true, "Invalid Code")
+                        }
+
+                    )
                 },
                 modifier = Modifier.fillMaxWidth(0.75f)
             ) {

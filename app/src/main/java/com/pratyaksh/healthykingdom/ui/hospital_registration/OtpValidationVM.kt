@@ -21,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel()
 class OtpValidationVM @Inject constructor(
-    val otpSignInUseCase: OtpSendUseCase,
+    val otpSignInUseCase: OtpSignInUseCase,
+    val otpSendUseCase: OtpSendUseCase,
     private val addHospitalUseCase: AddHospitalUseCase
 ) : ViewModel() {
 

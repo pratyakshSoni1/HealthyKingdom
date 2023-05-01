@@ -39,7 +39,6 @@ fun NavGraphBuilder.registrationNavgraph(
         ){
             LoginScreen(
                 navController = navController,
-                activity = activity,
                 updateCurrentLoggedUser= updateCurrentLoggedUser
             )
         }
@@ -67,7 +66,6 @@ fun NavGraphBuilder.registrationNavgraph(
         ){
             OtpVerifyScreen(
                 onVerify = {
-//                    navController.clearBackStack()
                     navController.navigate(Routes.HOMESCREEN.route){
                         popUpTo(Routes.SIGNUP_NAVGRAPH.route){ inclusive = true }
                     }
