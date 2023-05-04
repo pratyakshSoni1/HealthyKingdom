@@ -21,7 +21,10 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +43,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.pratyaksh.healthykingdom.R
+import com.pratyaksh.healthykingdom.ui.utils.AccTypeMenuItem
 import com.pratyaksh.healthykingdom.ui.utils.AppTextField
 import com.pratyaksh.healthykingdom.ui.utils.ErrorDialog
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
@@ -60,7 +64,9 @@ fun LoginScreen(
     updateCurrentLoggedUser: (userId: String) -> Flow<Resource<Boolean>>
 ) {
     val context = LocalContext.current
-    Box{
+    Box(
+        contentAlignment= Alignment.Center
+    ){
         Column(
             Modifier
                 .fillMaxSize()
@@ -77,64 +83,6 @@ fun LoginScreen(
             )
             Spacer(Modifier.height(12.dp))
 
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp, horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Text(
-                    "Account Type: ",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-                Spacer(Modifier.width(4.dp))
-
-                Box(Modifier.clickable {
-                    viewModel.toggleAccMenu()
-                }) {
-                    AccTypeMenuItem(
-                        name = viewModel.uiState.accountType.type,
-                        painterResource(id = viewModel.uiState.accountType.img)
-                    )
-                }
-
-                DropdownMenu(
-                    expanded = viewModel.uiState.isAccMenuExpanded,
-                    onDismissRequest = { viewModel.toggleAccMenu(false) }
-                ) {
-                    DropdownMenuItem(onClick = {
-                        viewModel.onAccChange(AccountTypes.AMBULANCE)
-                    }) {
-                        AccTypeMenuItem(
-                            name = "AMBULANCE",
-                            img = painterResource(id = R.drawable.ambulance)
-                        )
-                    }
-
-                    DropdownMenuItem(onClick = {
-                        viewModel.onAccChange(AccountTypes.HOSPITAL)
-                    }) {
-                        AccTypeMenuItem(
-                            name = "HOSPITAL",
-                            img = painterResource(id = R.drawable.hospital)
-                        )
-                    }
-
-                    DropdownMenuItem(onClick = {
-                        viewModel.onAccChange(AccountTypes.HOSPITAL)
-                    }) {
-                        AccTypeMenuItem(
-                            name = "Public User",
-                            img = painterResource(id = R.drawable.ic_person)
-                        )
-                    }
-                }
-            }
-
-
             AppTextField(
                 value = viewModel.uiState.phone,
                 onValueChange = viewModel::onPhoneChange,
@@ -149,6 +97,70 @@ fun LoginScreen(
             )
             Spacer(Modifier.height(8.dp))
 
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp, horizontal = 12.dp),
+            ) {
+
+                Text(
+                    "Account Type: ",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+                Spacer(Modifier.width(4.dp))
+
+                Box {
+                    Row(
+                        Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable {
+                                viewModel.toggleAccMenu()
+                            }
+                    ) {
+                        Icon(imageVector= Icons.Rounded.KeyboardArrowDown, contentDescription = "select account type")
+                        AccTypeMenuItem(
+                            name = viewModel.uiState.accountType.type,
+                            painterResource(id = viewModel.uiState.accountType.img)
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = viewModel.uiState.isAccMenuExpanded,
+                        onDismissRequest = { viewModel.toggleAccMenu(false) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        DropdownMenuItem(onClick = {
+                            viewModel.onAccChange(AccountTypes.AMBULANCE)
+                        }) {
+                            AccTypeMenuItem(
+                                name = "AMBULANCE",
+                                img = painterResource(id = R.drawable.ambulance)
+                            )
+                        }
+
+                        DropdownMenuItem(onClick = {
+                            viewModel.onAccChange(AccountTypes.HOSPITAL)
+                        }) {
+                            AccTypeMenuItem(
+                                name = "HOSPITAL",
+                                img = painterResource(id = R.drawable.hospital)
+                            )
+                        }
+
+                        DropdownMenuItem(onClick = {
+                            viewModel.onAccChange(AccountTypes.HOSPITAL)
+                        }) {
+                            AccTypeMenuItem(
+                                name = "Public User",
+                                img = painterResource(id = R.drawable.ic_person)
+                            )
+                        }
+                    }
+                }
+            }
+            Spacer(Modifier.height(8.dp))
             Text(
                 buildAnnotatedString {
                     append("New here ? ")
@@ -232,27 +244,3 @@ fun LoginScreen(
 
 }
 
-@Composable
-private fun AccTypeMenuItem(
-    name: String,
-    img: Painter
-){
-    Row(
-        Modifier
-            .wrapContentSize()
-            .padding(vertical = 4.dp, horizontal = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ){
-
-        Image(
-            painter = img, contentDescription = name,
-            modifier= Modifier
-                .size(48.dp)
-                .clip(RoundedCornerShape(12.dp)),
-            contentScale = ContentScale.Crop
-        )
-        Spacer(Modifier.width(8.dp))
-        Text(name, fontSize = 16.sp)
-
-    }
-}

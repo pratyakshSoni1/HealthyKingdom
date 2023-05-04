@@ -2,6 +2,9 @@ package com.pratyaksh.healthykingdom.ui.hospital_registration
 
 import com.google.firebase.auth.PhoneAuthProvider
 import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
+import com.pratyaksh.healthykingdom.domain.model.Users
+import com.pratyaksh.healthykingdom.utils.AccountTypes
+import com.pratyaksh.healthykingdom.utils.Gender
 import org.osmdroid.util.GeoPoint
 
 
@@ -14,13 +17,20 @@ data class RegistrationScreenUiState (
     val showError: Boolean = false,
     val errorText: String= "",
     val isLoading: Boolean = false,
+    val accountType: AccountTypes = AccountTypes.PUBLIC_USER,
+    val isAccMenuExpanded: Boolean = false,
+
 
     val name: String = "",
     val phone: String = "",
     val code: String = "",
     val mail: String = "",
     val password: String = "",
-    val confirmPassword: String = ""
+    val confirmPassword: String = "",
+    val age: String = "",
+    val vehicleNumber: String = "",
+    val gender: Gender= Gender.FEMALE,
+    val providesLocation: Boolean = false
 )
 
 data class OtpValidationUiState(
@@ -32,7 +42,7 @@ data class OtpValidationUiState(
     val resendToken: PhoneAuthProvider.ForceResendingToken? = null,
     val resendTimeout: Int = 0,
     val isTimoutRunning: Boolean = false,
-    val hospitalDto:HospitalsDto?= null,
+    val user:Users?= null,
     val showError: Boolean = false,
     val errorText: String= "",
     val isLoading: Boolean = false,

@@ -1,7 +1,7 @@
 package com.pratyaksh.healthykingdom.domain.use_case.get_public_user
 
 import com.pratyaksh.healthykingdom.data.dto.toPublicUser
-import com.pratyaksh.healthykingdom.domain.model.PublicUser
+import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.domain.repository.RemotePublicUserFbRepo
 import com.pratyaksh.healthykingdom.utils.Resource
 import kotlinx.coroutines.flow.flow
@@ -13,7 +13,7 @@ class GetPublicUserById @Inject constructor(
     private val fbRepo: RemotePublicUserFbRepo
 ) {
 
-    operator fun invoke(userId: String) = flow<Resource<PublicUser?>>{
+    operator fun invoke(userId: String) = flow<Resource<Users.PublicUser?>>{
 
         emit(Resource.Loading("Finding user"))
         try{

@@ -72,15 +72,15 @@ fun GroupLabel(
 
 @Composable
 fun GroupLabel(
-    plasma: Plasma
+    plasma: PlasmaGroupInfo
 ){
     val bgColor = Color(0xFFD89918)
 
     val text: String = when(plasma){
-            PlasmaGroupInfo.PLASMA_A -> "A"
-            PlasmaGroupInfo.PLASMA_B -> "B"
-            PlasmaGroupInfo.PLASMA_AB -> "AB"
-            PlasmaGroupInfo.PLASMA_O -> "O"
+            PlasmaGroupInfo.Plasma_A -> "A"
+            PlasmaGroupInfo.Plasma_B -> "B"
+            PlasmaGroupInfo.Plasma_AB -> "AB"
+            PlasmaGroupInfo.Plasma_O -> "O"
         else -> { "!" }
     }
 

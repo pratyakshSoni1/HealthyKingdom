@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.PhoneAuthProvider.ForceResendingToken
 import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
+import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.domain.use_case.add_hospital.AddHospitalUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.number_verification.OtpSendUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.number_verification.OtpSignInUseCase
@@ -35,12 +36,12 @@ class OtpValidationVM @Inject constructor(
         )
     }
 
-    fun initScreen(verificationId: String, phoneNum: String, resendingToken: ForceResendingToken, hospitalDto: HospitalsDto){
+    fun initScreen(verificationId: String, phoneNum: String, resendingToken: ForceResendingToken, user: Users){
         uiState = uiState.copy(
             verificationId = verificationId,
             phone = phoneNum,
             resendToken= resendingToken,
-            hospitalDto = hospitalDto,
+            user = user,
         )
         activateTimeout()
     }
@@ -90,7 +91,21 @@ class OtpValidationVM @Inject constructor(
 
     fun addHospitalToFB(){
         viewModelScope.launch {
-            addHospitalUseCase(uiState.hospitalDto!!)
+
+            when(uiState.user!!){
+                is Users.Ambulance -> {
+
+                }
+                is Users.Hospital -> {
+                    addHospitalUseCase(uiState.user)
+                }
+                is Users.PublicUser -> {
+
+                }
+
+            }
+
+            addHospitalUseCase(uiState.user!!)
                 .collectLatest {
                     when(it){
                         is Resource.Error -> {

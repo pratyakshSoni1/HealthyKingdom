@@ -25,6 +25,7 @@ import com.pratyaksh.healthykingdom.utils.LifeFluids
 import com.pratyaksh.healthykingdom.utils.Plasma
 import com.pratyaksh.healthykingdom.utils.getOnlyGroup
 import com.pratyaksh.healthykingdom.ui.utils.IconButton
+import com.pratyaksh.healthykingdom.utils.PlasmaGroupInfo
 
 @Composable
 fun MarkerDetailsSheet(
@@ -130,8 +131,6 @@ fun MarkerDetailsSheet(
 
             }
 
-
-
         }
 
     }
@@ -198,7 +197,7 @@ private fun FluidGroupList(type: LifeFluids, fluidsAvailable: List<BloodGroups>)
 }
 
 @Composable
-private fun FluidGroupList(plasmaAvailable: List<Plasma>){
+private fun FluidGroupList(plasmaAvailable: List<PlasmaGroupInfo>){
 
     Row(
         modifier = Modifier.fillMaxWidth(),

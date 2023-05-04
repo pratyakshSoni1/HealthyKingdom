@@ -1,7 +1,6 @@
 package com.pratyaksh.healthykingdom.domain.use_case.add_public_user
 
-import com.pratyaksh.healthykingdom.domain.model.Ambulance
-import com.pratyaksh.healthykingdom.domain.model.PublicUser
+import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.domain.model.toAmbulanceDto
 import com.pratyaksh.healthykingdom.domain.model.toPublicUserDto
 import com.pratyaksh.healthykingdom.domain.repository.RemoteAmbulanceFbRepo
@@ -15,7 +14,7 @@ class AddPublicUserCase @Inject constructor(
     private val fbUserRepo: RemotePublicUserFbRepo
 ) {
 
-    operator fun invoke(user: PublicUser): Flow<Resource<Boolean>> = flow{
+    operator fun invoke(user: Users.PublicUser): Flow<Resource<Boolean>> = flow{
         emit(Resource.Loading( "Adding ambulance"))
         try{
             if(fbUserRepo.addUser(user.toPublicUserDto()))

@@ -2,7 +2,7 @@ package com.pratyaksh.healthykingdom.data.repositories.test
 
 import com.google.firebase.firestore.GeoPoint
 import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
-import com.pratyaksh.healthykingdom.domain.model.Hospital
+import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.domain.repository.RemoteHospitalFbRepo
 import com.pratyaksh.healthykingdom.utils.Resource
 import kotlinx.coroutines.delay
@@ -68,11 +68,11 @@ class TestRepositoryImpl: RemoteHospitalFbRepo {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getHospitalByLocation(geoPoint: GeoPoint): Hospital {
+    override suspend fun getHospitalByLocation(geoPoint: GeoPoint): Users.Hospital {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getHospitalsNearby(geoPoint: GeoPoint): List<Hospital> {
+    override suspend fun getHospitalsNearby(geoPoint: GeoPoint): List<Users.Hospital> {
         TODO("Not yet implemented")
     }
 }

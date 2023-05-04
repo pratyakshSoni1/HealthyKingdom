@@ -6,7 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.PhoneAuthProvider
+import com.pratyaksh.healthykingdom.data.dto.toFBGeopoint
+import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.domain.use_case.number_verification.OtpSendUseCase
+import com.pratyaksh.healthykingdom.utils.AccountTypes
+import com.pratyaksh.healthykingdom.utils.Gender
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.osmdroid.util.GeoPoint
 import javax.inject.Inject
@@ -98,6 +102,90 @@ class RegisterHospitalVM @Inject constructor(
         )
     }
 
+    fun toggleAccMenu(expand: Boolean? = null){
+        uiState = uiState.copy(
+            isAccMenuExpanded = expand ?: !uiState.isAccMenuExpanded
+        )
+    }
+
+    fun onAccChange(accountType: AccountTypes){
+        uiState = uiState.copy(
+            accountType = accountType
+        )
+    }
+    fun onGenderChange(gender: Gender){
+        uiState = uiState.copy(
+            gender = gender
+        )
+    }
+    fun toggleProvideLoc(provide: Boolean){
+        uiState = uiState.copy(
+            providesLocation = provide
+        )
+    }
+
+    fun onAgeChange(age: String){
+        uiState = uiState.copy(
+            age= age
+        )
+
+    }
+    fun onVehicleNumberChange(number: String){
+        uiState = uiState.copy(
+            vehicleNumber = number
+        )
+
+    }
+
+    fun getUser(): Users {
+
+        val userId = "${uiState.phone.substring(8..11)}"
+
+        return when(uiState.accountType){
+            AccountTypes.AMBULANCE -> Users.Ambulance(
+                phone= uiState.phone,
+                driverName = uiState.name,
+                mail= uiState.mail,
+                password = uiState.password,
+                userId= "ambulance${userId}",
+                vehicleNumber = uiState.vehicleNumber,
+                driverAge= uiState.age.toInt(),
+                driverGender= when(uiState.gender){
+                    Gender.MALE -> "M"
+                    Gender.FEMALE -> "F"
+                    Gender.OTHERS -> "OTH"
+                },
+                vehicleLocation = GeoPoint(0.0, 0.0),
+                isVacant= false,
+                isOnline = false,
+                lastLocUpdated = null,
+            )
+
+            AccountTypes.HOSPITAL -> Users.Hospital(
+                phone= uiState.phone,
+                name= uiState.name,
+                mail= uiState.mail,
+                location = uiState.location!!,
+                password = uiState.password,
+                id= "hospital${userId}",
+                availPlatelets = emptyList(),
+                availPlasma = emptyList(),
+                availBloods = emptyList()
+            )
+
+            AccountTypes.PUBLIC_USER -> Users.PublicUser(
+                phone= uiState.phone,
+                userName = uiState.name,
+                mail= uiState.mail,
+                location = uiState.location!!,
+                userId= "publicUser${userId}",
+                providesLocation = uiState.providesLocation,
+                password = uiState.password,
+            )
+
+        }
+
+    }
 
 
 }

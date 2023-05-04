@@ -1,6 +1,6 @@
 package com.pratyaksh.healthykingdom.domain.use_case.add_ambulance
 
-import com.pratyaksh.healthykingdom.domain.model.Ambulance
+import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.domain.model.toAmbulanceDto
 import com.pratyaksh.healthykingdom.domain.repository.RemoteAmbulanceFbRepo
 import com.pratyaksh.healthykingdom.utils.Resource
@@ -12,7 +12,7 @@ class AddAmbulanceUserCase @Inject constructor(
     private val fbAmbulanceRepo: RemoteAmbulanceFbRepo
 ) {
 
-    operator fun invoke(ambulance: Ambulance): Flow<Resource<Boolean>> = flow{
+    operator fun invoke(ambulance: Users.Ambulance): Flow<Resource<Boolean>> = flow{
         emit(Resource.Loading( "Adding ambulance"))
         try{
             if(fbAmbulanceRepo.addAmbulance(ambulance.toAmbulanceDto()))

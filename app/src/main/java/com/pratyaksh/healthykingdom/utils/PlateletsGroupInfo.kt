@@ -1,78 +1,121 @@
 package com.pratyaksh.healthykingdom.utils
 
-sealed class PlateletsGroupInfo {
-
-    object A_POSITIVE: Platelets{
-        override val type: BloodGroups = BloodGroups.A_POSITIVE
-        override val canDonateTo: List<BloodGroups> = listOf<BloodGroups>(BloodGroups.A_POSITIVE, BloodGroups.O_POSITIVE)
-        override val canReceiveFrom: List<BloodGroups> = listOf<BloodGroups>(BloodGroups.A_POSITIVE, BloodGroups.A_NEGATIVE, BloodGroups.AB_POSITIVE, BloodGroups.AB_NEGATIVE)
-    }
-
-    object A_NEGATIVE: Platelets{
-        override val type: BloodGroups = BloodGroups.A_NEGATIVE
-        override val canDonateTo: List<BloodGroups> = listOf<BloodGroups>(BloodGroups.O_POSITIVE, BloodGroups.A_POSITIVE, BloodGroups.A_NEGATIVE, BloodGroups.O_NEGATIVE)
-        override val canReceiveFrom: List<BloodGroups> = listOf<BloodGroups>(BloodGroups.A_NEGATIVE, BloodGroups.AB_NEGATIVE)
-    }
-
-
-    object B_POSITIVE: Platelets{
-        override val type: BloodGroups = BloodGroups.B_POSITIVE
-        override val canDonateTo: List<BloodGroups> = listOf<BloodGroups>(BloodGroups.O_POSITIVE)
-        override val canReceiveFrom: List<BloodGroups> = listOf<BloodGroups>(BloodGroups.B_POSITIVE, BloodGroups.B_NEGATIVE, BloodGroups.AB_POSITIVE, BloodGroups.AB_NEGATIVE)
-    }
-
-    object B_NEGATIVE: Platelets{
-        override val type: BloodGroups = BloodGroups.B_NEGATIVE
-        override val canDonateTo: List<BloodGroups> = listOf<BloodGroups>(BloodGroups.B_POSITIVE, BloodGroups.B_NEGATIVE, BloodGroups.AB_POSITIVE, BloodGroups.AB_NEGATIVE)
-        override val canReceiveFrom: List<BloodGroups> = listOf<BloodGroups>(BloodGroups.B_NEGATIVE, BloodGroups.B_POSITIVE, BloodGroups.AB_POSITIVE, BloodGroups.AB_NEGATIVE)
-    }
-
-
-    object O_POSITIVE: Platelets{
-        override val type: BloodGroups = BloodGroups.O_POSITIVE
-        override val canDonateTo: List<BloodGroups> = listOf<BloodGroups>(BloodGroups.O_POSITIVE)
-        override val canReceiveFrom: List<BloodGroups> = listOf<BloodGroups>(BloodGroups.B_POSITIVE, BloodGroups.B_NEGATIVE, BloodGroups.O_POSITIVE,BloodGroups.O_NEGATIVE, BloodGroups.A_POSITIVE, BloodGroups.A_NEGATIVE , BloodGroups.AB_POSITIVE, BloodGroups.AB_NEGATIVE)
-    }
-
-    object O_NEGATIVE: Platelets{
-        override val type: BloodGroups = BloodGroups.O_NEGATIVE
-        override val canDonateTo: List<BloodGroups> = listOf<BloodGroups>( BloodGroups.O_POSITIVE, BloodGroups.O_NEGATIVE)
-        override val canReceiveFrom: List<BloodGroups> = listOf<BloodGroups>(BloodGroups.A_NEGATIVE, BloodGroups.B_NEGATIVE, BloodGroups.AB_NEGATIVE, BloodGroups.O_NEGATIVE)
-    }
-
-
-    object AB_POSITIVE: Platelets{
-        override val type: BloodGroups = BloodGroups.AB_POSITIVE
-        override val canDonateTo: List<BloodGroups> = listOf<BloodGroups>(BloodGroups.AB_POSITIVE, BloodGroups.A_POSITIVE, BloodGroups.B_POSITIVE, BloodGroups.O_POSITIVE)
-        override val canReceiveFrom: List<BloodGroups> = listOf<BloodGroups>(BloodGroups.AB_POSITIVE, BloodGroups.AB_NEGATIVE)
-    }
-
-    object AB_NEGATIVE: Platelets{
-        override val type: BloodGroups = BloodGroups.AB_NEGATIVE
-        override val canDonateTo: List<BloodGroups> = listOf<BloodGroups>(BloodGroups.B_POSITIVE, BloodGroups.B_NEGATIVE, BloodGroups.O_POSITIVE,BloodGroups.O_NEGATIVE, BloodGroups.A_POSITIVE, BloodGroups.A_NEGATIVE , BloodGroups.AB_POSITIVE, BloodGroups.AB_NEGATIVE)
-        override val canReceiveFrom: List<BloodGroups> = listOf<BloodGroups>(BloodGroups.AB_NEGATIVE)
-    }
-
-
-    object ERROR_TYPE: Platelets{
-        override val type: BloodGroups = BloodGroups.ERROR_TYPE
-        override val canDonateTo: List<BloodGroups> = listOf<BloodGroups>()
-        override val canReceiveFrom: List<BloodGroups> = listOf<BloodGroups>()
-    }
-
-
-}
-
-interface Platelets{
-    val type: BloodGroups
-    val canDonateTo: List<BloodGroups>
+sealed class PlateletsGroupInfo(
+    val type: BloodGroups,
+    val canDonateTo: List<BloodGroups>,
     val canReceiveFrom: List<BloodGroups>
+) {
+
+    object A_POSITIVE : PlateletsGroupInfo(
+        type = BloodGroups.A_POSITIVE,
+        canDonateTo = listOf<BloodGroups>(BloodGroups.A_POSITIVE, BloodGroups.O_POSITIVE),
+        canReceiveFrom = listOf<BloodGroups>(
+            BloodGroups.A_POSITIVE,
+            BloodGroups.A_NEGATIVE,
+            BloodGroups.AB_POSITIVE,
+            BloodGroups.AB_NEGATIVE
+        ),
+    )
+
+    object A_NEGATIVE : PlateletsGroupInfo(
+        type = BloodGroups.A_NEGATIVE,
+        canDonateTo = listOf<BloodGroups>(
+            BloodGroups.O_POSITIVE,
+            BloodGroups.A_POSITIVE,
+            BloodGroups.A_NEGATIVE,
+            BloodGroups.O_NEGATIVE
+        ),
+        canReceiveFrom = listOf<BloodGroups>(BloodGroups.A_NEGATIVE, BloodGroups.AB_NEGATIVE),
+    )
+
+
+    object B_POSITIVE : PlateletsGroupInfo(
+        type = BloodGroups.B_POSITIVE,
+        canDonateTo = listOf<BloodGroups>(BloodGroups.O_POSITIVE),
+        canReceiveFrom = listOf<BloodGroups>(
+            BloodGroups.B_POSITIVE,
+            BloodGroups.B_NEGATIVE,
+            BloodGroups.AB_POSITIVE,
+            BloodGroups.AB_NEGATIVE
+        ),
+    )
+
+    object B_NEGATIVE : PlateletsGroupInfo(
+        type = BloodGroups.B_NEGATIVE,
+        canDonateTo = listOf<BloodGroups>(
+            BloodGroups.B_POSITIVE,
+            BloodGroups.B_NEGATIVE,
+            BloodGroups.AB_POSITIVE,
+            BloodGroups.AB_NEGATIVE
+        ),
+        canReceiveFrom = listOf<BloodGroups>(
+            BloodGroups.B_NEGATIVE,
+            BloodGroups.B_POSITIVE,
+            BloodGroups.AB_POSITIVE,
+            BloodGroups.AB_NEGATIVE
+        ),
+    )
+
+
+    object O_POSITIVE : PlateletsGroupInfo(
+        type = BloodGroups.O_POSITIVE,
+        canDonateTo = listOf<BloodGroups>(BloodGroups.O_POSITIVE),
+        canReceiveFrom = listOf<BloodGroups>(
+            BloodGroups.B_POSITIVE,
+            BloodGroups.B_NEGATIVE,
+            BloodGroups.O_POSITIVE,
+            BloodGroups.O_NEGATIVE,
+            BloodGroups.A_POSITIVE,
+            BloodGroups.A_NEGATIVE,
+            BloodGroups.AB_POSITIVE,
+            BloodGroups.AB_NEGATIVE
+        ),
+    )
+
+    object O_NEGATIVE : PlateletsGroupInfo(
+        type = BloodGroups.O_NEGATIVE,
+        canDonateTo = listOf<BloodGroups>(BloodGroups.O_POSITIVE, BloodGroups.O_NEGATIVE),
+        canReceiveFrom = listOf<BloodGroups>(
+            BloodGroups.A_NEGATIVE,
+            BloodGroups.B_NEGATIVE,
+            BloodGroups.AB_NEGATIVE,
+            BloodGroups.O_NEGATIVE
+        ),
+    )
+
+
+    object AB_POSITIVE : PlateletsGroupInfo(
+        type = BloodGroups.AB_POSITIVE,
+        canDonateTo = listOf<BloodGroups>(
+            BloodGroups.AB_POSITIVE,
+            BloodGroups.A_POSITIVE,
+            BloodGroups.B_POSITIVE,
+            BloodGroups.O_POSITIVE
+        ),
+        canReceiveFrom = listOf<BloodGroups>(BloodGroups.AB_POSITIVE, BloodGroups.AB_NEGATIVE),
+    )
+
+    object AB_NEGATIVE : PlateletsGroupInfo(
+        type = BloodGroups.AB_NEGATIVE,
+        canDonateTo = listOf<BloodGroups>(
+            BloodGroups.B_POSITIVE,
+            BloodGroups.B_NEGATIVE,
+            BloodGroups.O_POSITIVE,
+            BloodGroups.O_NEGATIVE,
+            BloodGroups.A_POSITIVE,
+            BloodGroups.A_NEGATIVE,
+            BloodGroups.AB_POSITIVE,
+            BloodGroups.AB_NEGATIVE
+        ),
+        canReceiveFrom = listOf<BloodGroups>(BloodGroups.AB_NEGATIVE),
+    )
+
+
 }
 
-
-fun List<Platelets>.getOnlyGroup(): List<BloodGroups>{
+fun List<PlateletsGroupInfo>.getOnlyGroup(): List<BloodGroups> {
     return this.map {
-        when(it){
+        when (it) {
 
             PlateletsGroupInfo.A_POSITIVE -> BloodGroups.A_POSITIVE
             PlateletsGroupInfo.A_NEGATIVE -> BloodGroups.A_NEGATIVE
@@ -82,7 +125,6 @@ fun List<Platelets>.getOnlyGroup(): List<BloodGroups>{
             PlateletsGroupInfo.O_NEGATIVE -> BloodGroups.O_NEGATIVE
             PlateletsGroupInfo.B_POSITIVE -> BloodGroups.B_POSITIVE
             PlateletsGroupInfo.B_NEGATIVE -> BloodGroups.B_NEGATIVE
-            else -> BloodGroups.O_NEGATIVE
 
         }
     }

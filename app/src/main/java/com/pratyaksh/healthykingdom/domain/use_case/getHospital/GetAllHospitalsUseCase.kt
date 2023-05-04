@@ -2,7 +2,7 @@ package com.pratyaksh.healthykingdom.domain.use_case.getHospital
 
 import android.util.Log
 import com.pratyaksh.healthykingdom.data.dto.toHospital
-import com.pratyaksh.healthykingdom.domain.model.Hospital
+import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.domain.repository.RemoteHospitalFbRepo
 import com.pratyaksh.healthykingdom.utils.Resource
 import kotlinx.coroutines.flow.Flow
@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 class GetAllHospitalsUseCase @Inject constructor(private val firebaseRepo: RemoteHospitalFbRepo) {
 
-    operator fun invoke(): Flow<Resource<List<Hospital>>> = flow{
+    operator fun invoke(): Flow<Resource<List<Users.Hospital>>> = flow{
         try{
             val results = firebaseRepo.getAllHospitals().map {
                 it.toHospital()

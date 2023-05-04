@@ -2,7 +2,7 @@ package com.pratyaksh.healthykingdom.data.dto
 
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.GeoPoint
-import com.pratyaksh.healthykingdom.domain.model.Ambulance
+import com.pratyaksh.healthykingdom.domain.model.Users
 
 data class AmbulanceDto(
     val driverName: String = "",
@@ -18,7 +18,7 @@ data class AmbulanceDto(
     val lastLocUpdated: Timestamp? = null
 )
 
-fun AmbulanceDto.toAmbulance(): Ambulance{
+fun AmbulanceDto.toAmbulance(): Users.Ambulance{
 
     val gender = when(driverGender){
 
@@ -28,7 +28,7 @@ fun AmbulanceDto.toAmbulance(): Ambulance{
 
     }
 
-    return Ambulance(
+    return Users.Ambulance(
         driverName = driverName,
         driverGender = gender,
         driverAge = driverAge,

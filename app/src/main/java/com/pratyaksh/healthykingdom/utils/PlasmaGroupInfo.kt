@@ -1,57 +1,49 @@
 package com.pratyaksh.healthykingdom.utils
 
+sealed class PlasmaGroupInfo(
+    val type: String, val canDonateTo: List<Plasma>, val canReceiveFrom: List<Plasma>
+) {
+    object Plasma_A : PlasmaGroupInfo(
+        type = "A",
+        canDonateTo = listOf<Plasma>(Plasma.PLASMA_O, Plasma.PLASMA_A),
+        canReceiveFrom = listOf<Plasma>(Plasma.PLASMA_A, Plasma.PLASMA_AB)
+    )
 
 
-class PlasmaGroupInfo {
-    object PLASMA_A: Plasma{
-        override val type: String = "A"
-        override val canDonateTo: List<Plasma> = listOf<Plasma>(PLASMA_O, PLASMA_A)
-        override val canReceiveFrom: List<Plasma> = listOf<Plasma>(PLASMA_A, PLASMA_AB)
-    }
+    object Plasma_B : PlasmaGroupInfo(
+        type = "B",
+        canDonateTo = listOf<Plasma>(Plasma.PLASMA_O, Plasma.PLASMA_B),
+        canReceiveFrom = listOf<Plasma>(Plasma.PLASMA_B, Plasma.PLASMA_AB)
+    )
 
-    object PLASMA_B: Plasma{
-        override val type: String = "B"
-        override val canDonateTo: List<Plasma> = listOf<Plasma>(PLASMA_O, PLASMA_B)
-        override val canReceiveFrom: List<Plasma> = listOf<Plasma>(PLASMA_B, PLASMA_AB)
-    }
+    object Plasma_O : PlasmaGroupInfo(
+        type = "O",
+        canDonateTo = listOf<Plasma>(Plasma.PLASMA_O),
+        canReceiveFrom = listOf<Plasma>(
+            Plasma.PLASMA_O,
+            Plasma.PLASMA_A,
+            Plasma.PLASMA_B,
+            Plasma.PLASMA_AB
+        )
+    )
 
-    object PLASMA_O: Plasma{
-        override val type: String = "O"
-        override val canDonateTo: List<Plasma> = listOf<Plasma>( PLASMA_O )
-        override val canReceiveFrom: List<Plasma> = listOf<Plasma>( PLASMA_O, PLASMA_A, PLASMA_B, PLASMA_AB )
-    }
-
-    object PLASMA_AB: Plasma{
-        override val type: String = "AB"
-        override val canDonateTo: List<Plasma> = listOf<Plasma>(PLASMA_O, PLASMA_A, PLASMA_B, PLASMA_AB)
-        override val canReceiveFrom: List<Plasma> = listOf<Plasma>(PLASMA_AB)
-    }
-
-    object ERROR_TYPE: Plasma{
-        override val type: String = "ERROR_TYPE"
-        override val canDonateTo: List<Plasma> = listOf<Plasma>()
-        override val canReceiveFrom: List<Plasma> = listOf<Plasma>()
-    }
+    object Plasma_AB : PlasmaGroupInfo(
+        type = "AB",
+        canDonateTo = listOf<Plasma>(
+            Plasma.PLASMA_O,
+            Plasma.PLASMA_A,
+            Plasma.PLASMA_B,
+            Plasma.PLASMA_AB
+        ),
+        canReceiveFrom = listOf<Plasma>(Plasma.PLASMA_AB)
+    )
 
 
 }
 
-interface Plasma{
-        val type: String
-        val canDonateTo: List<Plasma>
-        val canReceiveFrom: List<Plasma>
+enum class Plasma {
+    PLASMA_O,
+    PLASMA_A,
+    PLASMA_B,
+    PLASMA_AB
 }
-
-
-//fun BloodGroups.toPlasma(): Plasma{
-//    return when(this){
-//        BloodGroups.A_POSITIVE -> PlasmaGroupInfo.PLASMA_A
-//        BloodGroups.A_NEGATIVE -> PlasmaGroupInfo.PLASMA_A
-//        BloodGroups.AB_POSITIVE -> PlasmaGroupInfo.PLASMA_AB
-//        BloodGroups.AB_NEGATIVE -> PlasmaGroupInfo.PLASMA_AB
-//        BloodGroups.B_POSITIVE -> PlasmaGroupInfo.PLASMA_B
-//        BloodGroups.B_NEGATIVE -> PlasmaGroupInfo.PLASMA_B
-//        BloodGroups.O_POSITIVE -> PlasmaGroupInfo.PLASMA_B
-//        BloodGroups.O_NEGATIVE -> PlasmaGroupInfo.PLASMA_B
-//    }
-//}

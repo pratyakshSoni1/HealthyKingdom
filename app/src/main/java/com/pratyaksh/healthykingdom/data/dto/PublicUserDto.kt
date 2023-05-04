@@ -1,7 +1,7 @@
 package com.pratyaksh.healthykingdom.data.dto
 
 import com.google.firebase.firestore.GeoPoint
-import com.pratyaksh.healthykingdom.domain.model.PublicUser
+import com.pratyaksh.healthykingdom.domain.model.Users
 
 data class PublicUserDto(
     val userName: String? = null,
@@ -12,7 +12,7 @@ data class PublicUserDto(
     val password: String? = null
 )
 
-fun PublicUserDto.toPublicUser(): PublicUser = PublicUser(
+fun PublicUserDto.toPublicUser(): Users.PublicUser = Users.PublicUser(
     userName,
     userId,
     providesLocation,

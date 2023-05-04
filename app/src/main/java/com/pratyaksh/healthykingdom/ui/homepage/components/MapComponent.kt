@@ -14,7 +14,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.forEach
 import com.pratyaksh.healthykingdom.R
 import com.pratyaksh.healthykingdom.data.dto.toMapsGeopoint
-import com.pratyaksh.healthykingdom.domain.model.Hospital
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.ITileSource
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory

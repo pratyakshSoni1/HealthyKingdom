@@ -2,13 +2,13 @@ package com.pratyaksh.healthykingdom.ui.utils
 
 import android.widget.TextView
 import com.pratyaksh.healthykingdom.R
-import com.pratyaksh.healthykingdom.domain.model.Hospital
+import com.pratyaksh.healthykingdom.domain.model.Users
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.infowindow.InfoWindow
 
 class HospitalsCustomWindow(
     private val mapView:MapView,
-    val hospital: Hospital
+    val hospital: Users.Hospital
 ): InfoWindow(R.layout.info_window, mapView) {
 
     private lateinit var hospitalName: TextView

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -39,6 +40,7 @@ import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.PhoneAuthProvider
 import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
+import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.ui.utils.ErrorDialog
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
 import com.pratyaksh.healthykingdom.ui.utils.OtpTextField
@@ -51,14 +53,14 @@ fun OtpVerifyScreen(
     verificationId: String,
     resendToken: PhoneAuthProvider.ForceResendingToken,
     viewModel: OtpValidationVM = hiltViewModel(),
-    hospitalDto: HospitalsDto
+    user: Users
 ){
 
     LaunchedEffect(Unit){
-        viewModel.initScreen( verificationId, phone, resendToken, hospitalDto )
+        viewModel.initScreen( verificationId, phone, resendToken, user )
     }
 
-    Box(Modifier.fillMaxSize()) {
+    Box(Modifier.fillMaxSize(), contentAlignment= Alignment.Center) {
         Column(
             Modifier
                 .fillMaxSize()
@@ -93,7 +95,7 @@ fun OtpVerifyScreen(
                 }
 
             }
-
+            Spacer(Modifier.height(6.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

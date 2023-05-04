@@ -20,7 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.pratyaksh.healthykingdom.R
 import com.pratyaksh.healthykingdom.data.dto.toMapsGeopoint
-import com.pratyaksh.healthykingdom.domain.model.Hospital
+import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.ui.HomeScreenViewModel
 import com.pratyaksh.healthykingdom.ui.homepage.components.HomeScreenSearchbar
 import com.pratyaksh.healthykingdom.ui.homepage.components.MapActionButtons
@@ -58,7 +58,7 @@ fun HomeScreen(
                 closeAllInfoWindow(viewModel)
                 viewModel.setBottomSheet(hospital = it)
                 sheetPeekHeight.value = 90.dp
-                mapView.value.controller.animateTo(it.location.toMapsGeopoint())
+                mapView.value.controller.animateTo(it.location)
                 viewModel.addMarkerWithInfoWindow(marker = marker)
             }.let {
                 viewModel.addNewMarker(it)
@@ -103,6 +103,8 @@ fun HomeScreen(
             MapActionButtons()
             HomeScreenSearchbar()
 
+
+
         }
     }
 
@@ -118,12 +120,12 @@ fun closeAllInfoWindow(viewModel: HomeScreenViewModel){
 }
 
 fun MapView.addHospitalToMap(
-    hospital: Hospital,
+    hospital: Users.Hospital,
     onMarkerClick:(marker:Marker) -> Unit,
 ): Marker{
 
     val newMarker = Marker(this).apply {
-        position = hospital.location.toMapsGeopoint()
+        position = hospital.location
         icon = ResourcesCompat.getDrawable(context.resources , R.drawable.icmark_hospital, null)
         title = hospital.name
         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)

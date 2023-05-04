@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
-import com.pratyaksh.healthykingdom.domain.model.Hospital
+import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetAllHospitalsUseCase
 import com.pratyaksh.healthykingdom.ui.homepage.HomeScreenUiState
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_detail_sheet.MarkerDetailSheetUiState
@@ -81,7 +81,7 @@ class HomeScreenViewModel @Inject constructor(
     fun setBottomSheetLoading( isLoading:Boolean = true ){
         detailSheetUiState.value = detailSheetUiState.value.copy(isLoading)
     }
-    fun setBottomSheet( hospital: Hospital ){
+    fun setBottomSheet( hospital: Users.Hospital ){
         viewModelScope.launch {
             setBottomSheetLoading(true)
             delay(2500L)

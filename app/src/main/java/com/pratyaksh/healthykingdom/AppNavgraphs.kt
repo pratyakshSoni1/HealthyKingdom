@@ -10,6 +10,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.google.firebase.auth.PhoneAuthProvider
 import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
+import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.ui.homepage.HomeScreen
 import com.pratyaksh.healthykingdom.ui.hospital_details.HospitalDetailsScreen
 import com.pratyaksh.healthykingdom.ui.hospital_registration.OtpVerifyScreen
@@ -32,7 +33,7 @@ fun NavGraphBuilder.registrationNavgraph(
     ){
 
         var resendToken: PhoneAuthProvider.ForceResendingToken? = null
-        var hospitalDto: HospitalsDto? = null
+        var user: Users? = null
 
         composable(
             route = Routes.LOGIN_SCREEN.route
@@ -49,9 +50,9 @@ fun NavGraphBuilder.registrationNavgraph(
             RegisterHospital(
                 activity = activity,
                 navController= navController
-            ){ resToken, hospital ->
+            ){ resToken, reqUser ->
                 resendToken = resToken
-                hospitalDto = hospital
+                user = reqUser
             }
         }
 
@@ -74,7 +75,7 @@ fun NavGraphBuilder.registrationNavgraph(
                 verificationId = it.arguments?.getString("verificationId")!!,
                 resendToken = resendToken!!,
                 activity = activity,
-                hospitalDto = hospitalDto!!
+                user = user!!
             )
         }
     }

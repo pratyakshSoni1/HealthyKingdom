@@ -1,7 +1,6 @@
 package com.pratyaksh.healthykingdom.domain.repository
 
 import com.pratyaksh.healthykingdom.data.dto.AmbulanceDto
-import com.pratyaksh.healthykingdom.domain.model.Ambulance
 
 interface RemoteAmbulanceFbRepo {
 

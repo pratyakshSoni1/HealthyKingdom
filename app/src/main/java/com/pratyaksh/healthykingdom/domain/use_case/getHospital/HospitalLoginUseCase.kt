@@ -1,7 +1,6 @@
 package com.pratyaksh.healthykingdom.domain.use_case.getHospital
 
 import com.pratyaksh.healthykingdom.data.dto.toHospital
-import com.pratyaksh.healthykingdom.domain.model.Hospital
 import com.pratyaksh.healthykingdom.domain.repository.RemoteHospitalFbRepo
 import com.pratyaksh.healthykingdom.utils.Resource
 import kotlinx.coroutines.flow.Flow
