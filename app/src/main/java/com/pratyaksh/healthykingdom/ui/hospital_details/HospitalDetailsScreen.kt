@@ -117,7 +117,7 @@ fun HospitalDetailsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp),
-                        location = viewModel.hospital.value!!.location.toMapsGeopoint(),
+                        location = viewModel.hospital.value!!.location,
                         name = viewModel.hospital.value!!.name
                     )
 

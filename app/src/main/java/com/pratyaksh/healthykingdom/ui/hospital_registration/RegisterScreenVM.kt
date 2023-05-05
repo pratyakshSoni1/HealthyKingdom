@@ -5,19 +5,28 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.PhoneAuthProvider
-import com.pratyaksh.healthykingdom.data.dto.toFBGeopoint
 import com.pratyaksh.healthykingdom.domain.model.Users
+import com.pratyaksh.healthykingdom.domain.use_case.add_ambulance.AddAmbulanceUserCase
+import com.pratyaksh.healthykingdom.domain.use_case.add_hospital.AddHospitalUseCase
+import com.pratyaksh.healthykingdom.domain.use_case.add_public_user.AddPublicUserCase
 import com.pratyaksh.healthykingdom.domain.use_case.number_verification.OtpSendUseCase
 import com.pratyaksh.healthykingdom.utils.AccountTypes
 import com.pratyaksh.healthykingdom.utils.Gender
+import com.pratyaksh.healthykingdom.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import javax.inject.Inject
 
 @HiltViewModel
-class RegisterHospitalVM @Inject constructor(
+class RegisterScreenVM @Inject constructor(
     val otpSendUseCase: OtpSendUseCase,
+    private val addHospitalUseCase: AddHospitalUseCase,
+    private val addPublicUseCse: AddPublicUserCase,
+    private val addAmbulanceUseCase: AddAmbulanceUserCase,
 ): ViewModel() {
 
     var uiState by mutableStateOf( RegistrationScreenUiState() )
@@ -186,6 +195,5 @@ class RegisterHospitalVM @Inject constructor(
         }
 
     }
-
 
 }

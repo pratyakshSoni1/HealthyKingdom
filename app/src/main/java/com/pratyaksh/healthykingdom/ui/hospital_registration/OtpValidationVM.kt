@@ -10,7 +10,12 @@ import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.PhoneAuthProvider.ForceResendingToken
 import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
 import com.pratyaksh.healthykingdom.domain.model.Users
+import com.pratyaksh.healthykingdom.domain.model.toAmbulanceDto
+import com.pratyaksh.healthykingdom.domain.model.toHospitalDto
+import com.pratyaksh.healthykingdom.domain.model.toPublicUserDto
+import com.pratyaksh.healthykingdom.domain.use_case.add_ambulance.AddAmbulanceUserCase
 import com.pratyaksh.healthykingdom.domain.use_case.add_hospital.AddHospitalUseCase
+import com.pratyaksh.healthykingdom.domain.use_case.add_public_user.AddPublicUserCase
 import com.pratyaksh.healthykingdom.domain.use_case.number_verification.OtpSendUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.number_verification.OtpSignInUseCase
 import com.pratyaksh.healthykingdom.utils.Resource
@@ -24,7 +29,9 @@ import javax.inject.Inject
 class OtpValidationVM @Inject constructor(
     val otpSignInUseCase: OtpSignInUseCase,
     val otpSendUseCase: OtpSendUseCase,
-    private val addHospitalUseCase: AddHospitalUseCase
+    private val addHospitalUseCase: AddHospitalUseCase,
+    private val addPublicUseCse: AddPublicUserCase,
+    private val addAmbulanceUseCase: AddAmbulanceUserCase,
 ) : ViewModel() {
 
     var uiState by mutableStateOf(OtpValidationUiState())
@@ -91,36 +98,34 @@ class OtpValidationVM @Inject constructor(
 
     fun addHospitalToFB(){
         viewModelScope.launch {
-
-            when(uiState.user!!){
+            val user = uiState.user!!
+            when(user){
                 is Users.Ambulance -> {
-
+                    addAmbulanceUseCase(user)
                 }
                 is Users.Hospital -> {
-                    addHospitalUseCase(uiState.user)
+                    addHospitalUseCase(user)
                 }
                 is Users.PublicUser -> {
-
+                    addPublicUseCse(user)
                 }
 
-            }
-
-            addHospitalUseCase(uiState.user!!)
-                .collectLatest {
-                    when(it){
-                        is Resource.Error -> {
-                            toggleLoadingCmp(false)
-                            toggleErrorDialog(true, it.msg!!)
-                        }
-                        is Resource.Loading -> {
-                            toggleLoadingCmp(true)
-                        }
-                        is Resource.Success -> {
-                            toggleLoadingCmp(false)
-                            Log.d("VMLOGS","Adding hospital: success - ${it.data}")
-                        }
+            }.collectLatest {
+                when(it){
+                    is Resource.Error -> {
+                        toggleLoadingCmp(false)
+                        toggleErrorDialog(true, it.msg!!)
+                    }
+                    is Resource.Loading -> {
+                        toggleLoadingCmp(true)
+                    }
+                    is Resource.Success -> {
+                        toggleLoadingCmp(false)
+                        Log.d("VMLOGS","Adding hospital: success - ${it.data}")
                     }
                 }
+            }
+
         }
     }
 

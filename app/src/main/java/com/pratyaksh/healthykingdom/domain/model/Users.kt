@@ -10,7 +10,8 @@ import com.pratyaksh.healthykingdom.utils.PlasmaGroupInfo
 import com.pratyaksh.healthykingdom.utils.PlateletsGroupInfo
 import org.osmdroid.util.GeoPoint
 
-sealed class Users {
+
+sealed class Users{
 
     data class Ambulance(
         val driverName: String,

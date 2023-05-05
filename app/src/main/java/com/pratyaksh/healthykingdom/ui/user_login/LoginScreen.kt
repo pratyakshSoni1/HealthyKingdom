@@ -44,6 +44,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.pratyaksh.healthykingdom.R
 import com.pratyaksh.healthykingdom.ui.utils.AccTypeMenuItem
+import com.pratyaksh.healthykingdom.ui.utils.AccountTypeChooser
 import com.pratyaksh.healthykingdom.ui.utils.AppTextField
 import com.pratyaksh.healthykingdom.ui.utils.ErrorDialog
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
@@ -81,7 +82,22 @@ fun LoginScreen(
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(22.dp))
+
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp, horizontal = 12.dp),
+            ) {
+                AccountTypeChooser(
+                    isExpanded = viewModel.uiState.isAccMenuExpanded,
+                    accountType = viewModel.uiState.accountType,
+                    onToggleExpand = viewModel::toggleAccMenu,
+                    onAccChange = viewModel::onAccChange,
+                    onToggle = viewModel::toggleAccMenu
+                )
+            }
+            Spacer(Modifier.height(8.dp))
 
             AppTextField(
                 value = viewModel.uiState.phone,
@@ -94,85 +110,6 @@ fun LoginScreen(
                 value = viewModel.uiState.password,
                 onValueChange = viewModel::onPassChange,
                 hint = "Password"
-            )
-            Spacer(Modifier.height(8.dp))
-
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp, horizontal = 12.dp),
-            ) {
-
-                Text(
-                    "Account Type: ",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-                Spacer(Modifier.width(4.dp))
-
-                Box {
-                    Row(
-                        Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable {
-                                viewModel.toggleAccMenu()
-                            }
-                    ) {
-                        Icon(imageVector= Icons.Rounded.KeyboardArrowDown, contentDescription = "select account type")
-                        AccTypeMenuItem(
-                            name = viewModel.uiState.accountType.type,
-                            painterResource(id = viewModel.uiState.accountType.img)
-                        )
-                    }
-
-                    DropdownMenu(
-                        expanded = viewModel.uiState.isAccMenuExpanded,
-                        onDismissRequest = { viewModel.toggleAccMenu(false) },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        DropdownMenuItem(onClick = {
-                            viewModel.onAccChange(AccountTypes.AMBULANCE)
-                        }) {
-                            AccTypeMenuItem(
-                                name = "AMBULANCE",
-                                img = painterResource(id = R.drawable.ambulance)
-                            )
-                        }
-
-                        DropdownMenuItem(onClick = {
-                            viewModel.onAccChange(AccountTypes.HOSPITAL)
-                        }) {
-                            AccTypeMenuItem(
-                                name = "HOSPITAL",
-                                img = painterResource(id = R.drawable.hospital)
-                            )
-                        }
-
-                        DropdownMenuItem(onClick = {
-                            viewModel.onAccChange(AccountTypes.HOSPITAL)
-                        }) {
-                            AccTypeMenuItem(
-                                name = "Public User",
-                                img = painterResource(id = R.drawable.ic_person)
-                            )
-                        }
-                    }
-                }
-            }
-            Spacer(Modifier.height(8.dp))
-            Text(
-                buildAnnotatedString {
-                    append("New here ? ")
-                    append("Register")
-                    addStyle(SpanStyle(color = Color.Blue), 10, 19)
-                    addStyle(SpanStyle(color = Color.LightGray), 0, 10)
-                },
-                modifier = Modifier.clickable {
-                    navController.navigate(Routes.HOSPITAL_REGITER_SCREEN.route){
-                        launchSingleTop = true
-                    }
-                }
             )
             Spacer(Modifier.height(8.dp))
 
@@ -216,10 +153,26 @@ fun LoginScreen(
                             }
                         }
                     }
-                }
+                },
+                modifier = Modifier.fillMaxWidth(0.9f)
             ) {
                 Text("Login", color = Color.White)
             }
+            Spacer(Modifier.height(8.dp))
+
+            Text(
+                buildAnnotatedString {
+                    append("New here ? ")
+                    append("Register")
+                    addStyle(SpanStyle(color = Color.Blue), 10, 19)
+                    addStyle(SpanStyle(color = Color.LightGray), 0, 10)
+                },
+                modifier = Modifier.clickable {
+                    navController.navigate(Routes.HOSPITAL_REGITER_SCREEN.route){
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         if( viewModel.uiState.isLoading ){

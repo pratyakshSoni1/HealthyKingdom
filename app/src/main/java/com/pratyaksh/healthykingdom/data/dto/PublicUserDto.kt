@@ -9,7 +9,8 @@ data class PublicUserDto(
     val providesLocation: Boolean? = null,
     val phone: String? =null,
     val location: GeoPoint? = null,
-    val password: String? = null
+    val password: String? = null,
+    val mail: String = ""
 )
 
 fun PublicUserDto.toPublicUser(): Users.PublicUser = Users.PublicUser(
@@ -18,5 +19,6 @@ fun PublicUserDto.toPublicUser(): Users.PublicUser = Users.PublicUser(
     providesLocation,
     phone,
     location?.toMapsGeopoint(),
-    password
+    password,
+    mail
 )

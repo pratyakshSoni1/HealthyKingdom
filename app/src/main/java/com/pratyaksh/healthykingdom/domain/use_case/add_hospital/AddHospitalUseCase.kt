@@ -1,6 +1,8 @@
 package com.pratyaksh.healthykingdom.domain.use_case.add_hospital
 
 import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
+import com.pratyaksh.healthykingdom.domain.model.Users
+import com.pratyaksh.healthykingdom.domain.model.toHospitalDto
 import com.pratyaksh.healthykingdom.domain.repository.RemoteHospitalFbRepo
 import com.pratyaksh.healthykingdom.utils.Resource
 import kotlinx.coroutines.flow.Flow
@@ -12,10 +14,10 @@ class AddHospitalUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke(
-        hospitalsDto: HospitalsDto
+        hospital: Users.Hospital
     ): Flow<Resource<Boolean>> = flow{
         try {
-            val resp = firebaseHospitalRepo.addHospital(hospitalsDto)
+            val resp = firebaseHospitalRepo.addHospital(hospital.toHospitalDto())
             if(resp)
                 emit(Resource.Success(resp))
             else

@@ -10,6 +10,7 @@ object Constants{
 
     val USER_LOGGED_DS = "healthykingdom.user_logged_datastore"
     val USER_LOGGED_KEY = "healthykingdom.user_logged_key"
+    val OTP_VALIDATION_RESULTS_KEY = "healthykingdom.user_reg_varification_key"
 
 }
 

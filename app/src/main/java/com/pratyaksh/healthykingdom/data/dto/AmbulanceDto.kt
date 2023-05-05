@@ -15,6 +15,7 @@ data class AmbulanceDto(
     val phone: String? = null,
     val location: GeoPoint? = null,
     val userId: String? = null,
+    val mail: String = "",
     val lastLocUpdated: Timestamp? = null
 )
 
@@ -39,7 +40,8 @@ fun AmbulanceDto.toAmbulance(): Users.Ambulance{
         lastLocUpdated = lastLocUpdated,
         userId = userId,
         password = password,
-        phone = phone
+        phone = phone,
+        mail= mail
     )
 
 }
