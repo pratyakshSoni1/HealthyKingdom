@@ -1,14 +1,11 @@
 package com.pratyaksh.healthykingdom
 
-import android.app.Instrumentation.ActivityResult
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
@@ -27,8 +24,6 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.pratyaksh.healthykingdom.ui.Navigation
-import com.pratyaksh.healthykingdom.ui.homepage.HomeScreen
-import com.pratyaksh.healthykingdom.ui.hospital_registration.RegisterHospital
 import com.pratyaksh.healthykingdom.ui.theme.HealthyKingdomTheme
 import com.pratyaksh.healthykingdom.utils.Constants
 import com.pratyaksh.healthykingdom.utils.Resource
@@ -39,9 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.lang.Exception
-import kotlin.coroutines.CoroutineContext
 
 
 @AndroidEntryPoint

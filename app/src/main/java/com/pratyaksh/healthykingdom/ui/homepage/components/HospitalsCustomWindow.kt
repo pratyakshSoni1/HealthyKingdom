@@ -1,4 +1,4 @@
-package com.pratyaksh.healthykingdom.ui.utils
+package com.pratyaksh.healthykingdom.ui.homepage.components
 
 import android.widget.TextView
 import com.pratyaksh.healthykingdom.R

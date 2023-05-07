@@ -27,7 +27,7 @@ fun AccTypeMenuItem(
     Row(
         Modifier
             .wrapContentSize()
-            .padding(vertical = 4.dp, horizontal = 6.dp),
+            .padding(vertical = 4.dp, horizontal = 2.dp),
         verticalAlignment = Alignment.CenterVertically,
     ){
 

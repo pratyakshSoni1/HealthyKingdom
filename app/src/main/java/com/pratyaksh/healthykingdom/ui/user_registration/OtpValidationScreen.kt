@@ -1,12 +1,9 @@
-package com.pratyaksh.healthykingdom.ui.hospital_registration
+package com.pratyaksh.healthykingdom.ui.user_registration
 
 import android.app.Activity
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,21 +22,16 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.firebase.FirebaseException
-import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.PhoneAuthProvider
-import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
 import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.ui.utils.ErrorDialog
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
@@ -171,13 +163,16 @@ fun OtpVerifyScreen(
         }
 
         if(viewModel.uiState.isLoading){
-            LoadingComponent(
-                modifier = Modifier
-                    .fillMaxSize(0.5f)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color.White),
-                text= "Please Wait"
-            )
+            Box(
+                Modifier.fillMaxSize().background(Color(0x32000000)), contentAlignment= Alignment.Center) {
+                LoadingComponent(
+                    modifier = Modifier
+                        .fillMaxSize(0.5f)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.White),
+                    text = "Please Wait"
+                )
+            }
         }
 
     }

@@ -9,16 +9,45 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.google.firebase.auth.PhoneAuthProvider
-import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
 import com.pratyaksh.healthykingdom.domain.model.Users
+import com.pratyaksh.healthykingdom.ui.fluid_update.FluidsUpdateNavScreen
+import com.pratyaksh.healthykingdom.ui.fluid_update.FluidsUpdationScreen
 import com.pratyaksh.healthykingdom.ui.homepage.HomeScreen
 import com.pratyaksh.healthykingdom.ui.hospital_details.HospitalDetailsScreen
-import com.pratyaksh.healthykingdom.ui.hospital_registration.OtpVerifyScreen
-import com.pratyaksh.healthykingdom.ui.hospital_registration.RegisterHospital
+import com.pratyaksh.healthykingdom.ui.user_registration.OtpVerifyScreen
+import com.pratyaksh.healthykingdom.ui.user_registration.RegisterHospital
 import com.pratyaksh.healthykingdom.ui.user_login.LoginScreen
+import com.pratyaksh.healthykingdom.utils.LifeFluids
 import com.pratyaksh.healthykingdom.utils.Resource
 import com.pratyaksh.healthykingdom.utils.Routes
 import kotlinx.coroutines.flow.Flow
+
+fun NavGraphBuilder.fluidsUpdationNavGraph(
+    navController: NavHostController,
+    getCurrentLoggedUser:() -> Flow<Resource<String?>>
+){
+
+    composable(
+        route= Routes.FLUIDS_SELECTION_SCREEN.route+"/{fluidType}"
+    ){
+        FluidsUpdateNavScreen(navController)
+    }
+
+    composable(
+        route= Routes.FLUIDS_SELECTION_SCREEN.route
+    ){
+        FluidsUpdationScreen(
+            navController, getCurrentLoggedUser,
+            fluidType = when(it.arguments?.getString("fluidType")!!){
+                LifeFluids.BLOOD.name -> LifeFluids.BLOOD
+                LifeFluids.PLASMA.name -> LifeFluids.PLASMA
+                LifeFluids.PLATELETS.name -> LifeFluids.PLATELETS
+                else -> null
+            }
+        )
+    }
+
+}
 
 fun NavGraphBuilder.registrationNavgraph(
     startDestination: Routes,

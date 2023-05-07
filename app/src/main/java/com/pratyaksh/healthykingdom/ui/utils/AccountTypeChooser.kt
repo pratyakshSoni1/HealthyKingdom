@@ -37,9 +37,10 @@ fun AccountTypeChooser(
     onAccChange:(type: AccountTypes)->Unit
 ){
     Row(
-        Modifier.fillMaxWidth()
+        Modifier
+            .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(Color.LightGray),
+            .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -54,19 +55,21 @@ fun AccountTypeChooser(
             Row(
                 Modifier
                     .clip(RoundedCornerShape(8.dp))
-                    .border(width = 2.5.dp, color= Color.Black, shape= RoundedCornerShape(8.dp))
-                    .padding(horizontal = 4.dp)
+                    .border(width = 2.5.dp, color = Color.Black, shape = RoundedCornerShape(8.dp))
+                    .padding(horizontal = 6.dp)
                     .clickable { onToggleExpand() },
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
                     imageVector = Icons.Rounded.KeyboardArrowDown,
                     contentDescription = "Select account type"
                 )
+                Spacer(Modifier.width(4.dp))
                 AccTypeMenuItem(
                     name = accountType.type,
                     painterResource(id = accountType.img)
                 )
+                Spacer(Modifier.width(2.dp))
             }
 
             AccountTypeSpinner(
@@ -93,6 +96,7 @@ private fun AccountTypeSpinner(
         modifier = Modifier.fillMaxWidth()
     ) {
         DropdownMenuItem(onClick = {
+            onToggle(false)
             onAccTypeChange(AccountTypes.AMBULANCE)
         }) {
             AccTypeMenuItem(
@@ -102,6 +106,7 @@ private fun AccountTypeSpinner(
         }
 
         DropdownMenuItem(onClick = {
+            onToggle(false)
             onAccTypeChange(AccountTypes.HOSPITAL)
         }) {
             AccTypeMenuItem(
@@ -111,7 +116,8 @@ private fun AccountTypeSpinner(
         }
 
         DropdownMenuItem(onClick = {
-            onAccTypeChange(AccountTypes.HOSPITAL)
+            onToggle(false)
+            onAccTypeChange(AccountTypes.PUBLIC_USER)
         }) {
             AccTypeMenuItem(
                 name = "Public User",

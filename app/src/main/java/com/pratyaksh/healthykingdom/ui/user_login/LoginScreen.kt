@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -82,22 +83,16 @@ fun LoginScreen(
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
-            Spacer(Modifier.height(22.dp))
+            Spacer(Modifier.height(32.dp))
 
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp, horizontal = 12.dp),
-            ) {
-                AccountTypeChooser(
+            AccountTypeChooser(
                     isExpanded = viewModel.uiState.isAccMenuExpanded,
                     accountType = viewModel.uiState.accountType,
                     onToggleExpand = viewModel::toggleAccMenu,
                     onAccChange = viewModel::onAccChange,
                     onToggle = viewModel::toggleAccMenu
                 )
-            }
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(12.dp))
 
             AppTextField(
                 value = viewModel.uiState.phone,
@@ -154,7 +149,8 @@ fun LoginScreen(
                         }
                     }
                 },
-                modifier = Modifier.fillMaxWidth(0.9f)
+                modifier = Modifier.fillMaxWidth(),
+                shape= RoundedCornerShape(100.dp)
             ) {
                 Text("Login", color = Color.White)
             }
@@ -167,7 +163,10 @@ fun LoginScreen(
                     addStyle(SpanStyle(color = Color.Blue), 10, 19)
                     addStyle(SpanStyle(color = Color.LightGray), 0, 10)
                 },
-                modifier = Modifier.clickable {
+                modifier = Modifier.clickable(
+                    indication= null,
+                    interactionSource = MutableInteractionSource()
+                ) {
                     navController.navigate(Routes.HOSPITAL_REGITER_SCREEN.route){
                         launchSingleTop = true
                     }

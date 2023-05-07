@@ -48,7 +48,6 @@ fun GroupLabel(
             BloodGroups.AB_NEGATIVE -> "AB-"
             BloodGroups.O_POSITIVE -> "O+"
             BloodGroups.O_NEGATIVE -> "O-"
-            BloodGroups.ERROR_TYPE -> "!"
 
 
         }

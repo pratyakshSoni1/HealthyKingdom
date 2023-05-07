@@ -1,9 +1,7 @@
-package com.pratyaksh.healthykingdom.ui.hospital_registration
+package com.pratyaksh.healthykingdom.ui.user_registration
 
 import android.app.Activity
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -23,20 +21,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -45,9 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.firebase.auth.PhoneAuthProvider
-import com.pratyaksh.healthykingdom.R
 import com.pratyaksh.healthykingdom.domain.model.Users
-import com.pratyaksh.healthykingdom.ui.utils.AccTypeMenuItem
 import com.pratyaksh.healthykingdom.ui.utils.AccountTypeChooser
 import com.pratyaksh.healthykingdom.ui.utils.AppTextField
 import com.pratyaksh.healthykingdom.ui.utils.ErrorDialog
@@ -56,7 +46,6 @@ import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
 import com.pratyaksh.healthykingdom.ui.utils.LocationChooserDialog
 import com.pratyaksh.healthykingdom.ui.utils.MapLocationPreview
 import com.pratyaksh.healthykingdom.utils.AccountTypes
-import com.pratyaksh.healthykingdom.utils.Constants
 import com.pratyaksh.healthykingdom.utils.Routes
 import org.osmdroid.util.GeoPoint
 
@@ -90,16 +79,13 @@ fun RegisterHospital (
 
             Text(
                 "Register",
-                fontSize = 18.sp,
+                fontSize = 21.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
             Spacer(Modifier.height(22.dp))
 
             CommonUsersUi(viewModel = viewModel)
-            Spacer(Modifier.height(12.dp))
-
-            NonHospitalUserUi(viewModel = viewModel)
             Spacer(Modifier.height(8.dp))
 
             AmbulanceUserUi(viewModel= viewModel)
@@ -113,7 +99,8 @@ fun RegisterHospital (
             ActionButtons(
                 onLogin = {
                     navController.navigate( route = Routes.LOGIN_SCREEN.route ){
-                    launchSingleTop = true }
+                        launchSingleTop = true
+                    }
                           },
                 onRegister = {
                     onRegisterUser(
@@ -173,8 +160,7 @@ private fun ColumnScope.PublicUserUi(viewModel: RegisterScreenVM){
         ) {
             Text(
                 "Provide Your Location:",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
                 color = Color.Black
             )
             Spacer(Modifier.width(8.dp))
@@ -205,11 +191,12 @@ private fun ColumnScope.AmbulanceUserUi(viewModel: RegisterScreenVM) {
 private fun ColumnScope.NonHospitalUserUi(viewModel: RegisterScreenVM){
     if(viewModel.uiState.accountType != AccountTypes.HOSPITAL){
         Row(
-            horizontalArrangement = Arrangement.Start
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text(
                 "Gender:",
-                fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
                 textAlign = TextAlign.Start
@@ -236,20 +223,17 @@ private fun ColumnScope.NonHospitalUserUi(viewModel: RegisterScreenVM){
 
 @Composable
 private fun ColumnScope.CommonUsersUi(viewModel: RegisterScreenVM){
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp, horizontal = 12.dp),
-    ) {
-        AccountTypeChooser(
+    AccountTypeChooser(
             isExpanded = viewModel.uiState.isAccMenuExpanded,
             accountType = viewModel.uiState.accountType,
             onToggleExpand = viewModel::toggleAccMenu,
             onAccChange = viewModel::onAccChange,
             onToggle = viewModel::toggleAccMenu
-        )
-    }
-    Spacer(Modifier.height(12.dp))
+    )
+    Spacer(Modifier.height(8.dp))
+
+    NonHospitalUserUi(viewModel = viewModel)
+    Spacer(Modifier.height(8.dp))
 
     AppTextField(
         value = viewModel.uiState.name, onValueChange = {
@@ -310,7 +294,7 @@ private fun ColumnScope.LocationComponent(viewModel: RegisterScreenVM){
             MapLocationPreview(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.4f),
+                    .height(150.dp),
                 location = viewModel.uiState.location ?: GeoPoint(0.0, 0.0),
                 name = viewModel.uiState.name
             )
@@ -362,7 +346,8 @@ private fun BoxScope.FloatingComponents(viewModel: RegisterScreenVM){
     if(viewModel.uiState.isLoading){
         LoadingComponent(
             modifier = Modifier
-                .fillMaxSize(0.45f)
+                .fillMaxWidth(0.85f)
+                .fillMaxHeight(0.75f)
                 .clip(RoundedCornerShape(12.dp))
                 .background(Color.White)
         )
@@ -387,7 +372,7 @@ private fun ActionButtons(
             text = "Register",
             color= Color.White,
             modifier= Modifier
-                .fillMaxWidth(0.85f)
+                .fillMaxWidth()
                 .padding(vertical = 2.dp),
             textAlign = TextAlign.Center
         )
@@ -406,7 +391,7 @@ private fun ActionButtons(
             text = "Login",
             color= Color.Black,
             modifier= Modifier
-                .fillMaxWidth(0.85f)
+                .fillMaxWidth()
                 .padding(vertical = 2.dp),
             textAlign = TextAlign.Center
         )

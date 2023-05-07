@@ -1,5 +1,6 @@
 package com.pratyaksh.healthykingdom.ui.utils
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -32,7 +33,8 @@ fun LoadingComponent(modifier: Modifier, text: String? = null){
     ){
         Column(
             Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ){
             LottieAnimation(
                 composition = lottieComposition, iterations = LottieConstants.IterateForever,

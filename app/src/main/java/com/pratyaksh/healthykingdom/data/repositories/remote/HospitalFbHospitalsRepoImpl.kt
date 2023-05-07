@@ -26,18 +26,28 @@ class HospitalFbHospitalsRepoImpl(private val fireStore: FirebaseFirestore): Rem
 
     override suspend fun getHospitalById(id: String): HospitalsDto? {
         try{
-            getAllHospitals()
-                .forEach {
-                    if(it.id == id){
-                        return it
-                    }
-                }
-            return null
+            return fireStore.collection(Collections.HOSPITALS_COLLECTION)
+                .document(id).get().await()
+                .toObject(HospitalsDto::class.java)
         }catch(e: Exception){
             e.printStackTrace()
             throw e
         }
     }
+//    override suspend fun getHospitalById(id: String): HospitalsDto? {
+//        try{
+//            getAllHospitals()
+//                .forEach {
+//                    if(it.id == id){
+//                        return it
+//                    }
+//                }
+//            return null
+//        }catch(e: Exception){
+//            e.printStackTrace()
+//            throw e
+//        }
+//    }
 
     override suspend fun getHospitalByPhone(phone: String): HospitalsDto? {
         try{
@@ -53,8 +63,8 @@ class HospitalFbHospitalsRepoImpl(private val fireStore: FirebaseFirestore): Rem
     override suspend fun addHospital(hospital: HospitalsDto): Boolean{
 
         try{
-            fireStore.collection(Constants.Collections.HOSPITALS_COLLECTION)
-                .document().set(hospital).await()
+            fireStore.collection(Collections.HOSPITALS_COLLECTION)
+                .document(hospital.id).set(hospital).await()
             return true
         }catch(e: FirebaseFirestoreException){
             e.printStackTrace()

@@ -1,7 +1,6 @@
-package com.pratyaksh.healthykingdom.ui.hospital_registration
+package com.pratyaksh.healthykingdom.ui.user_registration
 
 import com.google.firebase.auth.PhoneAuthProvider
-import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
 import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.utils.AccountTypes
 import com.pratyaksh.healthykingdom.utils.Gender

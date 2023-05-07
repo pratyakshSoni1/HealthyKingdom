@@ -112,8 +112,7 @@ enum class BloodGroups {
     O_POSITIVE,
     O_NEGATIVE,
     AB_POSITIVE,
-    AB_NEGATIVE,
-    ERROR_TYPE
+    AB_NEGATIVE
 
 }
 
