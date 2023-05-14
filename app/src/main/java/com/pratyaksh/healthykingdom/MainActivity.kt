@@ -13,6 +13,10 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.datastore.core.DataStore
@@ -25,15 +29,19 @@ import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.pratyaksh.healthykingdom.ui.Navigation
 import com.pratyaksh.healthykingdom.ui.theme.HealthyKingdomTheme
+import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
 import com.pratyaksh.healthykingdom.utils.Constants
 import com.pratyaksh.healthykingdom.utils.Resource
 import com.pratyaksh.healthykingdom.utils.Routes
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.lang.Exception
 
 
@@ -44,6 +52,7 @@ class MainActivity : ComponentActivity() {
     var permissionContract: ActivityResultLauncher<Array<String>>? = null
 
     val Context.userLoggedDS: DataStore<Preferences> by preferencesDataStore(Constants.USER_LOGGED_DS)
+    var startRoute: Routes = Routes.SIGNUP_NAVGRAPH
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,16 +81,32 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
+                    var isLoading by remember{ mutableStateOf(false) }
+
                     LaunchedEffect(key1 = Unit, block = {
                         askPermissions()
+                        readLoggedUser().collectLatest {
+                            if( it is Resource.Success  ){
+                                startRoute = if(it.data!!.isNotBlank()){ Routes.HOME_NAVGRAPH }else { Routes.SIGNUP_NAVGRAPH }
+                                isLoading = false
+                            }else {
+                                startRoute = Routes.SIGNUP_NAVGRAPH
+                                isLoading = false
+                            }
+                        }
+
                     })
 
-                    Navigation(
-                        startDestination = Routes.SIGNUP_NAVGRAPH,
-                        activity = this,
-                        getCurrentLoggedUser = { readLoggedUser() },
-                        updateCurrentLoggedUser = { updateLoggedUser(it) }
-                    )
+                    if(isLoading) {
+                        LoadingComponent(modifier = Modifier.fillMaxSize())
+                    }else{
+                        Navigation(
+                            startDestination = startRoute,
+                            activity = this,
+                            getCurrentLoggedUser = { readLoggedUser() },
+                            updateCurrentLoggedUser = { updateLoggedUser(it) }
+                        )
+                    }
                 }
             }
         }
@@ -98,31 +123,37 @@ class MainActivity : ComponentActivity() {
         )
     }
 
-    private fun updateLoggedUser(newUserId: String) = flow<Resource<Boolean>>{
-        CoroutineScope(Dispatchers.IO).launch {
+    private fun updateLoggedUser(newUserId: String?) = flow<Resource<Boolean>>{
             emit(Resource.Loading( "Updating current logged user"))
             try {
                 val userLoggedPrefKey = stringPreferencesKey(Constants.USER_LOGGED_KEY)
                 baseContext.userLoggedDS.edit { userDS ->
-                    userDS[userLoggedPrefKey] = newUserId
+                    userDS[userLoggedPrefKey] = newUserId ?: ""
                 }
                 emit(Resource.Success(true))
+                Log.d("DataStorePrefLogs", "Updated to: $newUserId")
             }catch(e: Exception){
                 e.printStackTrace()
                 emit(Resource.Error(e.message))
+                Log.d("DataStorePrefLogs", "Failed Updated")
             }
 
-        }
     }
 
     private fun readLoggedUser() = flow<Resource<String?>>{
         try {
-            emit(Resource.Loading( "Getting current login info"))
             val userLoggedPreKey = stringPreferencesKey(Constants.USER_LOGGED_KEY)
-            emit(Resource.Success(baseContext.userLoggedDS.data.first()[userLoggedPreKey]))
+            val user = baseContext.userLoggedDS.data.first()[userLoggedPreKey]
+            emit(
+                Resource.Success(
+                    if(user.isNullOrEmpty()) null else user
+                )
+            )
+            Log.d("DataStorePrefLogs", "Current usr: $user")
         }catch(e: Exception){
             e.printStackTrace()
             emit(Resource.Error(e.message))
+            Log.d("DataStorePrefLogs", "Falied to read Current usr")
         }
     }
 

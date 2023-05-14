@@ -27,26 +27,37 @@ fun NavGraphBuilder.fluidsUpdationNavGraph(
     getCurrentLoggedUser:() -> Flow<Resource<String?>>
 ){
 
-    composable(
-        route= Routes.FLUIDS_SELECTION_SCREEN.route+"/{fluidType}"
-    ){
-        FluidsUpdateNavScreen(navController)
-    }
+    navigation(
+        route = Routes.FLUIDS_UPDATION_NAVGRAPH.route,
+        startDestination = Routes.FLUIDS_SELECTION_SCREEN.route,
 
-    composable(
-        route= Routes.FLUIDS_SELECTION_SCREEN.route
-    ){
-        FluidsUpdationScreen(
-            navController, getCurrentLoggedUser,
-            fluidType = when(it.arguments?.getString("fluidType")!!){
-                LifeFluids.BLOOD.name -> LifeFluids.BLOOD
-                LifeFluids.PLASMA.name -> LifeFluids.PLASMA
-                LifeFluids.PLATELETS.name -> LifeFluids.PLATELETS
-                else -> null
-            }
-        )
-    }
+    ) {
+        composable(
+            route = Routes.FLUIDS_SELECTION_SCREEN.route
+        ) {
+            FluidsUpdateNavScreen(navController)
+        }
 
+        composable(
+            route = Routes.FLUIDS_UPDATION_SCREEN.route + "/{fluidType}",
+            arguments = listOf(
+                navArgument(name="fluidType"){
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            FluidsUpdationScreen(
+                navController,
+                fluidType = when (it.arguments?.getString("fluidType")!!) {
+                    LifeFluids.BLOOD.name -> LifeFluids.BLOOD
+                    LifeFluids.PLASMA.name -> LifeFluids.PLASMA
+                    LifeFluids.PLATELETS.name -> LifeFluids.PLATELETS
+                    else -> null
+                },
+                getCurrentUser = getCurrentLoggedUser
+            )
+        }
+    }
 }
 
 fun NavGraphBuilder.registrationNavgraph(
@@ -112,7 +123,8 @@ fun NavGraphBuilder.registrationNavgraph(
 
 fun NavGraphBuilder.homeScreenNavGraph(
     navController: NavHostController,
-    currentLoggedUser: Flow<Resource<String?>>
+    currentLoggedUser:() -> Flow<Resource<String?>>,
+    updateCurrentLoggedUser: (userId: String?) -> Flow<Resource<Boolean>>
 ){
 
     navigation(
@@ -124,7 +136,8 @@ fun NavGraphBuilder.homeScreenNavGraph(
             route= Routes.HOMESCREEN.route
         ){
             HomeScreen(
-                navController = navController
+                navController = navController,
+                logoutUser = { updateCurrentLoggedUser(null) }
             )
         }
 

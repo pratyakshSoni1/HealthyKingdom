@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.pratyaksh.healthykingdom.R
 import com.pratyaksh.healthykingdom.ui.utils.IconButton
 import com.pratyaksh.healthykingdom.ui.utils.VisibilityIconButton
 
@@ -35,10 +36,10 @@ fun MapActionButtons(){
         Column{
 
             VisibilityIconButton(
-                Icons.Default.Home,
+                painterResource(id = R.drawable.hospital) ,
                 onClick = { Log.d("UI_LOGS", "Clicked Icon button") },
                 backgroundColor = Color.White,
-                iconColor = Color.Red
+                iconColor = Color.Blue
             )
             Spacer(modifier = Modifier.height(6.dp))
             
@@ -46,8 +47,8 @@ fun MapActionButtons(){
                 icon = Icons.Default.LocationOn ,
                 onClick = { Log.d("UI_LOGS", "Clicked Icon button") },
                 isVisible = false,
-                iconColor = Color.White,
-                backgroundColor = Color.Magenta
+                iconColor = Color.Red,
+                backgroundColor = Color.White
             )
 
         }

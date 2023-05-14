@@ -3,6 +3,7 @@ package com.pratyaksh.healthykingdom.ui.utils
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,6 +18,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowLeft
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -35,12 +37,13 @@ fun SimpleTopBar(
         Row(
             modifier= Modifier
                 .fillMaxSize()
-                .padding(end = 8.dp)
+                .padding(end = 8.dp),
+            verticalAlignment= Alignment.CenterVertically
         ) {
             IconButton(icon = Icons.Rounded.KeyboardArrowLeft, onClick = onBackPress)
             Spacer(Modifier.width(4.dp))
 
-            Text(text = title, fontWeight = FontWeight.Bold, modifier=Modifier.weight(1f))
+            Text(text = title, fontWeight = FontWeight.Bold, modifier=Modifier.weight(1f).fillMaxHeight(), color = Color.Black)
             EndButtons()
         }
     }

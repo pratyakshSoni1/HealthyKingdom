@@ -34,7 +34,8 @@ fun FluidQuantityUpdater(
     qty: Int,
 ){
     Column(
-        Modifier.width(80.dp)
+        Modifier.width(80.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ){
         Box(
             Modifier
@@ -78,8 +79,11 @@ private fun FluidQuantityTxtField(
     Row(
         Modifier.fillMaxWidth()
     ){
-        IconButton(icon = Icons.Rounded.KeyboardArrowRight, onClick = { onIncQty() }, iconColor = Color.Green, backgroundColor = Color.Transparent)
-
+        IconButton(
+            icon = Icons.Rounded.KeyboardArrowRight,
+            onClick = { onDecQty() }, iconColor = Color.Red, backgroundColor = Color.Transparent,
+            size = 8.dp
+        )
         Text(
             modifier= Modifier
                 .width(21.dp)
@@ -87,26 +91,23 @@ private fun FluidQuantityTxtField(
                 .clip(RoundedCornerShape(4.dp)),
             text= "$qty ltrs"
         )
+        IconButton(icon = Icons.Rounded.KeyboardArrowLeft, onClick = { onIncQty() }, iconColor = Color.Green, backgroundColor = Color.Transparent, size = 8.dp)
 
-        IconButton(
-            icon = Icons.Rounded.KeyboardArrowLeft,
-            onClick = { onDecQty() }, iconColor = Color.Red, backgroundColor = Color.Transparent
-        )
+
     }
 
 }
 
 @Composable
 fun FluidQuantityUpdater(
-    type: LifeFluids,
     qty: Int,
     group: Plasma,
     onIncQty:()->Unit,
     onDecQty:()->Unit,
 
-    ){
+){
     Column(
-        Modifier.width(80.dp)
+        horizontalAlignment = Alignment.CenterHorizontally
     ){
         Box(
             Modifier

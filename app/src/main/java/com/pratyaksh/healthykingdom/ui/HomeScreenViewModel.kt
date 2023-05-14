@@ -115,6 +115,18 @@ class HomeScreenViewModel @Inject constructor(
         )
     }
 
+    fun toggleMainMenu(setVisible: Boolean? = null ){
+        homeScreenUiState.value = homeScreenUiState.value.copy(
+            isMainMenuVisible = setVisible ?: !homeScreenUiState.value.isMainMenuVisible
+        )
+    }
+
+    fun toggleLoadingScr(setVisible: Boolean){
+        homeScreenUiState.value = homeScreenUiState.value.copy(
+            isLoading = setVisible
+        )
+    }
+
 
 
 }

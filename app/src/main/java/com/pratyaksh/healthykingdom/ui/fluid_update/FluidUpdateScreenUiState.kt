@@ -8,9 +8,14 @@ import com.pratyaksh.healthykingdom.utils.LifeFluids
 
 data class FluidUpdateScreenUiState (
 
-    val fluidType: LifeFluids,
-    val availBloodGroups: AvailBlood,
-    val availPlasma: AvailPlasma,
-    val currentUserId: String,
+    val fluidType: LifeFluids? = null,
+    val availBloodGroups: AvailBlood = AvailBlood(0, 0, 0, 0, 0, 0, 0, 0),
+    val availPlasma: AvailPlasma = AvailPlasma(0, 0, 0, 0,),
+    val currentUserId: String? = null,
+    val isLoading: Boolean= false,
+    val errorText: String= "Unexpected Error Occured !",
+    val showErrorDialog: Boolean= false,
+    val showSuccesssDialog: Boolean= false,
 
-)
+
+    )

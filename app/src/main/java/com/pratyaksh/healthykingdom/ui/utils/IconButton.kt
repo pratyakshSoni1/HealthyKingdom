@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -107,9 +108,9 @@ fun VisibilityIconButton(
                 Image(
                     painter = painterResource(id = R.drawable.ic_visibility),
                     contentDescription = contentDescription,
-                    Modifier
+                    modifier= Modifier
+                        .size(12.dp)
                         .clip(CircleShape)
-                        .padding(12.dp)
                         .background(Color.Transparent),
                     colorFilter = ColorFilter.tint(Color(0xFFFF4A4A))
                 )

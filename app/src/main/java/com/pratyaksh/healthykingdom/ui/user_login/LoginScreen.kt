@@ -139,9 +139,16 @@ fun LoginScreen(
                                             Toast.LENGTH_SHORT
                                         ).show()
                                         updateCurrentLoggedUser(it.data!!)
-                                        navController.navigate(Routes.HOME_NAVGRAPH.route) {
-                                            popUpTo(Routes.SIGNUP_NAVGRAPH.route) { inclusive = true }
-                                        }
+                                            .collectLatest { resp ->
+                                                viewModel.toggleLoadingCmp(true)
+                                                if(resp is Resource.Success){
+                                                    navController.navigate(Routes.HOME_NAVGRAPH.route) {
+                                                        popUpTo(Routes.SIGNUP_NAVGRAPH.route) { inclusive = true }
+                                                    }
+                                                }else{
+                                                    viewModel.toggleErrorDialog(true, resp.msg!!)
+                                                }
+                                            }
                                     }
                                     viewModel.toggleLoadingCmp(false)
                                 }

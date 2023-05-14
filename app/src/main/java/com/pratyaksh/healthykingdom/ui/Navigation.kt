@@ -16,11 +16,10 @@ fun Navigation(
     startDestination: Routes,
     activity: Activity,
     getCurrentLoggedUser:() -> Flow<Resource<String?>>,
-    updateCurrentLoggedUser: (userId: String) -> Flow<Resource<Boolean>>
+    updateCurrentLoggedUser: (userId: String?) -> Flow<Resource<Boolean>>
 ) {
 
     val navController = rememberNavController()
-
 
     NavHost(
         navController = navController,
@@ -29,7 +28,8 @@ fun Navigation(
 
         homeScreenNavGraph(
             navController,
-            getCurrentLoggedUser()
+            getCurrentLoggedUser,
+            updateCurrentLoggedUser
         )
 
         registrationNavgraph(

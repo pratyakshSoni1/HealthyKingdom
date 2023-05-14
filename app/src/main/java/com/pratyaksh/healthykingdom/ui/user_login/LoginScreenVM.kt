@@ -45,6 +45,7 @@ class LoginScreenVM @Inject constructor(
 
     fun toggleErrorDialog(setToVisible: Boolean, text: String = "Something went wrong"){
         uiState = uiState.copy(
+                isLoading = false,
                 showError = setToVisible,
                 errorText = text
             )

@@ -4,9 +4,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pratyaksh.healthykingdom.data.repositories.remote.FirebaseAmbulanceRepoImpl
 import com.pratyaksh.healthykingdom.data.repositories.remote.HospitalFbHospitalsRepoImpl
+import com.pratyaksh.healthykingdom.data.repositories.remote.LifeFluidsRepoImpl
 import com.pratyaksh.healthykingdom.data.repositories.remote.PublicUserFbRepoImpl
 import com.pratyaksh.healthykingdom.domain.repository.RemoteAmbulanceFbRepo
 import com.pratyaksh.healthykingdom.domain.repository.RemoteHospitalFbRepo
+import com.pratyaksh.healthykingdom.domain.repository.RemoteLifeFluidsFbRepo
 import com.pratyaksh.healthykingdom.domain.repository.RemotePublicUserFbRepo
 import dagger.Module
 import dagger.Provides
@@ -54,6 +56,15 @@ object AppModule {
     ): RemotePublicUserFbRepo{
         return PublicUserFbRepoImpl(firestore)
     }
+    @Provides
+    @Singleton
+    fun provideFBFluidsRepo(
+        firestore: FirebaseFirestore
+    ): RemoteLifeFluidsFbRepo{
+        return LifeFluidsRepoImpl(firestore)
+    }
+
+
 
 
 

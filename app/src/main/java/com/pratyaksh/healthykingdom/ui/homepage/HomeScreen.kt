@@ -1,8 +1,10 @@
 package com.pratyaksh.healthykingdom.ui.homepage
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -26,8 +28,16 @@ import com.pratyaksh.healthykingdom.ui.homepage.components.MapActionButtons
 import com.pratyaksh.healthykingdom.ui.homepage.components.MapComponent
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_detail_sheet.MarkerDetailsSheet
 import com.pratyaksh.healthykingdom.ui.homepage.components.HospitalsCustomWindow
+import com.pratyaksh.healthykingdom.ui.utils.HomeScreenDialogMenu
+import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
+import com.pratyaksh.healthykingdom.utils.Resource
 import com.pratyaksh.healthykingdom.utils.Routes
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.osmdroid.config.Configuration
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -36,7 +46,8 @@ import org.osmdroid.views.overlay.Marker
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel = hiltViewModel(),
-    navController: NavHostController
+    navController: NavHostController,
+    logoutUser:()-> Flow<Resource<Boolean>>
 ){
     val context = LocalContext.current
     val mapView = remember{
@@ -98,10 +109,38 @@ fun HomeScreen(
                 closeAllInfoWindow(viewModel)
             }
             MapActionButtons()
-            HomeScreenSearchbar()
+            HomeScreenSearchbar(toggleMenu = { viewModel.toggleMainMenu(it) })
 
-
-
+            if(viewModel.homeScreenUiState.value.isMainMenuVisible){
+                HomeScreenDialogMenu(
+                    userName = "User Name",
+                    navController = navController,
+                    onLogout = {
+                        viewModel.toggleLoadingScr(true)
+                        CoroutineScope(Dispatchers.IO).launch {
+                            logoutUser()
+                                .collectLatest {
+                                    if(it.data == true){
+                                        withContext(Dispatchers.Main){
+                                            viewModel.toggleLoadingScr(false)
+                                            navController.navigate(Routes.SIGNUP_NAVGRAPH.route){
+                                                popUpTo(Routes.HOME_NAVGRAPH.route){ inclusive = true }
+                                            }
+                                        }
+                                    }else{
+                                        viewModel.toggleLoadingScr(false)
+                                    }
+                                }
+                        }
+                    },
+                    onCloseMenu = { viewModel.toggleMainMenu(false) }
+                )
+            }
+            if(viewModel.homeScreenUiState.value.isLoading) {
+                Box(Modifier.fillMaxSize().background(Color(0x2D000000)), contentAlignment = Alignment.Center){
+                    LoadingComponent(modifier = Modifier.size(80.dp))
+                }
+            }
         }
     }
 

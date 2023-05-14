@@ -16,10 +16,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.pratyaksh.healthykingdom.ui.utils.IconButton
+import com.pratyaksh.healthykingdom.utils.Routes
 
 @Composable
-fun HomeScreenSearchbar() {
+fun HomeScreenSearchbar(
+    toggleMenu:(setVisible: Boolean)->Unit
+) {
 
     Box(
         modifier = Modifier
@@ -54,7 +58,9 @@ fun HomeScreenSearchbar() {
             Spacer(Modifier.width(8.dp))
 
             IconButton(
-                icon = Icons.Default.AccountCircle, onClick = { Unit },
+                icon = Icons.Default.AccountCircle, onClick = {
+                    toggleMenu(true)
+                },
                 backgroundColor = Color.LightGray,
                 iconColor = Color.White,
                 size = 2.5.dp
