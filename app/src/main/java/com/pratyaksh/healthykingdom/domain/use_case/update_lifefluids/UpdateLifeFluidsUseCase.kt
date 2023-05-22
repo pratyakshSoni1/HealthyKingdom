@@ -25,7 +25,7 @@ class UpdateLifeFluidsUseCase @Inject constructor(
             )
             if(task) emit(Resource.Success(true)) else emit(Resource.Error("Fluids updation failed"))
         }catch(e: Exception){
-            emit(Resource.Error("Unexpected error, tru later !"))
+            emit(Resource.Error("Unexpected error, try later !"))
         }
     }
 

@@ -4,12 +4,13 @@ import com.pratyaksh.healthykingdom.domain.repository.RemoteHospitalFbRepo
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.GeoPoint
+import com.pratyaksh.healthykingdom.data.dto.AvailFluidsDto
 import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
+import com.pratyaksh.healthykingdom.data.dto.lifefluids.AvailBloodDto
+import com.pratyaksh.healthykingdom.data.dto.lifefluids.AvailPlasmaDto
+import com.pratyaksh.healthykingdom.data.dto.lifefluids.AvailPlateletsDto
 import com.pratyaksh.healthykingdom.domain.model.Users
-import com.pratyaksh.healthykingdom.utils.Constants
 import com.pratyaksh.healthykingdom.utils.Constants.Collections
-import com.pratyaksh.healthykingdom.utils.Resource
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
 class HospitalFbHospitalsRepoImpl(private val fireStore: FirebaseFirestore): RemoteHospitalFbRepo {
@@ -63,8 +64,21 @@ class HospitalFbHospitalsRepoImpl(private val fireStore: FirebaseFirestore): Rem
     override suspend fun addHospital(hospital: HospitalsDto): Boolean{
 
         try{
-            fireStore.collection(Collections.HOSPITALS_COLLECTION)
-                .document(hospital.id).set(hospital).await()
+            val task1 = fireStore.collection(Collections.HOSPITALS_COLLECTION)
+                .document(hospital.id).set(hospital)
+
+            val task2 = fireStore.collection(Collections.LIFE_FLUIDS)
+                .document(hospital.id).set(
+                    AvailFluidsDto(
+                        AvailBloodDto(),
+                        AvailPlasmaDto(),
+                        AvailPlateletsDto()
+                    )
+                )
+
+            task1.await()
+            task2.await()
+
             return true
         }catch(e: FirebaseFirestoreException){
             e.printStackTrace()

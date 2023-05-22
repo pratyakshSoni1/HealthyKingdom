@@ -45,7 +45,7 @@ fun FluidsUpdationScreen(
 
     val uiState by viewModel.uiState.collectAsState()
     LaunchedEffect(key1 = true, block = {
-        viewModel.toggleLoading()
+        viewModel.toggleLoading(true)
         getCurrentUser().collectLatest {
                 if (it is Resource.Success) viewModel.initScreen(it.data!!, fluidType!!)
                 else viewModel.toggleError(true, "Error getting user info")
@@ -75,7 +75,11 @@ fun FluidsUpdationScreen(
         ) { it ->
             Column(Modifier.padding(it), horizontalAlignment = Alignment.CenterHorizontally) {
 
-                LazyVerticalGrid(columns = GridCells.Fixed(2),modifier=Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceAround, content = {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier=Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    content = {
 
                     if (uiState.fluidType == LifeFluids.BLOOD || uiState.fluidType == LifeFluids.PLATELETS) {
                         items(BloodGroups.values()) { group ->

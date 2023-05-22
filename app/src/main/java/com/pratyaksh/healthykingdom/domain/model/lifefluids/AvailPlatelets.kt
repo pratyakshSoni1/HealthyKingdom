@@ -1,6 +1,5 @@
 package com.pratyaksh.healthykingdom.domain.model.lifefluids
 
-import com.pratyaksh.healthykingdom.data.dto.lifefluids.AvailBloodDto
 import com.pratyaksh.healthykingdom.data.dto.lifefluids.AvailPlateletsDto
 
 data class AvailPlatelets(

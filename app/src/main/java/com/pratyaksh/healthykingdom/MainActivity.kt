@@ -36,6 +36,7 @@ import com.pratyaksh.healthykingdom.utils.Routes
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -74,6 +75,8 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+
+
         setContent {
             HealthyKingdomTheme {
                 // A surface container using the 'background' color from the theme
@@ -81,13 +84,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    var isLoading by remember{ mutableStateOf(false) }
+                    var isLoading by remember{ mutableStateOf(true) }
 
                     LaunchedEffect(key1 = Unit, block = {
                         askPermissions()
                         readLoggedUser().collectLatest {
                             if( it is Resource.Success  ){
-                                startRoute = if(it.data!!.isNotBlank()){ Routes.HOME_NAVGRAPH }else { Routes.SIGNUP_NAVGRAPH }
+                                startRoute = if(!it.data.isNullOrBlank()){ Routes.HOME_NAVGRAPH }else { Routes.SIGNUP_NAVGRAPH }
+                                delay(1000L)
                                 isLoading = false
                             }else {
                                 startRoute = Routes.SIGNUP_NAVGRAPH

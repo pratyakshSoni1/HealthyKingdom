@@ -1,5 +1,6 @@
 package com.pratyaksh.healthykingdom.data.repositories.remote
 
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pratyaksh.healthykingdom.data.dto.AvailFluidsDto
 import com.pratyaksh.healthykingdom.data.dto.lifefluids.AvailBloodDto
@@ -47,12 +48,20 @@ class LifeFluidsRepoImpl(
             val fbDocRef = fireStore.collection(Constants.Collections.LIFE_FLUIDS)
                 .document(hospitalId)
 
+            Log.d("FireBase", "Going to update fluids")
+            Log.d("FireBase", "Fluids: \n ${lifeFluids.toString()}")
+
             val task = when(lifeFluidToBeUpdated){
                 LifeFluids.PLASMA -> fbDocRef.update( Constants.LifeFluidFieldNames.plasma, lifeFluids.plasma )
                 LifeFluids.BLOOD -> fbDocRef.update( Constants.LifeFluidFieldNames.blood, lifeFluids.bloods )
                 LifeFluids.PLATELETS -> fbDocRef.update( Constants.LifeFluidFieldNames.platelets, lifeFluids.platelets )
             }
+
+            Log.d("FireBase", "Updating fluids")
             task.await()
+
+
+            Log.d("FireBase", "Await finished")
 
         return task.isSuccessful
 

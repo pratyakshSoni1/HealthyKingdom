@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -34,7 +35,6 @@ fun FluidQuantityUpdater(
     qty: Int,
 ){
     Column(
-        Modifier.width(80.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         Box(
@@ -77,21 +77,21 @@ private fun FluidQuantityTxtField(
 ){
 
     Row(
-        Modifier.fillMaxWidth()
+        Modifier.fillMaxWidth(),
+        verticalAlignment= Alignment.CenterVertically
     ){
         IconButton(
-            icon = Icons.Rounded.KeyboardArrowRight,
+            icon = Icons.Rounded.KeyboardArrowLeft,
             onClick = { onDecQty() }, iconColor = Color.Red, backgroundColor = Color.Transparent,
             size = 8.dp
         )
         Text(
             modifier= Modifier
-                .width(21.dp)
-                .padding(horizontal = 6.dp)
+                .wrapContentWidth()
                 .clip(RoundedCornerShape(4.dp)),
             text= "$qty ltrs"
         )
-        IconButton(icon = Icons.Rounded.KeyboardArrowLeft, onClick = { onIncQty() }, iconColor = Color.Green, backgroundColor = Color.Transparent, size = 8.dp)
+        IconButton(icon = Icons.Rounded.KeyboardArrowRight, onClick = { onIncQty() }, iconColor = Color.Green, backgroundColor = Color.Transparent, size = 8.dp)
 
 
     }

@@ -1,20 +1,19 @@
 package com.pratyaksh.healthykingdom.data.dto.lifefluids
 
-import com.pratyaksh.healthykingdom.domain.model.lifefluids.AvailBlood
 import com.pratyaksh.healthykingdom.domain.model.lifefluids.AvailPlasma
 
 data class AvailPlasmaDto(
-    val aGroup: Int = 0,
-    val abGroup: Int = 0,
-    val bGroup: Int = 0,
-    val oGroup: Int = 0,
+    val a_group: Int = 0,
+    val ab_group: Int = 0,
+    val b_group: Int = 0,
+    val o_group: Int = 0,
 )
 
 fun AvailPlasmaDto.toPlasmaModel(): AvailPlasma {
     return AvailPlasma(
-        aGroup,
-        abGroup,
-        bGroup,
-        oGroup
+        a_group,
+        ab_group,
+        b_group,
+        o_group
     )
 }
