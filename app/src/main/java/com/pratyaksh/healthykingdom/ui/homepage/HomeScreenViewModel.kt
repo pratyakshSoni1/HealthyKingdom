@@ -1,4 +1,4 @@
-package com.pratyaksh.healthykingdom.ui
+package com.pratyaksh.healthykingdom.ui.homepage
 
 
 import android.util.Log
@@ -9,12 +9,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import com.pratyaksh.healthykingdom.domain.model.Users
+import com.pratyaksh.healthykingdom.domain.model.getAvailGroups
+import com.pratyaksh.healthykingdom.domain.use_case.getFluidsData.GetFluidsByHospitalUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetAllHospitalsUseCase
-import com.pratyaksh.healthykingdom.ui.homepage.HomeScreenUiState
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_detail_sheet.MarkerDetailSheetUiState
 import com.pratyaksh.healthykingdom.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -24,6 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     val getAllHospitalsUseCase: GetAllHospitalsUseCase,
+    val getHospitalFluidUseCase: GetFluidsByHospitalUseCase,
     private val saveState: SavedStateHandle
 ): ViewModel() {
 
@@ -34,12 +36,11 @@ class HomeScreenViewModel @Inject constructor(
         private set
 
     val detailSheetUiState = mutableStateOf( MarkerDetailSheetUiState(
-        isLoading = false,
         hospitalName = "",
         hospitalId = "",
-        listOf(),
-        listOf(),
-        listOf(),
+        availBloodTypes = listOf(),
+        availPlasmaTypes = listOf(),
+        availPlateletsTypes = listOf(),
     ) )
 
     init {
@@ -81,18 +82,31 @@ class HomeScreenViewModel @Inject constructor(
     fun setBottomSheetLoading( isLoading:Boolean = true ){
         detailSheetUiState.value = detailSheetUiState.value.copy(isLoading)
     }
+    fun setBottomSheetError( isError:Boolean = true ){
+        detailSheetUiState.value = detailSheetUiState.value.copy(isError = isError, isLoading = false)
+    }
     fun setBottomSheet( hospital: Users.Hospital ){
         viewModelScope.launch {
             setBottomSheetLoading(true)
-            delay(2500L)
-            detailSheetUiState.value = detailSheetUiState.value.copy(
-                isLoading = false,
-                hospital.name,
-                hospital.id,
-                hospital.availBloods,
-                hospital.availPlasma,
-                hospital.availPlatelets
-            )
+            getHospitalFluidUseCase(hospital.id).collectLatest {
+
+                when(it){
+                    is Resource.Error -> setBottomSheetError(true)
+                    is Resource.Loading -> setBottomSheetLoading(true)
+                    is Resource.Success -> {
+                        detailSheetUiState.value = detailSheetUiState.value.copy(
+                            isLoading = false,
+                            hospitalName= hospital.name,
+                            hospitalId = hospital.id,
+                            availBloodTypes = it.data?.bloods!!.getAvailGroups(),
+                            availPlasmaTypes = it.data.plasma.getAvailGroups(),
+                            availPlateletsTypes = it.data.platelets.getAvailGroups()
+                        )
+                        setBottomSheetLoading(false)
+                    }
+                }
+
+            }
             setBottomSheetLoading(false)
         }
     }

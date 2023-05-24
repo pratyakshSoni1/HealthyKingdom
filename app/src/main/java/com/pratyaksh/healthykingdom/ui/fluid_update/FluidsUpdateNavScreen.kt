@@ -66,7 +66,6 @@ fun FluidsUpdateNavScreen(
                 title = "Plasma Data", imageIcon = painterResource(id = R.drawable.ic_plasma),
                 onClick = { navController.navigate(Routes.FLUIDS_UPDATION_SCREEN.withArgs(LifeFluids.PLASMA)) }
             )
-            Divider()
 
         }
     }
@@ -79,7 +78,7 @@ fun Divider(){
             .height(1.5.dp)
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .background(Color.LightGray)
+            .background(Color(0xFFE7E7E7))
             .clip(RoundedCornerShape(100.dp))
     )
 }
@@ -130,14 +129,15 @@ fun NavMenuItem(
     ){
 
         Icon(
-            modifier= Modifier.size(36.dp),
+            modifier= Modifier.size(28.dp),
             imageVector = imageIcon,
-            contentDescription = null
+            contentDescription = null,
+            tint = Color.DarkGray
         )
         Spacer(Modifier.width(6.dp))
 
-        Text(text= title, fontSize= 18.sp, modifier= Modifier.weight(1f))
-        Icon(imageVector = Icons.Rounded.KeyboardArrowRight, contentDescription = null, modifier=Modifier.size(32.dp))
+        Text(text= title, fontSize= 16.sp, modifier= Modifier.weight(1f))
+//        Icon(imageVector = Icons.Rounded.KeyboardArrowRight, contentDescription = null, modifier=Modifier.size(28.dp), tint= Color.LightGray)
 
     }
 

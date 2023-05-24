@@ -35,9 +35,6 @@ sealed class Users{
         val phone: String,
         val location: GeoPoint,
         val id: String,
-        val availBloods: List<BloodGroupsInfo>,
-        val availPlasma: List<PlasmaGroupInfo>,
-        val availPlatelets: List<PlateletsGroupInfo>,
         val password: String
     ): Users()
 
@@ -72,45 +69,9 @@ fun Users.PublicUser.toPublicUserDto(): PublicUserDto {
 
 fun Users.Hospital.toHospitalDto(): HospitalsDto {
 
-    val bloodStock: List<String> = availBloods.map {
-        when(it){
-            BloodGroupsInfo.A_POSITIVE -> "A+"
-            BloodGroupsInfo.A_NEGATIVE -> "A-"
-            BloodGroupsInfo.AB_POSITIVE -> "AB+"
-            BloodGroupsInfo.AB_NEGATIVE -> "AB-"
-            BloodGroupsInfo.B_POSITIVE -> "B+"
-            BloodGroupsInfo.B_NEGATIVE -> "B-"
-            BloodGroupsInfo.O_POSITIVE -> "O+"
-            BloodGroupsInfo.O_NEGATIVE -> "O-"
-        }
-    }
-        val plateletsStock: List<String> = availPlatelets.map {
-        when(it){
-            PlateletsGroupInfo.A_POSITIVE -> "A+"
-            PlateletsGroupInfo.A_NEGATIVE -> "A-"
-            PlateletsGroupInfo.AB_POSITIVE -> "AB+"
-            PlateletsGroupInfo.AB_NEGATIVE -> "AB-"
-            PlateletsGroupInfo.B_POSITIVE -> "B+"
-            PlateletsGroupInfo.B_NEGATIVE -> "B-"
-            PlateletsGroupInfo.O_POSITIVE -> "O+"
-            PlateletsGroupInfo.O_NEGATIVE -> "O-"
-            else -> ""
-        }
-    }
-        val plasmaStock: List<String> = availPlasma.map {
-        when(it){
-            PlasmaGroupInfo.Plasma_A -> "A"
-            PlasmaGroupInfo.Plasma_AB -> "AB"
-            PlasmaGroupInfo.Plasma_B -> "B"
-            PlasmaGroupInfo.Plasma_O -> "O"
-        }
-    }
-
     return HospitalsDto(
         name, location.toFBGeopoint(),
         id, mail, phone,
-        availBloods = bloodStock,
-        plasmaStock, plateletsStock,
-        password
+        password = password
     )
 }

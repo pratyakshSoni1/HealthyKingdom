@@ -1,23 +1,23 @@
 package com.pratyaksh.healthykingdom.utils
 
 sealed class PlasmaGroupInfo(
-    val type: String, val canDonateTo: List<Plasma>, val canReceiveFrom: List<Plasma>
+    val type: Plasma, val canDonateTo: List<Plasma>, val canReceiveFrom: List<Plasma>
 ) {
     object Plasma_A : PlasmaGroupInfo(
-        type = "A",
+        type = Plasma.PLASMA_A,
         canDonateTo = listOf<Plasma>(Plasma.PLASMA_O, Plasma.PLASMA_A),
         canReceiveFrom = listOf<Plasma>(Plasma.PLASMA_A, Plasma.PLASMA_AB)
     )
 
 
     object Plasma_B : PlasmaGroupInfo(
-        type = "B",
+        type = Plasma.PLASMA_B ,
         canDonateTo = listOf<Plasma>(Plasma.PLASMA_O, Plasma.PLASMA_B),
         canReceiveFrom = listOf<Plasma>(Plasma.PLASMA_B, Plasma.PLASMA_AB)
     )
 
     object Plasma_O : PlasmaGroupInfo(
-        type = "O",
+        type = Plasma.PLASMA_O ,
         canDonateTo = listOf<Plasma>(Plasma.PLASMA_O),
         canReceiveFrom = listOf<Plasma>(
             Plasma.PLASMA_O,
@@ -28,7 +28,7 @@ sealed class PlasmaGroupInfo(
     )
 
     object Plasma_AB : PlasmaGroupInfo(
-        type = "AB",
+        type = Plasma.PLASMA_AB ,
         canDonateTo = listOf<Plasma>(
             Plasma.PLASMA_O,
             Plasma.PLASMA_A,

@@ -22,7 +22,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.pratyaksh.healthykingdom.R
 import com.pratyaksh.healthykingdom.domain.model.Users
-import com.pratyaksh.healthykingdom.ui.HomeScreenViewModel
 import com.pratyaksh.healthykingdom.ui.homepage.components.HomeScreenSearchbar
 import com.pratyaksh.healthykingdom.ui.homepage.components.MapActionButtons
 import com.pratyaksh.healthykingdom.ui.homepage.components.MapComponent

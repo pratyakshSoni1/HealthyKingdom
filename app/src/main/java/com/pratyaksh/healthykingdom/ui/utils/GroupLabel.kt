@@ -2,6 +2,8 @@ package com.pratyaksh.healthykingdom.ui.utils
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pratyaksh.healthykingdom.utils.BloodGroups
@@ -28,7 +31,9 @@ import com.pratyaksh.healthykingdom.utils.PlasmaGroupInfo
 @Composable
 fun GroupLabel(
     type: LifeFluids,
-    group: BloodGroups
+    group: BloodGroups,
+    qty: Int? = null,
+    size: Dp = 20.dp
 ){
     val bgColor: Color =  when(type){
 
@@ -52,49 +57,69 @@ fun GroupLabel(
 
         }
 
-    Box(
-        modifier=Modifier.height(20.dp).wrapContentWidth()
-            .clip(RoundedCornerShape(4.dp))
-            .padding(2.dp)
-            .background(color = bgColor),
-        contentAlignment = Alignment.Center
-    ){
-        Text(
-            text= text,
-            color = Color.White,
-            fontSize = 14.sp,
-            fontWeight= FontWeight.Black,
-        )
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier= Modifier
+                .height(size)
+                .wrapContentWidth()
+                .clip(RoundedCornerShape(4.dp))
+                .background(color = bgColor)
+                .padding(horizontal = 2.dp),
+            contentAlignment = Alignment.Center
+        ){
+            Text(
+                text= text,
+                color = Color.White,
+                fontSize = if(size < 35.dp) 14.sp else 18.sp,
+                fontWeight= FontWeight.Black,
+            )
+        }
+        if(qty != null) {
+            Spacer(Modifier.height(2.dp))
+            Text(text = qty.toString() + "L")
+        }
     }
 
 }
 
 @Composable
 fun GroupLabel(
-    plasma: PlasmaGroupInfo
+    plasma: Plasma,
+    qty: Int? = null,
+    size: Dp = 20.dp
 ){
     val bgColor = Color(0xFFD89918)
 
     val text: String = when(plasma){
-            PlasmaGroupInfo.Plasma_A -> "A"
-            PlasmaGroupInfo.Plasma_B -> "B"
-            PlasmaGroupInfo.Plasma_AB -> "AB"
-            PlasmaGroupInfo.Plasma_O -> "O"
-        else -> { "!" }
+            Plasma.PLASMA_A -> "A"
+            Plasma.PLASMA_B -> "B"
+            Plasma.PLASMA_AB -> "AB"
+            Plasma.PLASMA_O -> "O"
     }
 
-    Box(
-        modifier=Modifier.size(20.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .background(color = bgColor),
-        contentAlignment = Alignment.Center
-    ){
-        Text(
-            text= text,
-            color = Color.White,
-            fontSize = 14.sp,
-            fontWeight= FontWeight.Black,
-        )
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(20.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .background(color = bgColor),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = text,
+                color = Color.White,
+                fontSize = if(size < 35.dp) 14.sp else 18.sp,
+                fontWeight = FontWeight.Black,
+            )
+        }
+        if(qty != null) {
+            Spacer(Modifier.height(2.dp))
+            Text(text = qty.toString() + "L")
+        }
     }
 
 }

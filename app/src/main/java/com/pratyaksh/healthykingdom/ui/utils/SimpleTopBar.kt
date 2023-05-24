@@ -43,7 +43,7 @@ fun SimpleTopBar(
             IconButton(icon = Icons.Rounded.KeyboardArrowLeft, onClick = onBackPress)
             Spacer(Modifier.width(4.dp))
 
-            Text(text = title, fontWeight = FontWeight.Bold, modifier=Modifier.weight(1f).fillMaxHeight(), color = Color.Black)
+            Text(text = title, fontWeight = FontWeight.Bold, modifier=Modifier.weight(1f), color = Color.Black)
             EndButtons()
         }
     }

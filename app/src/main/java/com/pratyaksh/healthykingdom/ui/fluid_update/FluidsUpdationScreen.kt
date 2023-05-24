@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -78,7 +79,6 @@ fun FluidsUpdationScreen(
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
                     modifier=Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceAround,
                     content = {
 
                     if (uiState.fluidType == LifeFluids.BLOOD || uiState.fluidType == LifeFluids.PLATELETS) {
@@ -109,7 +109,7 @@ fun FluidsUpdationScreen(
                                     Plasma.PLASMA_B -> uiState.availPlasma.bGroup
                                     Plasma.PLASMA_AB -> uiState.availPlasma.abGroup
                                     Plasma.PLASMA_O -> uiState.availPlasma.oGroup
-                                                },
+                                },
                                 onIncQty = { viewModel.incPlasmaGroupQty(group) },
                                 onDecQty = { viewModel.decPlasmaGroupQty(group) }
                             )

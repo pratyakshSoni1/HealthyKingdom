@@ -4,14 +4,19 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.runtime.Composable
@@ -20,11 +25,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pratyaksh.healthykingdom.utils.BloodGroups
 import com.pratyaksh.healthykingdom.utils.LifeFluids
 import com.pratyaksh.healthykingdom.utils.Plasma
+
+@Preview(showBackground = true)
+@Composable
+private fun Previewcompose(){
+    Box(
+        modifier=Modifier.fillMaxSize()
+    ){
+
+        Column(Modifier.wrapContentSize(), horizontalAlignment = Alignment.CenterHorizontally){
+            FluidQuantityUpdater(qty = 10, type= LifeFluids.BLOOD, group = BloodGroups.B_POSITIVE, onIncQty = { Unit }, onDecQty = { Unit })
+        }
+
+    }
+}
+
 
 @Composable
 fun FluidQuantityUpdater(
@@ -35,7 +56,8 @@ fun FluidQuantityUpdater(
     qty: Int,
 ){
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier= Modifier.padding(4.dp)
     ){
         Box(
             Modifier
@@ -77,11 +99,11 @@ private fun FluidQuantityTxtField(
 ){
 
     Row(
-        Modifier.fillMaxWidth(),
+        Modifier.wrapContentWidth(),
         verticalAlignment= Alignment.CenterVertically
     ){
         IconButton(
-            icon = Icons.Rounded.KeyboardArrowLeft,
+            icon = Icons.Rounded.Close,
             onClick = { onDecQty() }, iconColor = Color.Red, backgroundColor = Color.Transparent,
             size = 8.dp
         )
@@ -91,7 +113,7 @@ private fun FluidQuantityTxtField(
                 .clip(RoundedCornerShape(4.dp)),
             text= "$qty ltrs"
         )
-        IconButton(icon = Icons.Rounded.KeyboardArrowRight, onClick = { onIncQty() }, iconColor = Color.Green, backgroundColor = Color.Transparent, size = 8.dp)
+        IconButton(icon = Icons.Rounded.Add, onClick = { onIncQty() }, iconColor = Color.Green, backgroundColor = Color.Transparent, size = 8.dp)
 
 
     }

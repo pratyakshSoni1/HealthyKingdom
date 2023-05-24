@@ -152,9 +152,9 @@ fun VisibilityIconButton(
                     painter = painterResource(id = R.drawable.ic_visibility),
                     contentDescription = contentDescription,
                     Modifier
+                        .size(12.dp)
                         .clip(CircleShape)
-                        .background(Color.Transparent)
-                        .padding(12.dp),
+                        .background(Color.Transparent),
                     colorFilter = ColorFilter.tint(Color(0xFFFF4A4A))
                 )
             }

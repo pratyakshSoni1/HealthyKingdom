@@ -61,7 +61,7 @@ fun HomeScreenSearchbar(
                 icon = Icons.Default.AccountCircle, onClick = {
                     toggleMenu(true)
                 },
-                backgroundColor = Color.LightGray,
+                backgroundColor = Color(0xFFFF9800),
                 iconColor = Color.White,
                 size = 2.5.dp
             )

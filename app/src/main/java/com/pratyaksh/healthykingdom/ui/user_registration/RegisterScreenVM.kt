@@ -172,10 +172,7 @@ class RegisterScreenVM @Inject constructor(
                 mail= uiState.mail,
                 location = uiState.location!!,
                 password = uiState.password,
-                id= "hospital${userId}",
-                availPlatelets = emptyList(),
-                availPlasma = emptyList(),
-                availBloods = emptyList()
+                id= "hospital${userId}"
             )
 
             AccountTypes.PUBLIC_USER -> Users.PublicUser(

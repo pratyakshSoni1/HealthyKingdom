@@ -8,14 +8,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pratyaksh.healthykingdom.R
@@ -38,7 +41,7 @@ fun MarkerDetailsSheet(
         modifier= Modifier
             .fillMaxWidth()
             .background(Color.White)
-            .padding(bottom = 16.dp, top = 8.dp, start = 14.dp, end = 14.dp),
+            .padding(bottom = 16.dp, start = 14.dp, end = 14.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.Start
     ){
@@ -62,47 +65,58 @@ fun MarkerDetailsSheet(
             }
         }
         if(uiState.isLoading){
-            LinearProgressIndicator(
+            CircularProgressIndicator(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxHeight(0.8f)
                     .padding(top = 18.dp, bottom = 26.dp, start = 14.dp, end = 14.dp),
                 color= Color.Blue
             )
+        }else if(uiState.isError){
+            Box(
+                modifier= Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column {
+                    Image(
+                        painter = painterResource(R.drawable.ic_visibility),
+                        contentDescription = "Error fetching details",
+                        modifier = Modifier.size(64.dp),
+                        colorFilter = ColorFilter.tint(color = Color(0xFFDFDFDF))
+                    )
+                    Spacer(Modifier.height(10.dp))
+                    Text(
+                        text = "Unexpected Error\n Check your internet",
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        color = Color.LightGray
+                    )
+                }
+            }
         }else{
-            Row(
-                modifier= Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ){
+            Box(contentAlignment = Alignment.Center) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
-                Image(
-                    painter = painterResource(id = R.drawable.hospital),
-                    contentDescription = uiState.hospitalName,
-                    modifier= Modifier.size(48.dp)
-                )
+                    Image(
+                        painter = painterResource(id = R.drawable.hospital),
+                        contentDescription = uiState.hospitalName,
+                        modifier = Modifier.size(48.dp)
+                    )
 
-                Spacer(modifier = (Modifier.width(8.dp)))
-                Text(
-                    text= uiState.hospitalName,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
-                    fontSize = 16.sp,
-                )
+                    Spacer(modifier = (Modifier.height(8.dp)))
+                    Text(
+                        text = uiState.hospitalName,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        fontSize = 16.sp,
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text= "Available Life-Fluids",
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                fontSize = 14.sp,
-                modifier= Modifier
-                    .background(Color.Green)
-                    .clip(RoundedCornerShape(2.dp))
-                    .padding(vertical = 4.dp, horizontal = 6.dp)
-            )
-            Spacer(modifier = Modifier.height(10.dp))
             FluidGroupList(type = LifeFluids.BLOOD, fluidsAvailable = uiState.availBloodTypes.getOnlyGroup() )
             Spacer(modifier = Modifier.height(8.dp))
             FluidGroupList(plasmaAvailable = uiState.availPlasmaTypes )
@@ -110,26 +124,16 @@ fun MarkerDetailsSheet(
             FluidGroupList(type = LifeFluids.PLATELETS, fluidsAvailable = uiState.availPlateletsTypes.getOnlyGroup() )
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(Modifier.fillMaxWidth()){
-                Button(
-                    onClick={  },
-                    modifier= Modifier.fillMaxWidth(0.4f),
-                    colors = ButtonDefaults.buttonColors(Color.Transparent ),
-                    elevation = ButtonDefaults.elevation(0.dp, pressedElevation = 0.dp)
-                ){
-                    Text( text= "Close", color= Color.Red )
-                }
-                Spacer(modifier = Modifier.width(6.dp))
-
-                Button(
-                    onClick={ onDetailsClick(uiState.hospitalId) },
-                    modifier= Modifier.fillMaxWidth(0.4f),
-                    colors = ButtonDefaults.buttonColors(Color(0xFF00A5F0) )
-                ){
-                    Text( text= "Details", color= Color.White  )
-                }
-
+            Button(
+                onClick={ onDetailsClick(uiState.hospitalId) },
+                modifier= Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(Color(0xFF0027FF)),
+                shape = RoundedCornerShape(100.dp)
+            ){
+                Text( text= "Details", color= Color.White, modifier= Modifier.weight(1f), textAlign = TextAlign.Center   )
+                Icon(imageVector = Icons.Rounded.KeyboardArrowRight, contentDescription = null , tint = Color.White)
             }
+
 
         }
 
@@ -218,7 +222,7 @@ private fun FluidGroupList(plasmaAvailable: List<PlasmaGroupInfo>){
         Spacer(Modifier.width(8.dp))
         if(plasmaAvailable.isNotEmpty()){
             for( fluid in plasmaAvailable ){
-                GroupLabel( plasma = fluid )
+                GroupLabel( plasma = fluid.type )
                 Spacer(Modifier.width(8.dp))
             }
         }else{

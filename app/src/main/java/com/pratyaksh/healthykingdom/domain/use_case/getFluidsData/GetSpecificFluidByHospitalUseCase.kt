@@ -1,10 +1,8 @@
 package com.pratyaksh.healthykingdom.domain.use_case.getFluidsData
 
-import com.pratyaksh.healthykingdom.data.dto.AvailFluidsDto
 import com.pratyaksh.healthykingdom.data.dto.lifefluids.toBloodModel
 import com.pratyaksh.healthykingdom.data.dto.lifefluids.toPlasmaModel
 import com.pratyaksh.healthykingdom.data.dto.lifefluids.toPlateletsModel
-import com.pratyaksh.healthykingdom.data.dto.toAvailFluids
 import com.pratyaksh.healthykingdom.domain.model.lifefluids.LifeFluidsModel
 import com.pratyaksh.healthykingdom.domain.repository.RemoteLifeFluidsFbRepo
 import com.pratyaksh.healthykingdom.utils.LifeFluids

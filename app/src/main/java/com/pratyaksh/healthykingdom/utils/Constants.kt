@@ -11,7 +11,7 @@ object Constants{
 
     object LifeFluidFieldNames{
 
-        val blood = "blood"
+        val blood = "bloods"
         val plasma = "plasma"
         val platelets = "platelets"
         object BloodFields{

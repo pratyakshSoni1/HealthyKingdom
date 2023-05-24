@@ -52,10 +52,10 @@ fun HomeScreenDialogMenu(
     Dialog(onDismissRequest = { onCloseMenu() }){
         Column(
             modifier= Modifier
-                .fillMaxWidth(0.95f)
+                .fillMaxWidth(0.99f)
                 .fillMaxHeight(0.85f)
-                .clip(RoundedCornerShape(14.dp))
-                .background(Color(0xFFB3D7FF))
+                .clip(RoundedCornerShape(18.dp))
+                .background(Color(0xFFD8EAFF))
                 .padding(6.dp)
         ){
 
@@ -69,7 +69,7 @@ fun HomeScreenDialogMenu(
                     modifier=Modifier.weight(1f),
                     textAlign = TextAlign.Center
                 )
-                IconButton(icon = Icons.Rounded.Close, onClick = { onCloseMenu() }, backgroundColor = Color(0xFFB3D7FF))
+                IconButton(icon = Icons.Rounded.Close, onClick = { onCloseMenu() }, backgroundColor = Color.Transparent)
             }
             Spacer(Modifier.height(6.dp))
 
@@ -87,11 +87,12 @@ fun HomeScreenDialogMenu(
                     verticalAlignment = Alignment.CenterVertically
                 ){
 
+                    Spacer(Modifier.width(6.dp))
                     Image(
                         painter = painterResource(R.drawable.ic_person),
                         contentDescription = null,
                         modifier= Modifier
-                            .size(24.dp)
+                            .size(38.dp)
                             .clip(CircleShape)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
@@ -99,27 +100,28 @@ fun HomeScreenDialogMenu(
                     Text(
                         text= userName,
                         color=Color(0xFF353535),
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
                     )
                 }
 
                 NavMenuItem(title = "Profile", imageIcon = Icons.Rounded.AccountCircle ) {
 
                 }
-                Divider()
+//                Divider()
 
                 NavMenuItem(title = "Update Fluids", imageIcon = Icons.Rounded.Edit ) {
                     navController.navigate(Routes.FLUIDS_UPDATION_NAVGRAPH.route)
                 }
-                Divider()
+//                Divider()
                 NavMenuItem(title = "Donation Requests", imageIcon = Icons.Rounded.Info ) {
 
                 }
-                Divider()
+//                Divider()
                 NavMenuItem(title = "Settings", imageIcon = Icons.Rounded.Settings ) {
 
                 }
-                Divider()
+//                Divider()
                 NavMenuItem(title = "Log out", imageIcon = Icons.Rounded.ExitToApp ) {
                     onLogout()
                 }
