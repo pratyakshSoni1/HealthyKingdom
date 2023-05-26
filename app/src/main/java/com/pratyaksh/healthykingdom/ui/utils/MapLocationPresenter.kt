@@ -28,7 +28,7 @@ fun MapLocationPreview(
     val ctx = LocalContext.current
     val mapView = remember{ mutableStateOf( MapView(ctx) ) }
     Box(
-        modifier= modifier.clip(RoundedCornerShape(12.dp)),
+        modifier= modifier.clip(RoundedCornerShape(16.dp)),
     ){
 
         AndroidView(

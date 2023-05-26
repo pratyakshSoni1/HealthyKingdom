@@ -12,9 +12,11 @@ import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.domain.model.getAvailGroups
 import com.pratyaksh.healthykingdom.domain.use_case.getFluidsData.GetFluidsByHospitalUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetAllHospitalsUseCase
+import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetHospitalByIdUseCase
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_detail_sheet.MarkerDetailSheetUiState
 import com.pratyaksh.healthykingdom.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -31,10 +33,6 @@ class HomeScreenViewModel @Inject constructor(
 
     val homeScreenUiState = mutableStateOf( HomeScreenUiState() )
 
-    @OptIn(SavedStateHandleSaveableApi::class)
-    var user by saveState.saveable { mutableStateOf<String>("") }
-        private set
-
     val detailSheetUiState = mutableStateOf( MarkerDetailSheetUiState(
         hospitalName = "",
         hospitalId = "",
@@ -45,6 +43,16 @@ class HomeScreenViewModel @Inject constructor(
 
     init {
         getAllHospitals()
+    }
+
+    fun initScreen(userId: String){
+        homeScreenUiState.value= homeScreenUiState.value.copy(
+            userId= userId
+        )
+    }
+
+    fun toggleError(setVisible: Boolean){
+        homeScreenUiState.value = homeScreenUiState.value.copy(isError= setVisible, isLoading = false)
     }
 
     private fun getAllHospitals(){
@@ -88,7 +96,7 @@ class HomeScreenViewModel @Inject constructor(
     fun setBottomSheet( hospital: Users.Hospital ){
         viewModelScope.launch {
             setBottomSheetLoading(true)
-            getHospitalFluidUseCase(hospital.id).collectLatest {
+            getHospitalFluidUseCase(hospital.userId).collectLatest {
 
                 when(it){
                     is Resource.Error -> setBottomSheetError(true)
@@ -97,7 +105,7 @@ class HomeScreenViewModel @Inject constructor(
                         detailSheetUiState.value = detailSheetUiState.value.copy(
                             isLoading = false,
                             hospitalName= hospital.name,
-                            hospitalId = hospital.id,
+                            hospitalId = hospital.userId,
                             availBloodTypes = it.data?.bloods!!.getAvailGroups(),
                             availPlasmaTypes = it.data.plasma.getAvailGroups(),
                             availPlateletsTypes = it.data.platelets.getAvailGroups()

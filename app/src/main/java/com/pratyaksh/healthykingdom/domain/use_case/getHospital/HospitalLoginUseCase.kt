@@ -17,7 +17,7 @@ class HospitalLoginUseCase @Inject constructor(
             val reqUser = fbRepo.getHospitalByPhone(phone)
             if(reqUser != null){
                 if(reqUser.password == password)
-                    emit(Resource.Success(reqUser.id))
+                    emit(Resource.Success(reqUser.userId))
                 else
                     emit(Resource.Error("Invalid password"))
             }else{

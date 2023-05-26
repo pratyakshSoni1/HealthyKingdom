@@ -15,7 +15,8 @@ data class HomeScreenUiState(
     val mapActionButtonsUiState: MapActionButtonsUiState = MapActionButtonsUiState(true, false),
     val isLoading: Boolean = false,
     val isError: Boolean = false,
-    val isMainMenuVisible: Boolean = false
+    val isMainMenuVisible: Boolean = false,
+    val userId: String? = null
 
 ){
 

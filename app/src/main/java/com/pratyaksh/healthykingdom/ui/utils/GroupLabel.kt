@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -63,7 +64,9 @@ fun GroupLabel(
         Box(
             modifier= Modifier
                 .height(size)
+                .defaultMinSize(minWidth = size, minHeight = size)
                 .wrapContentWidth()
+                .padding( if(size < 32.dp ) 2.dp else 3.dp )
                 .clip(RoundedCornerShape(4.dp))
                 .background(color = bgColor)
                 .padding(horizontal = 2.dp),
@@ -104,9 +107,13 @@ fun GroupLabel(
     ) {
         Box(
             modifier = Modifier
-                .size(20.dp)
+                .height(size)
+                .defaultMinSize(minWidth = size, minHeight = size)
+                .wrapContentWidth()
+                .padding( if(size < 32.dp ) 2.dp else 3.dp )
                 .clip(RoundedCornerShape(4.dp))
-                .background(color = bgColor),
+                .background(color = bgColor)
+                .padding(horizontal= 2.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(

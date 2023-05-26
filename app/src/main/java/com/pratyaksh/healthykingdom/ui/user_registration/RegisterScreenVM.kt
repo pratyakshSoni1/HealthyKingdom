@@ -144,7 +144,7 @@ class RegisterScreenVM @Inject constructor(
 
     fun getUser(): Users {
 
-        val userId = "${uiState.phone.substring(8..11)}"
+        val userId = uiState.phone.substring(8..11)
 
         return when(uiState.accountType){
             AccountTypes.AMBULANCE -> Users.Ambulance(
@@ -152,7 +152,7 @@ class RegisterScreenVM @Inject constructor(
                 driverName = uiState.name,
                 mail= uiState.mail,
                 password = uiState.password,
-                userId= "ambulance${userId}",
+                userId= "${AccountTypes.AMBULANCE.type}-${userId}",
                 vehicleNumber = uiState.vehicleNumber,
                 driverAge= uiState.age.toInt(),
                 driverGender= when(uiState.gender){
@@ -172,7 +172,7 @@ class RegisterScreenVM @Inject constructor(
                 mail= uiState.mail,
                 location = uiState.location!!,
                 password = uiState.password,
-                id= "hospital${userId}"
+                userId= "${AccountTypes.HOSPITAL.type}-${userId}"
             )
 
             AccountTypes.PUBLIC_USER -> Users.PublicUser(
@@ -180,7 +180,7 @@ class RegisterScreenVM @Inject constructor(
                 userName = uiState.name,
                 mail= uiState.mail,
                 location = uiState.location!!,
-                userId= "publicUser${userId}",
+                userId= "${AccountTypes.PUBLIC_USER.type}-${userId}",
                 providesLocation = uiState.providesLocation,
                 password = uiState.password,
             )

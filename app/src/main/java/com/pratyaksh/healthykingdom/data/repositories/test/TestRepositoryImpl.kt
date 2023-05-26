@@ -15,7 +15,7 @@ class TestRepositoryImpl: RemoteHospitalFbRepo {
             HospitalsDto(
                 name = "First Hospital",
                 location = GeoPoint(26.9279849, 81.1967074),
-                id = "firatHospital",
+                userId = "firatHospital",
                 mail = "firstHosp@gmail.com",
                 phone="+91 0000000000"
             ),
@@ -23,7 +23,7 @@ class TestRepositoryImpl: RemoteHospitalFbRepo {
             HospitalsDto(
                 name = "Third Hospital",
                 location = GeoPoint(26.9329849, 81.1967074),
-                id = "thirdHospital",
+                userId = "thirdHospital",
                 mail = "firstHosp@gmail.com",
                 phone="+91 0000000000"
             ),
@@ -31,7 +31,7 @@ class TestRepositoryImpl: RemoteHospitalFbRepo {
             HospitalsDto(
                 name = "Second Hospital",
                 location = GeoPoint(26.9279849, 81.1907074),
-                id = "secondHospital",
+                userId = "secondHospital",
                 mail = "firstHosp@gmail.com",
                 phone="+91 0000000000"
             )
@@ -42,7 +42,7 @@ class TestRepositoryImpl: RemoteHospitalFbRepo {
         return HospitalsDto(
             name = "Second Hospital",
             location = GeoPoint(26.9279849, 81.1907074),
-            id = "secondHospital",
+            userId = "secondHospital",
             mail = "firstHosp@gmail.com",
             phone="+91 0000000000"
         )

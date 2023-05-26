@@ -51,8 +51,6 @@ class FluidUpdateScreenVM @Inject constructor(
                     is Resource.Error -> { toggleError(true, resp.msg!!) }
                     is Resource.Loading -> toggleLoading(true)
                     is Resource.Success -> {
-                        toggleLoading(false)
-
                         _uiState.update {
                             when(resp.data){
                                 is AvailPlatelets -> it.copy(availBloodGroups = resp.data.toBloodsModel())
@@ -60,14 +58,21 @@ class FluidUpdateScreenVM @Inject constructor(
                                 is AvailPlasma -> it.copy(availPlasma = resp.data)
                                 else -> { it.copy() }
                             }
-
                         }
+                        toggleLoading(false)
+                        toggleUpdateBtnState(true)
 
                     }
                 }
             }
         }
 
+    }
+
+    fun toggleUpdateBtnState(setActive: Boolean){
+        _uiState.update {
+            it.copy( isUpdateBtnActive = setActive)
+        }
     }
 
     fun incBloodGroupQty( group: BloodGroups ){

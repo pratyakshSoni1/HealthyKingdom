@@ -10,7 +10,7 @@ import com.pratyaksh.healthykingdom.utils.PlateletsGroupInfo
 data class HospitalsDto (
     val name: String = "",
     val location: GeoPoint? =null,
-    val id: String = "",
+    val userId: String = "",
     val mail: String = "",
     val phone: String = "",
     val password: String? = null
@@ -21,7 +21,7 @@ fun HospitalsDto.toHospital(): Users.Hospital {
     return Users.Hospital(
         name = name,
         location = location!!.toMapsGeopoint(),
-        id = id,
+        userId = userId,
         mail = mail,
         phone = phone,
         password = password!!

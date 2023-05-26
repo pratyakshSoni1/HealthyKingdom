@@ -11,7 +11,7 @@ import com.pratyaksh.healthykingdom.utils.PlateletsGroupInfo
 import org.osmdroid.util.GeoPoint
 
 
-sealed class Users{
+sealed class Users(){
 
     data class Ambulance(
         val driverName: String,
@@ -34,7 +34,7 @@ sealed class Users{
         val mail: String,
         val phone: String,
         val location: GeoPoint,
-        val id: String,
+        val userId: String,
         val password: String
     ): Users()
 
@@ -71,7 +71,7 @@ fun Users.Hospital.toHospitalDto(): HospitalsDto {
 
     return HospitalsDto(
         name, location.toFBGeopoint(),
-        id, mail, phone,
+        userId, mail, phone,
         password = password
     )
 }

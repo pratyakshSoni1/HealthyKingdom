@@ -137,7 +137,8 @@ fun NavGraphBuilder.homeScreenNavGraph(
         ){
             HomeScreen(
                 navController = navController,
-                logoutUser = { updateCurrentLoggedUser(null) }
+                logoutUser = { updateCurrentLoggedUser(null) },
+                getLoggedUser = { currentLoggedUser() }
             )
         }
 

@@ -16,6 +16,7 @@ data class FluidUpdateScreenUiState (
     val errorText: String= "Unexpected Error Occured !",
     val showErrorDialog: Boolean= false,
     val showSuccesssDialog: Boolean= false,
+    val isUpdateBtnActive: Boolean= false
 
 
     )

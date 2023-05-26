@@ -28,8 +28,11 @@ class HospitalDetailsVM @Inject constructor(
     var uiState: MutableState<HospitalDetailsUiState> = mutableStateOf(HospitalDetailsUiState())
         private set
 
-    fun fetchHospital(id: String){
+    init {
+        toggleLoading(true)
+    }
 
+    fun fetchHospital(id: String){
         viewModelScope.launch {
             uiState.value = uiState.value.copy(hospital = getHospitalById(id))
         }
@@ -45,6 +48,7 @@ class HospitalDetailsVM @Inject constructor(
                             plasma = it.data.plasma,
                             platelets = it.data.platelets
                         )
+                        toggleLoading(false)
                     }
                 }
             }
@@ -57,7 +61,7 @@ class HospitalDetailsVM @Inject constructor(
         uiState.value = uiState.value.copy(isError = isError, isLoading = false)
     }
     fun toggleLoading(isLoading: Boolean){
-        uiState.value = uiState.value.copy(isLoading = true)
+        uiState.value = uiState.value.copy(isLoading = isLoading)
     }
 
     fun showFluidInfoDialog(

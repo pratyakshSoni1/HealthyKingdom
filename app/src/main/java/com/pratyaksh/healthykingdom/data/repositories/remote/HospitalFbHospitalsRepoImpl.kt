@@ -65,10 +65,10 @@ class HospitalFbHospitalsRepoImpl(private val fireStore: FirebaseFirestore): Rem
 
         try{
             val task1 = fireStore.collection(Collections.HOSPITALS_COLLECTION)
-                .document(hospital.id).set(hospital)
+                .document(hospital.userId).set(hospital)
 
             val task2 = fireStore.collection(Collections.LIFE_FLUIDS)
-                .document(hospital.id).set(
+                .document(hospital.userId).set(
                     AvailFluidsDto(
                         AvailBloodDto(),
                         AvailPlasmaDto(),
