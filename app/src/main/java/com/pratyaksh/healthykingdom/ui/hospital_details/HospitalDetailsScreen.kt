@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -18,13 +17,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -92,16 +88,20 @@ fun HospitalDetailsScreen(
                         .padding(horizontal = 12.dp, vertical = 14.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    if(uiState.isLoading){
+                    if (uiState.isLoading) {
                         Box(
                             Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
                             LoadingComponent(modifier = Modifier.size(80.dp))
                         }
-                    }else if(uiState.isError){
-                      Text("Unexpected Error\n Try again later.", modifier= Modifier.fillMaxSize(), textAlign= TextAlign.Center)
-                    }else if(uiState.hospital != null) {
+                    } else if (uiState.isError) {
+                        Text(
+                            "Unexpected Error\n Try again later.",
+                            modifier = Modifier.fillMaxSize(),
+                            textAlign = TextAlign.Center
+                        )
+                    } else if (uiState.hospital != null) {
 
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -128,6 +128,7 @@ fun HospitalDetailsScreen(
                                     color = Color.Black
                                 )
                             }
+                            Spacer(Modifier.height(4.dp))
                             Row(
                                 Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.Start,
@@ -146,6 +147,7 @@ fun HospitalDetailsScreen(
                                     color = Color.Black
                                 )
                             }
+                            Spacer(Modifier.height(2.dp))
                             Row(
                                 Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.Start,
@@ -173,7 +175,7 @@ fun HospitalDetailsScreen(
                                 name = uiState.hospital.name
                             )
                         }
-                        Spacer(modifier = Modifier.height(22.dp))
+                        Spacer(modifier = Modifier.height(32.dp))
 
                         Text(
                             text = "Available Fluids",
@@ -191,7 +193,10 @@ fun HospitalDetailsScreen(
                                 .background(Color(0x33FF6060))
                                 .padding(8.dp)
                         ) {
-                            Row(verticalAlignment = Alignment.CenterVertically, modifier= Modifier.padding(vertical = 12.dp)) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(vertical = 12.dp)
+                            ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_blood),
                                     modifier = Modifier.size(33.dp),
@@ -199,9 +204,10 @@ fun HospitalDetailsScreen(
                                     alignment = Alignment.Center,
                                     contentScale = ContentScale.Fit
                                 )
-                                Spacer(Modifier.width(8.dp))
+                                Spacer(Modifier.width(4.dp))
                                 Text(
-                                    text = "Available Bloods"
+                                    text = "Available Bloods",
+                                    fontWeight = FontWeight.Medium
                                 )
                             }
 
@@ -213,24 +219,28 @@ fun HospitalDetailsScreen(
                             ) {
 
                                 val availBlood = uiState.bloods.getQuantityMap()
-                                for (group in availBlood) {
-                                    if (group.value > 0) {
-                                        Box(
-                                            Modifier.clickable {
-                                                viewModel.showFluidInfoDialog(
-                                                    LifeFluids.BLOOD,
-                                                    fluidBloodGroup = group.key
+                                if(availBlood.isNotEmpty()){
+                                    for (group in availBlood) {
+                                        if (group.value > 0) {
+                                            Box(
+                                                Modifier.clickable {
+                                                    viewModel.showFluidInfoDialog(
+                                                        LifeFluids.BLOOD,
+                                                        fluidBloodGroup = group.key
+                                                    )
+                                                }
+                                            ) {
+                                                GroupLabel(
+                                                    type = LifeFluids.BLOOD,
+                                                    group = group.key.type,
+                                                    qty = group.value,
+                                                    fontSize = 24.sp
                                                 )
                                             }
-                                        ) {
-                                            GroupLabel(
-                                                type = LifeFluids.BLOOD,
-                                                group = group.key.type,
-                                                qty = group.value,
-                                                size = 42.dp
-                                            )
                                         }
                                     }
+                                }else{
+                                    FluidNotAvailableTag()
                                 }
 
                             }
@@ -246,7 +256,10 @@ fun HospitalDetailsScreen(
                                 .background(Color(0x4DFCC60E))
                                 .padding(8.dp)
                         ) {
-                            Row(verticalAlignment = Alignment.CenterVertically, modifier= Modifier.padding(vertical = 12.dp)) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(vertical = 12.dp)
+                            ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_plasma),
                                     modifier = Modifier.size(33.dp),
@@ -254,9 +267,10 @@ fun HospitalDetailsScreen(
                                     alignment = Alignment.Center,
                                     contentScale = ContentScale.Fit
                                 )
-                                Spacer(Modifier.width(8.dp))
+                                Spacer(Modifier.width(4.dp))
                                 Text(
-                                    text = "Available Plasma"
+                                    text = "Available Plasma",
+                                    fontWeight = FontWeight.Medium
                                 )
                             }
 
@@ -267,23 +281,27 @@ fun HospitalDetailsScreen(
                             ) {
 
                                 val availPlasma = uiState.plasma.getQuantityMap()
-                                for (group in availPlasma) {
-                                    if (group.value > 0) {
-                                        Box(
-                                            Modifier.clickable {
-                                                viewModel.showFluidInfoDialog(
-                                                    LifeFluids.PLASMA,
-                                                    fluidPlasmaGroup = group.key
+                                if(availPlasma.isNotEmpty()){
+                                    for (group in availPlasma) {
+                                        if (group.value > 0) {
+                                            Box(
+                                                Modifier.clickable {
+                                                    viewModel.showFluidInfoDialog(
+                                                        LifeFluids.PLASMA,
+                                                        fluidPlasmaGroup = group.key
+                                                    )
+                                                }
+                                            ) {
+                                                GroupLabel(
+                                                    qty = group.value,
+                                                    fontSize = 24.sp,
+                                                    plasma = group.key.type
                                                 )
                                             }
-                                        ) {
-                                            GroupLabel(
-                                                qty = group.value,
-                                                size = 42.dp,
-                                                plasma= group.key.type
-                                            )
                                         }
                                     }
+                                }else{
+                                    FluidNotAvailableTag()
                                 }
                             }
                         }
@@ -296,7 +314,10 @@ fun HospitalDetailsScreen(
                                 .background(Color(0x3BDD0000))
                                 .padding(8.dp)
                         ) {
-                            Row(verticalAlignment = Alignment.CenterVertically, modifier= Modifier.padding(vertical = 12.dp)) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(vertical = 12.dp)
+                            ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_platelets),
                                     modifier = Modifier.size(33.dp),
@@ -304,9 +325,10 @@ fun HospitalDetailsScreen(
                                     alignment = Alignment.Center,
                                     contentScale = ContentScale.Fit
                                 )
-                                Spacer(Modifier.width(8.dp))
+                                Spacer(Modifier.width(4.dp))
                                 Text(
-                                    text = "Available Platelets"
+                                    text = "Available Platelets",
+                                    fontWeight = FontWeight.Medium
                                 )
                             }
 
@@ -317,24 +339,28 @@ fun HospitalDetailsScreen(
                             ) {
 
                                 val availPlatelets = uiState.platelets.getQuantityMap()
-                                for (group in availPlatelets) {
-                                    if (group.value > 0) {
-                                        Box(
-                                            Modifier.clickable {
-                                                viewModel.showFluidInfoDialog(
-                                                    LifeFluids.BLOOD,
-                                                    fluidPlateletsGroup = group.key
+                                if (availPlatelets.isNotEmpty()) {
+                                    for (group in availPlatelets) {
+                                        if (group.value > 0) {
+                                            Box(
+                                                Modifier.clickable {
+                                                    viewModel.showFluidInfoDialog(
+                                                        LifeFluids.BLOOD,
+                                                        fluidPlateletsGroup = group.key
+                                                    )
+                                                }
+                                            ) {
+                                                GroupLabel(
+                                                    type = LifeFluids.BLOOD,
+                                                    group = group.key.type,
+                                                    qty = group.value,
+                                                    fontSize = 24.sp
                                                 )
                                             }
-                                        ) {
-                                            GroupLabel(
-                                                type = LifeFluids.BLOOD,
-                                                group = group.key.type,
-                                                qty = group.value,
-                                                size = 42.dp
-                                            )
                                         }
                                     }
+                                } else {
+                                    FluidNotAvailableTag()
                                 }
 
                             }
@@ -379,6 +405,32 @@ fun HospitalDetailsScreen(
 }
 
 @Composable
+private fun FluidNotAvailableTag() {
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        Icon(
+            painter = painterResource(id = R.drawable.ic_visibility),
+            contentDescription = "null",
+            tint = Color.Red,
+            modifier = Modifier.size(16.dp)
+        )
+        Spacer(Modifier.width(6.dp))
+        Text(
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center,
+            text = "Fluid not available"
+        )
+    }
+
+}
+
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
 private fun FluidInfoDialog(
     fluidType: LifeFluids,
     canDonateTo: List<BloodGroups>,
@@ -397,11 +449,12 @@ private fun FluidInfoDialog(
 
         Column(
             modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .fillMaxHeight(0.8f)
+                .fillMaxWidth()
+                .fillMaxHeight(0.9f)
+                .verticalScroll(rememberScrollState())
                 .clip(RoundedCornerShape(14.dp))
                 .background(Color.White)
-                .padding(horizontal = 12.dp)
+                .padding(horizontal = 14.dp)
         ) {
 
             Row(
@@ -412,17 +465,21 @@ private fun FluidInfoDialog(
             ) {
                 when (fluidType) {
                     LifeFluids.PLASMA -> {
-                        GroupLabel(plasma = plasmaGroup!!.type, size = 56.dp)
+                        GroupLabel(plasma = plasmaGroup!!.type, fontSize = 24.sp)
                     }
 
                     LifeFluids.BLOOD -> {
-                        GroupLabel(group = bloodGroup!!.type, size = 56.dp, type = LifeFluids.BLOOD)
+                        GroupLabel(
+                            group = bloodGroup!!.type,
+                            fontSize = 24.sp,
+                            type = LifeFluids.BLOOD
+                        )
                     }
 
                     LifeFluids.PLATELETS -> {
                         GroupLabel(
                             group = plateletsGroup!!.type,
-                            size = 56.dp,
+                            fontSize = 24.sp,
                             type = LifeFluids.PLATELETS
                         )
                     }
@@ -431,7 +488,7 @@ private fun FluidInfoDialog(
                 Text(
                     "Fluid Info",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                    fontSize = 21.sp,
                     modifier = Modifier.weight(1f)
                 )
                 IconButton(icon = Icons.Rounded.Close, onClick = { onDismissReq() })
@@ -439,61 +496,73 @@ private fun FluidInfoDialog(
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "Can Donate To: ",
+                text = "Can Donate To ",
                 fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(8.dp))
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(4),
-                contentPadding = PaddingValues(vertical = 3.dp, horizontal = 2.dp),
-                verticalArrangement = Arrangement.SpaceAround,
+            FlowRow(
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceAround,
-                content = {
-                    when (fluidType) {
-                        LifeFluids.PLASMA -> {
-                            items(canDonPlasmaTo) {
-                                GroupLabel(plasma = it, size = 38.dp)
-                            }
-                        }
-
-                        LifeFluids.BLOOD, LifeFluids.PLATELETS -> {
-                            items(canDonateTo) {
-                                GroupLabel(group = it, size = 38.dp, type = fluidType)
-                            }
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color(0x33FF6060))
+                    .padding(12.dp),
+                maxItemsInEachRow = 4
+            ) {
+                when (fluidType) {
+                    LifeFluids.PLASMA -> {
+                        for (item in canDonPlasmaTo) {
+                            GroupLabel(plasma = item, fontSize = 24.sp)
                         }
                     }
 
-                })
-            Spacer(Modifier.height(12.dp))
+                    LifeFluids.BLOOD, LifeFluids.PLATELETS -> {
+                        for (item in canDonateTo) {
+                            GroupLabel(group = item, fontSize = 18.sp, type = fluidType)
+                        }
+                    }
+                }
+
+            }
+            Spacer(Modifier.height(21.dp))
 
             Text(
-                text = "Can Receive From: ",
+                text = "Can Receive From",
                 fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(8.dp))
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(4),
-                contentPadding = PaddingValues(vertical = 3.dp, horizontal = 2.dp),
-                verticalArrangement = Arrangement.SpaceAround,
+            FlowRow(
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceAround,
-                content = {
-                    when (fluidType) {
-                        LifeFluids.PLASMA -> {
-                            items(canRecPlasmaFrom) {
-                                GroupLabel(plasma = it, size = 38.dp)
-                            }
-                        }
-
-                        LifeFluids.BLOOD, LifeFluids.PLATELETS -> {
-                            items(canReceivefrom) {
-                                GroupLabel(group = it, size = 38.dp, type = fluidType)
-                            }
+                maxItemsInEachRow = 4,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color(0x3BDD0000))
+                    .padding(12.dp)
+            ) {
+                when (fluidType) {
+                    LifeFluids.PLASMA -> {
+                        for (item in canRecPlasmaFrom) {
+                            GroupLabel(plasma = item, fontSize = 24.sp)
                         }
                     }
 
-                })
+                    LifeFluids.BLOOD, LifeFluids.PLATELETS -> {
+                        for (item in canReceivefrom) {
+                            GroupLabel(group = item, fontSize = 18.sp, type = fluidType)
+                        }
+                    }
+                }
+
+            }
 
 
         }

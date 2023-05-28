@@ -2,21 +2,18 @@ package com.pratyaksh.healthykingdom.ui.homepage
 
 
 import android.util.Log
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.SavedStateHandle
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
-import androidx.lifecycle.viewmodel.compose.saveable
 import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.domain.model.getAvailGroups
 import com.pratyaksh.healthykingdom.domain.use_case.getFluidsData.GetFluidsByHospitalUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetAllHospitalsUseCase
-import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetHospitalByIdUseCase
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_detail_sheet.MarkerDetailSheetUiState
 import com.pratyaksh.healthykingdom.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -25,10 +22,10 @@ import org.osmdroid.views.overlay.Marker
 import javax.inject.Inject
 
 @HiltViewModel
+@OptIn(ExperimentalMaterialApi::class)
 class HomeScreenViewModel @Inject constructor(
     val getAllHospitalsUseCase: GetAllHospitalsUseCase,
-    val getHospitalFluidUseCase: GetFluidsByHospitalUseCase,
-    private val saveState: SavedStateHandle
+    val getHospitalFluidUseCase: GetFluidsByHospitalUseCase
 ): ViewModel() {
 
     val homeScreenUiState = mutableStateOf( HomeScreenUiState() )
@@ -52,6 +49,7 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     fun toggleError(setVisible: Boolean){
+        toggleBottomSheetState(true)
         homeScreenUiState.value = homeScreenUiState.value.copy(isError= setVisible, isLoading = false)
     }
 
@@ -69,13 +67,11 @@ class HomeScreenViewModel @Inject constructor(
                     Log.d("ViewmodelLogs", "Hospitals retreived: ${it.data}")
                 }
                 is Resource.Loading -> {
-
                     homeScreenUiState.value = homeScreenUiState.value.copy(
                         isLoading = true
                     )
                 }
                 is Resource.Error -> {
-
                     homeScreenUiState.value = homeScreenUiState.value.copy(
                         isLoading = false,
                         isError = true
@@ -88,10 +84,11 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     fun setBottomSheetLoading( isLoading:Boolean = true ){
-        detailSheetUiState.value = detailSheetUiState.value.copy(isLoading)
+        detailSheetUiState.value = detailSheetUiState.value.copy(isLoading = isLoading, isError = false)
     }
     fun setBottomSheetError( isError:Boolean = true ){
         detailSheetUiState.value = detailSheetUiState.value.copy(isError = isError, isLoading = false)
+
     }
     fun setBottomSheet( hospital: Users.Hospital ){
         viewModelScope.launch {
@@ -102,14 +99,26 @@ class HomeScreenViewModel @Inject constructor(
                     is Resource.Error -> setBottomSheetError(true)
                     is Resource.Loading -> setBottomSheetLoading(true)
                     is Resource.Success -> {
-                        detailSheetUiState.value = detailSheetUiState.value.copy(
-                            isLoading = false,
-                            hospitalName= hospital.name,
-                            hospitalId = hospital.userId,
-                            availBloodTypes = it.data?.bloods!!.getAvailGroups(),
-                            availPlasmaTypes = it.data.plasma.getAvailGroups(),
-                            availPlateletsTypes = it.data.platelets.getAvailGroups()
-                        )
+
+                        if( it.data != null ){
+                            detailSheetUiState.value = detailSheetUiState.value.copy(
+                                isLoading = false,
+                                hospitalName= hospital.name,
+                                hospitalId = hospital.userId,
+                                availBloodTypes = it.data.bloods.getAvailGroups(),
+                                availPlasmaTypes = it.data.plasma.getAvailGroups(),
+                                availPlateletsTypes = it.data.platelets.getAvailGroups()
+                            )
+                        }else{
+                            detailSheetUiState.value = detailSheetUiState.value.copy(
+                                isLoading = false,
+                                hospitalName= hospital.name,
+                                hospitalId = hospital.userId,
+                                availBloodTypes = emptyList(),
+                                availPlasmaTypes = emptyList(),
+                                availPlateletsTypes = emptyList()
+                            )
+                        }
                         setBottomSheetLoading(false)
                     }
                 }
@@ -138,14 +147,28 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     fun toggleMainMenu(setVisible: Boolean? = null ){
+        toggleBottomSheetState(true)
         homeScreenUiState.value = homeScreenUiState.value.copy(
             isMainMenuVisible = setVisible ?: !homeScreenUiState.value.isMainMenuVisible
         )
     }
 
     fun toggleLoadingScr(setVisible: Boolean){
+        toggleBottomSheetState(true)
         homeScreenUiState.value = homeScreenUiState.value.copy(
             isLoading = setVisible
+        )
+    }
+
+    fun toggleBottomSheetState(setToCollapse: Boolean){
+            detailSheetUiState.value = detailSheetUiState.value.copy (
+                isSheetCollapsed = setToCollapse
+            )
+    }
+
+    fun toggleSheetPeek(setVisible: Boolean){
+        detailSheetUiState.value = detailSheetUiState.value.copy(
+            sheetPeekState = if(setVisible) 90.dp else 0.dp
         )
     }
 

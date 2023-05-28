@@ -344,13 +344,18 @@ private fun BoxScope.FloatingComponents(viewModel: RegisterScreenVM){
     }
 
     if(viewModel.uiState.isLoading){
-        LoadingComponent(
-            modifier = Modifier
-                .fillMaxWidth(0.85f)
-                .fillMaxHeight(0.75f)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color.White)
-        )
+        Box(
+            modifier= Modifier.fillMaxSize()
+                .background(Color(0x12000000))
+        ){
+            LoadingComponent(
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+                    .fillMaxHeight(0.6f)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.White)
+            )
+        }
     }
 }
 

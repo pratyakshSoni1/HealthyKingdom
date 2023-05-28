@@ -4,12 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -18,24 +17,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pratyaksh.healthykingdom.utils.BloodGroups
 import com.pratyaksh.healthykingdom.utils.LifeFluids
-import com.pratyaksh.healthykingdom.utils.LifeFluids.PLASMA
 import com.pratyaksh.healthykingdom.utils.LifeFluids.BLOOD
 import com.pratyaksh.healthykingdom.utils.LifeFluids.PLATELETS
 import com.pratyaksh.healthykingdom.utils.Plasma
-import com.pratyaksh.healthykingdom.utils.PlasmaGroupInfo
 
 @Composable
 fun GroupLabel(
     type: LifeFluids,
     group: BloodGroups,
     qty: Int? = null,
-    size: Dp = 20.dp
+    fontSize: TextUnit = 16.sp
 ){
+
     val bgColor: Color =  when(type){
 
         BLOOD -> Color(0xFFFF2B2B)
@@ -63,10 +61,8 @@ fun GroupLabel(
     ) {
         Box(
             modifier= Modifier
-                .height(size)
-                .defaultMinSize(minWidth = size, minHeight = size)
-                .wrapContentWidth()
-                .padding( if(size < 32.dp ) 2.dp else 3.dp )
+                .wrapContentSize()
+                .padding( if(fontSize < 22.sp ) 3.dp else 4.dp )
                 .clip(RoundedCornerShape(4.dp))
                 .background(color = bgColor)
                 .padding(horizontal = 2.dp),
@@ -75,7 +71,7 @@ fun GroupLabel(
             Text(
                 text= text,
                 color = Color.White,
-                fontSize = if(size < 35.dp) 14.sp else 18.sp,
+                fontSize = fontSize,
                 fontWeight= FontWeight.Black,
             )
         }
@@ -91,7 +87,7 @@ fun GroupLabel(
 fun GroupLabel(
     plasma: Plasma,
     qty: Int? = null,
-    size: Dp = 20.dp
+    fontSize: TextUnit = 16.sp
 ){
     val bgColor = Color(0xFFD89918)
 
@@ -106,11 +102,8 @@ fun GroupLabel(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
-            modifier = Modifier
-                .height(size)
-                .defaultMinSize(minWidth = size, minHeight = size)
-                .wrapContentWidth()
-                .padding( if(size < 32.dp ) 2.dp else 3.dp )
+            modifier = Modifier.wrapContentSize()
+                .padding( if(fontSize < 22.sp ) 3.dp else 4.dp )
                 .clip(RoundedCornerShape(4.dp))
                 .background(color = bgColor)
                 .padding(horizontal= 2.dp),
@@ -119,7 +112,7 @@ fun GroupLabel(
             Text(
                 text = text,
                 color = Color.White,
-                fontSize = if(size < 35.dp) 14.sp else 18.sp,
+                fontSize = fontSize,
                 fontWeight = FontWeight.Black,
             )
         }

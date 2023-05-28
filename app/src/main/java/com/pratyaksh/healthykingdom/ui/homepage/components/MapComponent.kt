@@ -45,11 +45,6 @@ fun MapComponent(
             it.setTileSource(TileSourceFactory.MAPNIK)
             it.controller.zoomTo(5, 2500L)
 
-            val rotationalGestOverlay = RotationGestureOverlay(it)
-            it.setMultiTouchControls(true)
-            it.overlays.add(rotationalGestOverlay)
-            it.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
-
 //            val clickListeners = MapEventsOverlay(object: MapEventsReceiver{
 //                override fun singleTapConfirmedHelper(geoPoint: GeoPoint?): Boolean {
 //                    onMapSingleClick()
@@ -61,6 +56,12 @@ fun MapComponent(
 //                }
 //            })
 //            it.overlays.add(clickListeners)
+
+            val rotationalGestOverlay = RotationGestureOverlay(it)
+            it.setMultiTouchControls(true)
+            it.overlays.add(rotationalGestOverlay)
+            it.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+
         }
 
     }

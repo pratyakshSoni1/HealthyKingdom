@@ -49,7 +49,7 @@ class PublicUserFbRepoImpl(
 
     override suspend fun addUser(userDto: PublicUserDto): Boolean {
         try {
-            fireStore.collection(Constants.Collections.AMBLANCE_DRIVERS)
+            fireStore.collection(Constants.Collections.PUBLIC_USERS)
                 .document().set(userDto)
                 .await()
             return true

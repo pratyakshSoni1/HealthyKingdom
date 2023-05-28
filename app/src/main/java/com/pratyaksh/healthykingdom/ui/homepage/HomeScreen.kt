@@ -36,6 +36,7 @@ import com.pratyaksh.healthykingdom.utils.Resource
 import com.pratyaksh.healthykingdom.utils.Routes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -53,10 +54,18 @@ fun HomeScreen(
     getLoggedUser: () -> Flow<Resource<String?>>
 ) {
     val context = LocalContext.current
+    val coroutine = rememberCoroutineScope()
+    val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = viewModel.detailSheetUiState.value.sheetState)
+
     val mapView = remember {
         mutableStateOf(MapView(context))
     }
-    val sheetPeekHeight = remember { mutableStateOf(0.dp) }
+
+    LaunchedEffect(viewModel.detailSheetUiState.value.isSheetCollapsed){
+        viewModel.detailSheetUiState.value.sheetState.let {
+            if(viewModel.detailSheetUiState.value.isSheetCollapsed) it.collapse() else it.expand()
+        }
+    }
 
     LaunchedEffect(Unit) {
         Configuration.getInstance().userAgentValue = context.packageName
@@ -71,6 +80,7 @@ fun HomeScreen(
                         viewModel.toggleLoadingScr(false)
                     }else{
                         viewModel.toggleError(true)
+                        delay(2000L)
                         navController.navigate(Routes.SIGNUP_NAVGRAPH.route){
                             popUpTo(Routes.HOME_NAVGRAPH.route){ inclusive = true }
                         }
@@ -87,7 +97,7 @@ fun HomeScreen(
             mapView.value.addHospitalToMap(it) { marker ->
                 closeAllInfoWindow(viewModel)
                 viewModel.setBottomSheet(hospital = it)
-                sheetPeekHeight.value = 90.dp
+                viewModel.toggleSheetPeek(true)
                 mapView.value.controller.animateTo(it.location)
                 viewModel.addMarkerWithInfoWindow(marker = marker)
             }.let {
@@ -96,9 +106,6 @@ fun HomeScreen(
         }
     })
 
-    val bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
-    val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState)
-    val coroutine = rememberCoroutineScope()
 
     if(!viewModel.homeScreenUiState.value.isError){
         BottomSheetScaffold(
@@ -106,16 +113,16 @@ fun HomeScreen(
             sheetContent = {
                 MarkerDetailsSheet(uiState = viewModel.detailSheetUiState.value, onCloseClick = {
                     coroutine.launch {
-                        bottomSheetState.collapse()
+                        viewModel.toggleBottomSheetState(true)
                     }
-                    sheetPeekHeight.value = 0.dp
+                    viewModel.toggleSheetPeek(false)
                     closeAllInfoWindow(viewModel)
                 },
                     onDetailsClick = {
                         navController.navigate(Routes.HOSPITAL_DETAILS_SCREEN.route + "/$it")
                     })
             },
-            sheetPeekHeight = sheetPeekHeight.value,
+            sheetPeekHeight = viewModel.detailSheetUiState.value.sheetPeekState,
             sheetElevation = 12.dp,
             sheetBackgroundColor = Color.Transparent,
             sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
@@ -126,10 +133,10 @@ fun HomeScreen(
             ) {
                 MapComponent(mapView) {
                     coroutine.launch {
-                        bottomSheetState.collapse()
+                        viewModel.toggleBottomSheetState(true)
                     }
-                    sheetPeekHeight.value = 0.dp
-                    closeAllInfoWindow(viewModel)
+                    viewModel.toggleSheetPeek(viewModel.homeScreenUiState.value.markersWithInfoWindow.isNotEmpty())
+//                    closeAllInfoWindow(viewModel)
                 }
                 MapActionButtons()
                 HomeScreenSearchbar(toggleMenu = { viewModel.toggleMainMenu(it) })

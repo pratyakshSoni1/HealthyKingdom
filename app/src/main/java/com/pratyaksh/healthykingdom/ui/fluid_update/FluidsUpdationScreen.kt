@@ -61,10 +61,12 @@ fun FluidsUpdationScreen(
                 ) {
                     Text(
                         text = "Update",
-                        color = Color.Blue,
+                        color = if(uiState.isUpdateBtnActive) Color.Blue else Color(0x230027FF),
                         modifier = Modifier.clickable {
-                            Log.d("ClickLogs", "Clicked update")
-                            viewModel.onUpdateFluidToFireStore()
+                            if(uiState.isUpdateBtnActive) {
+                                Log.d("ClickLogs", "Clicked update")
+                                viewModel.onUpdateFluidToFireStore()
+                            }
                         }
                     )
                 }

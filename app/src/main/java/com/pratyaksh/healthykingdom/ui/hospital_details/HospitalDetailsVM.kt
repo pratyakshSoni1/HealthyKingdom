@@ -43,12 +43,16 @@ class HospitalDetailsVM @Inject constructor(
                     is Resource.Error -> toggleError(true)
                     is Resource.Loading -> toggleLoading(true)
                     is Resource.Success -> {
-                        uiState.value = uiState.value.copy(
-                            bloods = it.data?.bloods!!,
-                            plasma = it.data.plasma,
-                            platelets = it.data.platelets
-                        )
-                        toggleLoading(false)
+                        if( it.data != null ) {
+                            uiState.value = uiState.value.copy(
+                                bloods = it.data.bloods,
+                                plasma = it.data.plasma,
+                                platelets = it.data.platelets
+                            )
+                            toggleLoading(false)
+                        }else{
+                            toggleError(true)
+                        }
                     }
                 }
             }
