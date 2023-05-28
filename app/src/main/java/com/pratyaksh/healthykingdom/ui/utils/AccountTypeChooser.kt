@@ -39,37 +39,42 @@ fun AccountTypeChooser(
     Row(
         Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .padding(horizontal = 12.dp),
+            .clip(RoundedCornerShape(100.dp))
+            .background(Color(0xFFE4E4E4))
+            .padding(horizontal = 6.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Spacer(Modifier.width(12.dp))
         Text(
-            "Account Type: ",
-            fontSize = 14.sp,
+            "Account Type ",
+            fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = Color.Black,
+            modifier= Modifier.weight(1f)
         )
         Spacer(Modifier.width(4.dp))
 
-        Box {
+        Box(
+            modifier= Modifier
+                .clip(RoundedCornerShape(100.dp)).background(Color(0x80007BFF)).padding(vertical = 2.dp)
+        ) {
             Row(
                 Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .border(width = 2.5.dp, color = Color.Black, shape = RoundedCornerShape(8.dp))
-                    .padding(horizontal = 6.dp)
+                    .padding(horizontal = 12.dp)
                     .clickable { onToggleExpand() },
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.KeyboardArrowDown,
-                    contentDescription = "Select account type"
-                )
-                Spacer(Modifier.width(4.dp))
                 AccTypeMenuItem(
                     name = accountType.type,
                     painterResource(id = accountType.img)
                 )
-                Spacer(Modifier.width(2.dp))
+                Spacer(Modifier.width(4.dp))
+
+                Icon(
+                    imageVector = Icons.Rounded.KeyboardArrowDown,
+                    contentDescription = "Select account type",
+                    tint = Color.White
+                )
             }
 
             AccountTypeSpinner(
@@ -93,7 +98,7 @@ private fun AccountTypeSpinner(
     DropdownMenu(
         expanded = isExpanded,
         onDismissRequest = { onToggle(false) },
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp))
     ) {
         DropdownMenuItem(onClick = {
             onToggle(false)

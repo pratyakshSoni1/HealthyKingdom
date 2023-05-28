@@ -62,9 +62,9 @@ fun AppTextField(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color(0xFFE6E6E6))
-            .padding(horizontal = 12.dp, vertical = 2.dp),
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color(0xFFE4E4E4))
+            .padding(horizontal = 12.dp),
         colors = TextFieldDefaults.textFieldColors(
             textColor = Color.Black,
             backgroundColor = Color.Transparent,

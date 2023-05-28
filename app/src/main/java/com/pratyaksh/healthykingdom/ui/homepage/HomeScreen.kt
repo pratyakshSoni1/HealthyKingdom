@@ -112,13 +112,13 @@ fun HomeScreen(
             scaffoldState = scaffoldState,
             sheetContent = {
                 MarkerDetailsSheet(uiState = viewModel.detailSheetUiState.value, onCloseClick = {
-                    coroutine.launch {
-                        viewModel.toggleBottomSheetState(true)
-                    }
                     viewModel.toggleSheetPeek(false)
+                    viewModel.toggleBottomSheetState(true)
                     closeAllInfoWindow(viewModel)
                 },
                     onDetailsClick = {
+                        viewModel.toggleLoadingScr(false)
+                        viewModel.toggleBottomSheetState(true)
                         navController.navigate(Routes.HOSPITAL_DETAILS_SCREEN.route + "/$it")
                     })
             },

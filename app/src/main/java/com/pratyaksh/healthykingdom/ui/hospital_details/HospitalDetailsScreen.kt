@@ -219,7 +219,8 @@ fun HospitalDetailsScreen(
                             ) {
 
                                 val availBlood = uiState.bloods.getQuantityMap()
-                                if(availBlood.isNotEmpty()){
+                                val isAvailable = availBlood.filter { grp -> grp.value > 0 }.isNotEmpty()
+                                if(isAvailable){
                                     for (group in availBlood) {
                                         if (group.value > 0) {
                                             Box(
@@ -281,7 +282,8 @@ fun HospitalDetailsScreen(
                             ) {
 
                                 val availPlasma = uiState.plasma.getQuantityMap()
-                                if(availPlasma.isNotEmpty()){
+                                val isAvailable = availPlasma.filter { grp -> grp.value > 0 }.isNotEmpty()
+                                if(isAvailable){
                                     for (group in availPlasma) {
                                         if (group.value > 0) {
                                             Box(
@@ -339,7 +341,8 @@ fun HospitalDetailsScreen(
                             ) {
 
                                 val availPlatelets = uiState.platelets.getQuantityMap()
-                                if (availPlatelets.isNotEmpty()) {
+                                val isAvailable = availPlatelets.filter { grp -> grp.value > 0 }.isNotEmpty()
+                                if (isAvailable) {
                                     for (group in availPlatelets) {
                                         if (group.value > 0) {
                                             Box(

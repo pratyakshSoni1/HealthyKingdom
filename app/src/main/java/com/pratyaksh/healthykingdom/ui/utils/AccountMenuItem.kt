@@ -34,7 +34,7 @@ fun AccTypeMenuItem(
         Image(
             painter = img, contentDescription = name,
             modifier= Modifier
-                .size(38.dp)
+                .size(28.dp)
                 .clip(RoundedCornerShape(12.dp)),
             contentScale = ContentScale.Crop
         )

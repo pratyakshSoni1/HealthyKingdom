@@ -79,9 +79,10 @@ fun LoginScreen(
             Spacer(Modifier.height(12.dp))
             Text(
                 "Login",
-                fontSize = 23.sp,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = Color.Black,
+                modifier= Modifier.fillMaxWidth()
             )
             Spacer(Modifier.height(32.dp))
 
@@ -159,7 +160,7 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape= RoundedCornerShape(100.dp)
             ) {
-                Text("Login", color = Color.White)
+                Text("Login", color = Color.White, fontSize= 16.sp)
             }
             Spacer(Modifier.height(8.dp))
 

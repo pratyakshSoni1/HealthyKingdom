@@ -1,5 +1,6 @@
 package com.pratyaksh.healthykingdom.ui.hospital_details
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -28,10 +29,6 @@ class HospitalDetailsVM @Inject constructor(
     var uiState: MutableState<HospitalDetailsUiState> = mutableStateOf(HospitalDetailsUiState())
         private set
 
-    init {
-        toggleLoading(true)
-    }
-
     fun fetchHospital(id: String){
         viewModelScope.launch {
             uiState.value = uiState.value.copy(hospital = getHospitalById(id))
@@ -50,6 +47,7 @@ class HospitalDetailsVM @Inject constructor(
                                 platelets = it.data.platelets
                             )
                             toggleLoading(false)
+                            Log.d("DetailScreen", "Data Loading success + loading set false")
                         }else{
                             toggleError(true)
                         }

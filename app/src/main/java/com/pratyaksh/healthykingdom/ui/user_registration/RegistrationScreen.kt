@@ -22,6 +22,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Switch
+import androidx.compose.material.SwitchColors
+import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -78,12 +80,13 @@ fun RegisterHospital (
         ) {
 
             Text(
-                "Register",
-                fontSize = 21.sp,
+                "Sign Up",
+                fontSize = 26.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = Color.Black,
+                modifier= Modifier.fillMaxWidth()
             )
-            Spacer(Modifier.height(22.dp))
+            Spacer(Modifier.height(28.dp))
 
             CommonUsersUi(viewModel = viewModel)
             Spacer(Modifier.height(8.dp))
@@ -91,10 +94,10 @@ fun RegisterHospital (
             AmbulanceUserUi(viewModel= viewModel)
             Spacer(Modifier.height(8.dp))
 
-            PublicUserUi(viewModel = viewModel)
-
             LocationComponent(viewModel = viewModel)
             Spacer(Modifier.height(22.dp))
+
+            PublicUserUi(viewModel = viewModel)
 
             ActionButtons(
                 onLogin = {
@@ -156,18 +159,23 @@ private fun ColumnScope.PublicUserUi(viewModel: RegisterScreenVM){
     if(viewModel.uiState.accountType == AccountTypes.PUBLIC_USER){
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier= Modifier.fillMaxWidth(),
+            modifier= Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(100.dp))
+                .background(Color(0xFFE4E4E4)),
         ) {
             Text(
-                "Provide Your Location:",
+                "Provide Your Location",
                 fontSize = 16.sp,
-                color = Color.Black
+                color = Color.Black,
+                modifier= Modifier.weight(1f)
             )
             Spacer(Modifier.width(8.dp))
 
             Switch(
                 checked = viewModel.uiState.providesLocation,
-                onCheckedChange = { viewModel.toggleProvideLoc(it) }
+                onCheckedChange = { viewModel.toggleProvideLoc(it) },
+                colors = SwitchDefaults.colors(checkedThumbColor = Color.Blue, checkedTrackColor = Color(0x80007BFF), uncheckedTrackColor = Color(0xFFE4E4E4))
             )
         }
 
@@ -195,14 +203,6 @@ private fun ColumnScope.NonHospitalUserUi(viewModel: RegisterScreenVM){
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                "Gender:",
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                textAlign = TextAlign.Start
-            )
-            Spacer(Modifier.width(8.dp))
-
             GenderChooser(
                 onGenderChange = { viewModel.onGenderChange(it) },
                 viewModel.uiState.gender
@@ -345,7 +345,8 @@ private fun BoxScope.FloatingComponents(viewModel: RegisterScreenVM){
 
     if(viewModel.uiState.isLoading){
         Box(
-            modifier= Modifier.fillMaxSize()
+            modifier= Modifier
+                .fillMaxSize()
                 .background(Color(0x12000000))
         ){
             LoadingComponent(
@@ -370,7 +371,7 @@ private fun ActionButtons(
         },
         shape= RoundedCornerShape(100.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = Color(0xFF007BFF),
+            backgroundColor = Color(0xFF0166FF),
         )
     ) {
         Text(
@@ -379,7 +380,8 @@ private fun ActionButtons(
             modifier= Modifier
                 .fillMaxWidth()
                 .padding(vertical = 2.dp),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            fontSize= 16.sp
         )
     }
 
@@ -389,16 +391,17 @@ private fun ActionButtons(
         },
         shape= RoundedCornerShape(100.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = Color(0xFFCECECE),
+            backgroundColor = Color.Transparent,
         )
     ) {
         Text(
             text = "Login",
-            color= Color.Black,
+            color= Color(0xFF0166FF),
             modifier= Modifier
                 .fillMaxWidth()
                 .padding(vertical = 2.dp),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            fontSize= 16.sp
         )
     }
 
