@@ -115,6 +115,7 @@ fun NavGraphBuilder.registrationNavgraph(
                 verificationId = it.arguments?.getString("verificationId")!!,
                 resendToken = resendToken!!,
                 activity = activity,
+                navController = navController,
                 user = user!!
             )
         }

@@ -3,6 +3,7 @@ package com.pratyaksh.healthykingdom.ui.utils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -61,7 +62,7 @@ fun AccountTypeChooser(
             Row(
                 Modifier
                     .padding(horizontal = 12.dp)
-                    .clickable { onToggleExpand() },
+                    .clickable(interactionSource = MutableInteractionSource(), indication = null) { onToggleExpand() },
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 AccTypeMenuItem(

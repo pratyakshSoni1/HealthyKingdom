@@ -2,6 +2,7 @@ package com.pratyaksh.healthykingdom.ui.utils
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -91,11 +92,12 @@ fun GenderOption(onClick: (type: Gender) -> Unit, type: Gender, txtColor: Color,
         },
         modifier = Modifier
             .clip(RoundedCornerShape(100.dp))
-            .background(bgColor)
-            .padding(vertical = 4.dp, horizontal = 6.dp)
-            .clickable {
+            .clickable(interactionSource = MutableInteractionSource(), indication = null) {
                 onClick(type)
-            },
+            }
+            .background(bgColor)
+            .padding(vertical = 8.dp, horizontal = 6.dp)
+            ,
         color = txtColor,
         fontWeight = FontWeight.Bold
     )

@@ -68,7 +68,7 @@ fun HospitalDetailsScreen(
         viewModel.fetchHospital(hospitalId)
     })
 
-    val uiState = viewModel.uiState.value
+    val uiState = viewModel.uiState
 
     Box(
         contentAlignment = Alignment.Center
@@ -88,20 +88,20 @@ fun HospitalDetailsScreen(
                         .padding(horizontal = 12.dp, vertical = 14.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    if (uiState.isLoading) {
+                    if (uiState.value.isLoading) {
                         Box(
                             Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
                             LoadingComponent(modifier = Modifier.size(80.dp))
                         }
-                    } else if (uiState.isError) {
+                    } else if (uiState.value.isError) {
                         Text(
                             "Unexpected Error\n Try again later.",
                             modifier = Modifier.fillMaxSize(),
                             textAlign = TextAlign.Center
                         )
-                    } else if (uiState.hospital != null) {
+                    } else if (uiState.value.hospital != null) {
 
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -122,7 +122,7 @@ fun HospitalDetailsScreen(
                                 Spacer(Modifier.width(8.dp))
 
                                 Text(
-                                    text = uiState.hospital.name,
+                                    text = uiState.value.hospital!!.name,
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.Black
@@ -142,7 +142,7 @@ fun HospitalDetailsScreen(
                                 Spacer(Modifier.width(8.dp))
 
                                 Text(
-                                    text = uiState.hospital.phone,
+                                    text = uiState.value.hospital!!.phone,
                                     fontSize = 16.sp,
                                     color = Color.Black
                                 )
@@ -160,7 +160,7 @@ fun HospitalDetailsScreen(
                                 )
                                 Spacer(Modifier.width(8.dp))
                                 Text(
-                                    text = uiState.hospital.mail,
+                                    text = uiState.value.hospital!!.mail,
                                     fontSize = 16.sp,
                                     color = Color.Black
                                 )
@@ -171,8 +171,8 @@ fun HospitalDetailsScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(150.dp),
-                                location = uiState.hospital.location,
-                                name = uiState.hospital.name
+                                location = uiState.value.hospital!!.location,
+                                name = uiState.value.hospital!!.name
                             )
                         }
                         Spacer(modifier = Modifier.height(32.dp))
@@ -195,7 +195,7 @@ fun HospitalDetailsScreen(
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(vertical = 12.dp)
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 12.dp)
                             ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_blood),
@@ -217,10 +217,8 @@ fun HospitalDetailsScreen(
                                 horizontalArrangement = Arrangement.SpaceAround,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-
-                                val availBlood = uiState.bloods.getQuantityMap()
-                                val isAvailable = availBlood.filter { grp -> grp.value > 0 }.isNotEmpty()
-                                if(isAvailable){
+                                val availBlood = uiState.value.bloods.getQuantityMap()
+                                if (availBlood.values.any { qty -> qty > 0 }){
                                     for (group in availBlood) {
                                         if (group.value > 0) {
                                             Box(
@@ -259,7 +257,7 @@ fun HospitalDetailsScreen(
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(vertical = 12.dp)
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical= 12.dp)
                             ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_plasma),
@@ -281,9 +279,8 @@ fun HospitalDetailsScreen(
                                 horizontalArrangement = Arrangement.SpaceAround
                             ) {
 
-                                val availPlasma = uiState.plasma.getQuantityMap()
-                                val isAvailable = availPlasma.filter { grp -> grp.value > 0 }.isNotEmpty()
-                                if(isAvailable){
+                                val availPlasma = uiState.value.plasma.getQuantityMap()
+                                if (availPlasma.values.any { qty -> qty > 0 }){
                                     for (group in availPlasma) {
                                         if (group.value > 0) {
                                             Box(
@@ -318,7 +315,7 @@ fun HospitalDetailsScreen(
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(vertical = 12.dp)
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 12.dp)
                             ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_platelets),
@@ -340,9 +337,8 @@ fun HospitalDetailsScreen(
                                 horizontalArrangement = Arrangement.SpaceAround
                             ) {
 
-                                val availPlatelets = uiState.platelets.getQuantityMap()
-                                val isAvailable = availPlatelets.filter { grp -> grp.value > 0 }.isNotEmpty()
-                                if (isAvailable) {
+                                val availPlatelets = uiState.value.platelets.getQuantityMap()
+                                if (availPlatelets.values.any { qty -> qty > 0 }) {
                                     for (group in availPlatelets) {
                                         if (group.value > 0) {
                                             Box(
@@ -377,7 +373,7 @@ fun HospitalDetailsScreen(
             }
         )
 
-        if (uiState.showFluidDialog) {
+        if (uiState.value.showFluidDialog) {
 
             Box(
                 Modifier
@@ -385,19 +381,19 @@ fun HospitalDetailsScreen(
                     .background(Color(0x20000000))
             ) {
                 FluidInfoDialog(
-                    fluidType = uiState.dialogFluidType!!,
-                    canDonateTo = if (uiState.dialogPlateletsGroup != null) uiState.dialogPlateletsGroup.canDonateTo
-                    else uiState.dialogBloodGroup?.canDonateTo ?: emptyList(),
+                    fluidType = uiState.value.dialogFluidType!!,
+                    canDonateTo = if (uiState.value.dialogPlateletsGroup != null) uiState.value.dialogPlateletsGroup!!.canDonateTo
+                    else uiState.value.dialogBloodGroup?.canDonateTo ?: emptyList(),
 
-                    canReceivefrom = if (uiState.dialogPlateletsGroup != null) uiState.dialogPlateletsGroup.canReceiveFrom
-                    else uiState.dialogBloodGroup?.canReceiveFrom ?: emptyList(),
+                    canReceivefrom = if (uiState.value.dialogPlateletsGroup != null) uiState.value.dialogPlateletsGroup!!.canReceiveFrom
+                    else uiState.value.dialogBloodGroup?.canReceiveFrom ?: emptyList(),
 
                     onDismissReq = { viewModel.dismissFluidDialog() },
-                    canRecPlasmaFrom = uiState.dialogPlasmaGroup?.canReceiveFrom ?: emptyList(),
-                    canDonPlasmaTo = uiState.dialogPlasmaGroup?.canDonateTo ?: emptyList(),
-                    bloodGroup = uiState.dialogBloodGroup,
-                    plasmaGroup = uiState.dialogPlasmaGroup,
-                    plateletsGroup = uiState.dialogPlateletsGroup
+                    canRecPlasmaFrom = uiState.value.dialogPlasmaGroup?.canReceiveFrom ?: emptyList(),
+                    canDonPlasmaTo = uiState.value.dialogPlasmaGroup?.canDonateTo ?: emptyList(),
+                    bloodGroup = uiState.value.dialogBloodGroup,
+                    plasmaGroup = uiState.value.dialogPlasmaGroup,
+                    plateletsGroup = uiState.value.dialogPlateletsGroup
                 )
             }
 

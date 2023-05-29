@@ -63,7 +63,9 @@ fun HomeScreen(
 
     LaunchedEffect(viewModel.detailSheetUiState.value.isSheetCollapsed){
         viewModel.detailSheetUiState.value.sheetState.let {
-            if(viewModel.detailSheetUiState.value.isSheetCollapsed) it.collapse() else it.expand()
+            coroutine.launch {
+                if(viewModel.detailSheetUiState.value.isSheetCollapsed) it.collapse() else it.expand()
+            }
         }
     }
 

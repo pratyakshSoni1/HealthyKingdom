@@ -82,7 +82,7 @@ fun LoginScreen(
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
-                modifier= Modifier.fillMaxWidth()
+                modifier= Modifier.fillMaxWidth().padding(start=12.dp)
             )
             Spacer(Modifier.height(32.dp))
 

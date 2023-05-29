@@ -84,7 +84,9 @@ fun RegisterHospital (
                 fontSize = 26.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
-                modifier= Modifier.fillMaxWidth()
+                modifier= Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp)
             )
             Spacer(Modifier.height(28.dp))
 
@@ -95,9 +97,9 @@ fun RegisterHospital (
             Spacer(Modifier.height(8.dp))
 
             LocationComponent(viewModel = viewModel)
-            Spacer(Modifier.height(22.dp))
 
             PublicUserUi(viewModel = viewModel)
+            Spacer(Modifier.height(32.dp))
 
             ActionButtons(
                 onLogin = {
@@ -162,7 +164,8 @@ private fun ColumnScope.PublicUserUi(viewModel: RegisterScreenVM){
             modifier= Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(100.dp))
-                .background(Color(0xFFE4E4E4)),
+                .background(Color(0xFFE4E4E4))
+                .padding(horizontal = 14.dp),
         ) {
             Text(
                 "Provide Your Location",
@@ -175,7 +178,7 @@ private fun ColumnScope.PublicUserUi(viewModel: RegisterScreenVM){
             Switch(
                 checked = viewModel.uiState.providesLocation,
                 onCheckedChange = { viewModel.toggleProvideLoc(it) },
-                colors = SwitchDefaults.colors(checkedThumbColor = Color.Blue, checkedTrackColor = Color(0x80007BFF), uncheckedTrackColor = Color(0xFFE4E4E4))
+                colors = SwitchDefaults.colors(checkedThumbColor = Color.Blue, checkedTrackColor = Color(0x80007BFF))
             )
         }
 
@@ -318,6 +321,7 @@ private fun ColumnScope.LocationComponent(viewModel: RegisterScreenVM){
             }
 
         }
+        Spacer(Modifier.height(22.dp))
     }
 
 }
@@ -392,7 +396,7 @@ private fun ActionButtons(
         shape= RoundedCornerShape(100.dp),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.Transparent,
-        )
+        ), elevation = ButtonDefaults.elevation(0.dp , 0.dp, hoveredElevation =  0.dp, focusedElevation =  0.dp)
     ) {
         Text(
             text = "Login",

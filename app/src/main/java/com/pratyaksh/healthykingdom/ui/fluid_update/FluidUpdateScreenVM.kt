@@ -102,24 +102,24 @@ class FluidUpdateScreenVM @Inject constructor(
     fun decBloodGroupQty( group: BloodGroups ){
         _uiState.update {
             when (group) {
-                BloodGroups.A_POSITIVE -> it.copy(availBloodGroups = it.availBloodGroups.copy(aPos= it.availBloodGroups.aPos-1))
-                BloodGroups.A_NEGATIVE -> it.copy(availBloodGroups = it.availBloodGroups.copy(aNeg= it.availBloodGroups.aNeg-1))
-                BloodGroups.B_POSITIVE -> it.copy(availBloodGroups = it.availBloodGroups.copy(bPos= it.availBloodGroups.bPos-1))
-                BloodGroups.B_NEGATIVE -> it.copy(availBloodGroups = it.availBloodGroups.copy(bNeg= it.availBloodGroups.bNeg-1))
-                BloodGroups.O_POSITIVE -> it.copy(availBloodGroups = it.availBloodGroups.copy(oPos= it.availBloodGroups.oPos-1))
-                BloodGroups.O_NEGATIVE -> it.copy(availBloodGroups = it.availBloodGroups.copy(oNeg= it.availBloodGroups.oNeg-1))
-                BloodGroups.AB_POSITIVE -> it.copy(availBloodGroups = it.availBloodGroups.copy(abPos= it.availBloodGroups.abPos-1))
-                BloodGroups.AB_NEGATIVE -> it.copy(availBloodGroups = it.availBloodGroups.copy(abNeg= it.availBloodGroups.abNeg-1))
+                BloodGroups.A_POSITIVE -> if(it.availBloodGroups.aPos -1 >=0) it.copy(availBloodGroups = it.availBloodGroups.copy(aPos= it.availBloodGroups.aPos-1)) else it
+                BloodGroups.A_NEGATIVE -> if(it.availBloodGroups.aNeg -1 >=0) it.copy(availBloodGroups = it.availBloodGroups.copy(aNeg= it.availBloodGroups.aNeg-1)) else it
+                BloodGroups.B_POSITIVE -> if(it.availBloodGroups.bPos -1 >=0) it.copy(availBloodGroups = it.availBloodGroups.copy(bPos= it.availBloodGroups.bPos-1)) else it
+                BloodGroups.B_NEGATIVE -> if(it.availBloodGroups.bNeg -1 >=0) it.copy(availBloodGroups = it.availBloodGroups.copy(bNeg= it.availBloodGroups.bNeg-1)) else it
+                BloodGroups.O_POSITIVE -> if(it.availBloodGroups.oPos -1 >=0) it.copy(availBloodGroups = it.availBloodGroups.copy(oPos= it.availBloodGroups.oPos-1)) else it
+                BloodGroups.O_NEGATIVE -> if(it.availBloodGroups.oNeg -1 >=0) it.copy(availBloodGroups = it.availBloodGroups.copy(oNeg= it.availBloodGroups.oNeg-1)) else it
+                BloodGroups.AB_POSITIVE -> if(it.availBloodGroups.abPos -1 >=0) it.copy(availBloodGroups = it.availBloodGroups.copy(abPos= it.availBloodGroups.abPos-1)) else it
+                BloodGroups.AB_NEGATIVE -> if(it.availBloodGroups.abNeg -1 >=0) it.copy(availBloodGroups = it.availBloodGroups.copy(abNeg= it.availBloodGroups.abNeg-1)) else it
             }
         }
     }
     fun decPlasmaGroupQty( group: Plasma ) {
         _uiState.update {
             when (group) {
-                Plasma.PLASMA_A -> it.copy(availPlasma = it.availPlasma.copy(aGroup = it.availPlasma.aGroup - 1))
-                Plasma.PLASMA_AB -> it.copy(availPlasma = it.availPlasma.copy(abGroup = it.availPlasma.abGroup - 1))
-                Plasma.PLASMA_B -> it.copy(availPlasma = it.availPlasma.copy(bGroup = it.availPlasma.bGroup - 1))
-                Plasma.PLASMA_O -> it.copy(availPlasma = it.availPlasma.copy(oGroup = it.availPlasma.oGroup - 1))
+                Plasma.PLASMA_A -> if(it.availPlasma.aGroup -1 >=0) it.copy(availPlasma = it.availPlasma.copy(aGroup = it.availPlasma.aGroup - 1))else it
+                Plasma.PLASMA_AB -> if(it.availPlasma.abGroup -1 >=0) it.copy(availPlasma = it.availPlasma.copy(abGroup = it.availPlasma.abGroup - 1))else it
+                Plasma.PLASMA_B -> if(it.availPlasma.bGroup -1 >=0) it.copy(availPlasma = it.availPlasma.copy(bGroup = it.availPlasma.bGroup - 1))else it
+                Plasma.PLASMA_O -> if(it.availPlasma.oGroup -1 >=0) it.copy(availPlasma = it.availPlasma.copy(oGroup = it.availPlasma.oGroup - 1))else it
             }
         }
     }
