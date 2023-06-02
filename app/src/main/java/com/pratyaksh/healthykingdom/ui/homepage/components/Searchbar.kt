@@ -17,55 +17,63 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.FilterOption
+import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.MarkerFilters
 import com.pratyaksh.healthykingdom.ui.utils.IconButton
 import com.pratyaksh.healthykingdom.utils.Routes
 
 @Composable
 fun HomeScreenSearchbar(
-    toggleMenu:(setVisible: Boolean)->Unit
+    toggleMenu:(setVisible: Boolean)->Unit,
+    filterOptions: List<FilterOption>
 ) {
 
     Box(
         modifier = Modifier
-            .padding(top= 10.dp)
-            .fillMaxWidth(0.95f)
+            .padding(top = 10.dp)
+            .fillMaxWidth()
             .fillMaxHeight(),
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color.White)
-                .padding(horizontal = 14.dp, vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-
-            Image(
-                imageVector = Icons.Default.Search,
-                contentDescription = "search hospitals",
+        Column(){
+            Row(
                 modifier = Modifier
-                    .padding(8.dp),
-                colorFilter = ColorFilter.tint(Color.LightGray)
-            )
-            Spacer(Modifier.width(8.dp))
+                    .fillMaxWidth(0.95f)
+                    .wrapContentHeight()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color.White)
+                    .padding(horizontal = 14.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
 
-            Text(
-                text= "Search Hospitals...",
-                color = Color.LightGray,
-            )
-            Spacer(Modifier.width(8.dp))
+                Image(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "search hospitals",
+                    modifier = Modifier
+                        .padding(8.dp),
+                    colorFilter = ColorFilter.tint(Color.LightGray)
+                )
+                Spacer(Modifier.width(8.dp))
 
-            IconButton(
-                icon = Icons.Default.AccountCircle, onClick = {
-                    toggleMenu(true)
-                },
-                backgroundColor = Color(0xFFFF9800),
-                iconColor = Color.White,
-                size = 2.5.dp
-            )
+                Text(
+                    text= "Search Hospitals...",
+                    color = Color.LightGray,
+                )
+                Spacer(Modifier.width(8.dp))
 
+                IconButton(
+                    icon = Icons.Default.AccountCircle, onClick = {
+                        toggleMenu(true)
+                    },
+                    backgroundColor = Color(0xFFFF9800),
+                    iconColor = Color.White,
+                    size = 2.5.dp
+                )
+
+            }
+            Spacer(Modifier.height(8.dp))
+
+            MarkerFilters(filterOptions = filterOptions)
         }
     }
 

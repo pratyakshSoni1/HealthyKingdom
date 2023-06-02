@@ -7,10 +7,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.pratyaksh.healthykingdom.utils.*
 
-data class MarkerDetailSheetUiState @OptIn(ExperimentalMaterialApi::class) constructor(
-    val sheetState: BottomSheetState = BottomSheetState(initialValue = BottomSheetValue.Collapsed),
-    val isSheetCollapsed: Boolean = true,
-    val sheetPeekState: Dp = 0.dp,
+data class MarkerDetailSheetUiState (
     val isLoading: Boolean= false,
     val isError: Boolean= false,
     val hospitalName: String = "",

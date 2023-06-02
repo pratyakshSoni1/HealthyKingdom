@@ -22,9 +22,11 @@ import com.pratyaksh.healthykingdom.R
 import com.pratyaksh.healthykingdom.ui.utils.IconButton
 import com.pratyaksh.healthykingdom.ui.utils.VisibilityIconButton
 
-@Preview(showBackground = true)
 @Composable
-fun MapActionButtons(){
+fun MapActionButtons(
+    onToggleRequests:()->Unit,
+    onToggleHospitals:()->Unit
+){
 
     Box(
         modifier= Modifier
@@ -38,8 +40,7 @@ fun MapActionButtons(){
             VisibilityIconButton(
                 painterResource(id = R.drawable.hospital) ,
                 onClick = { Log.d("UI_LOGS", "Clicked Icon button") },
-                backgroundColor = Color.White,
-                iconColor = Color.Blue
+                backgroundColor = Color.White
             )
             Spacer(modifier = Modifier.height(6.dp))
             

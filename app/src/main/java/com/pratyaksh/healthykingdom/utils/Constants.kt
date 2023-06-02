@@ -7,6 +7,14 @@ object Constants{
         val AMBLANCE_DRIVERS = "ambulance"
         val PUBLIC_USERS = "public"
         val LIFE_FLUIDS = "lifefluids"
+        val REQUESTS = "requests"
+    }
+
+    object RequestsDocField{
+        val blood = "bloods"
+        val plasma = "plasma"
+        val platelets = "platelets"
+        val hospitalId = "hospitalId"
     }
 
     object LifeFluidFieldNames{

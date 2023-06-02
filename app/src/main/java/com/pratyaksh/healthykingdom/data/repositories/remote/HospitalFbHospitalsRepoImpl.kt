@@ -1,5 +1,6 @@
 package com.pratyaksh.healthykingdom.data.repositories.remote
 
+import com.google.android.gms.tasks.Task
 import com.pratyaksh.healthykingdom.domain.repository.RemoteHospitalFbRepo
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -61,31 +62,13 @@ class HospitalFbHospitalsRepoImpl(private val fireStore: FirebaseFirestore): Rem
         }
     }
 
-    override suspend fun addHospital(hospital: HospitalsDto): Boolean{
+    override suspend fun addHospital(hospital: HospitalsDto): Task<Void> {
 
-        try{
-            val task1 = fireStore.collection(Collections.HOSPITALS_COLLECTION)
+        return fireStore.collection(Collections.HOSPITALS_COLLECTION)
                 .document(hospital.userId).set(hospital)
 
-            val task2 = fireStore.collection(Collections.LIFE_FLUIDS)
-                .document(hospital.userId).set(
-                    AvailFluidsDto(
-                        AvailBloodDto(),
-                        AvailPlasmaDto(),
-                        AvailPlateletsDto()
-                    )
-                )
-
-            task1.await()
-            task2.await()
-
-            return true
-        }catch(e: FirebaseFirestoreException){
-            e.printStackTrace()
-            throw e
-        }
-
     }
+
     override suspend fun getHospitalByLocation(geoPoint: GeoPoint): Users.Hospital {
         TODO("Not yet implemented")
     }

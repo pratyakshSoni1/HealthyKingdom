@@ -1,6 +1,7 @@
 package com.pratyaksh.healthykingdom.ui.homepage
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,21 +10,25 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.res.ResourcesCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.pratyaksh.healthykingdom.R
+import com.pratyaksh.healthykingdom.domain.model.Requests
 import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.ui.homepage.components.HomeScreenDialogMenu
 import com.pratyaksh.healthykingdom.ui.homepage.components.HomeScreenSearchbar
@@ -31,7 +36,15 @@ import com.pratyaksh.healthykingdom.ui.homepage.components.HospitalsCustomWindow
 import com.pratyaksh.healthykingdom.ui.homepage.components.MapActionButtons
 import com.pratyaksh.healthykingdom.ui.homepage.components.MapComponent
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_detail_sheet.MarkerDetailsSheet
+import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.FilterOption
+import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.MarkerFilters
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
+import com.pratyaksh.healthykingdom.utils.BloodGroups
+import com.pratyaksh.healthykingdom.utils.BloodGroupsInfo
+import com.pratyaksh.healthykingdom.utils.LifeFluids
+import com.pratyaksh.healthykingdom.utils.Plasma
+import com.pratyaksh.healthykingdom.utils.PlasmaGroupInfo
+import com.pratyaksh.healthykingdom.utils.PlateletsGroupInfo
 import com.pratyaksh.healthykingdom.utils.Resource
 import com.pratyaksh.healthykingdom.utils.Routes
 import kotlinx.coroutines.CoroutineScope
@@ -55,17 +68,32 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     val coroutine = rememberCoroutineScope()
-    val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = viewModel.detailSheetUiState.value.sheetState)
+
+
+    val sheetState: BottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
+    var sheetPeekState: Dp by remember { mutableStateOf(0.dp) }
+    val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
 
     val mapView = remember {
         mutableStateOf(MapView(context))
     }
 
-    LaunchedEffect(viewModel.detailSheetUiState.value.isSheetCollapsed){
-        viewModel.detailSheetUiState.value.sheetState.let {
-            coroutine.launch {
-                if(viewModel.detailSheetUiState.value.isSheetCollapsed) it.collapse() else it.expand()
-            }
+
+    fun toggleSheetState(setCollapse: Boolean) {
+        coroutine.launch {
+            if (setCollapse) sheetState.collapse() else sheetState.expand()
+        }
+    }
+
+    fun toggleSheetPeek(setVisible: Boolean) {
+        sheetPeekState = if (setVisible) 90.dp else 0.dp
+    }
+
+    BackHandler {
+        if (sheetState.isExpanded) {
+            toggleSheetState(true)
+        } else if (sheetPeekState > 0.dp) {
+            toggleSheetPeek(true)
         }
     }
 
@@ -73,18 +101,18 @@ fun HomeScreen(
         Configuration.getInstance().userAgentValue = context.packageName
 
         getLoggedUser().collectLatest {
-            when(it){
+            when (it) {
                 is Resource.Error -> viewModel.toggleError(true)
                 is Resource.Loading -> viewModel.toggleLoadingScr(true)
                 is Resource.Success -> {
-                    if(it.data != null){
-                        viewModel.initScreen(it.data)
+                    if (it.data != null) {
+                        viewModel.initScreen( it.data, getFilters(viewModel) )
                         viewModel.toggleLoadingScr(false)
-                    }else{
+                    } else {
                         viewModel.toggleError(true)
                         delay(2000L)
-                        navController.navigate(Routes.SIGNUP_NAVGRAPH.route){
-                            popUpTo(Routes.HOME_NAVGRAPH.route){ inclusive = true }
+                        navController.navigate(Routes.SIGNUP_NAVGRAPH.route) {
+                            popUpTo(Routes.HOME_NAVGRAPH.route) { inclusive = true }
                         }
                     }
                 }
@@ -92,56 +120,74 @@ fun HomeScreen(
         }
     }
 
-    LaunchedEffect(key1 = viewModel.homeScreenUiState.value.hospitals.size, block = {
+    LaunchedEffect(key1 = viewModel.homeScreenUiState.value.hospitals.size, key2= viewModel.homeScreenUiState.value.selectedFilter, block = {
         Log.d("MapMarkerLogs", "Adding map markers")
 
-        viewModel.homeScreenUiState.value.hospitals.forEach {
-            mapView.value.addHospitalToMap(it) { marker ->
-                closeAllInfoWindow(viewModel)
-                viewModel.setBottomSheet(hospital = it)
-                viewModel.toggleSheetPeek(true)
-                mapView.value.controller.animateTo(it.location)
-                viewModel.addMarkerWithInfoWindow(marker = marker)
-            }.let {
-                viewModel.addNewMarker(it)
+        if(viewModel.homeScreenUiState.value.selectedFilter == MarkerFilters.HOSPITALS){
+            viewModel.homeScreenUiState.value.hospitals.forEach {
+                mapView.value.addHospitalToMap(it) { marker ->
+                    closeAllInfoWindow(viewModel)
+                    viewModel.setBottomSheet(hospital = it)
+                    toggleSheetState(false)
+                    mapView.value.controller.animateTo(it.location)
+                    viewModel.addMarkerWithInfoWindow(marker = marker)
+                }.let {
+                    viewModel.addNewMarker(it)
+                }
             }
         }
     })
 
+    LaunchedEffect(key1= viewModel.homeScreenUiState.value.selectedFilter){
 
-    if(!viewModel.homeScreenUiState.value.isError){
+        viewModel.homeScreenUiState.value.mapUiState.markers.forEach{
+            viewModel.removeMarker(it)
+        }
+
+
+
+    }
+
+
+    if (!viewModel.homeScreenUiState.value.isError) {
         BottomSheetScaffold(
             scaffoldState = scaffoldState,
             sheetContent = {
                 MarkerDetailsSheet(uiState = viewModel.detailSheetUiState.value, onCloseClick = {
-                    viewModel.toggleSheetPeek(false)
-                    viewModel.toggleBottomSheetState(true)
+                    toggleSheetPeek(false)
+                    toggleSheetState(true)
                     closeAllInfoWindow(viewModel)
                 },
                     onDetailsClick = {
                         viewModel.toggleLoadingScr(false)
-                        viewModel.toggleBottomSheetState(true)
+                        toggleSheetState(true)
                         navController.navigate(Routes.HOSPITAL_DETAILS_SCREEN.route + "/$it")
                     })
             },
-            sheetPeekHeight = viewModel.detailSheetUiState.value.sheetPeekState,
+            sheetPeekHeight = sheetPeekState,
             sheetElevation = 12.dp,
             sheetBackgroundColor = Color.Transparent,
-            sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
+            sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
         ) {
             Box(
                 Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 MapComponent(mapView) {
-                    coroutine.launch {
-                        viewModel.toggleBottomSheetState(true)
-                    }
-                    viewModel.toggleSheetPeek(viewModel.homeScreenUiState.value.markersWithInfoWindow.isNotEmpty())
-//                    closeAllInfoWindow(viewModel)
+                    toggleSheetState(true)
+                    toggleSheetPeek(viewModel.homeScreenUiState.value.markersWithInfoWindow.isNotEmpty())
                 }
-                MapActionButtons()
-                HomeScreenSearchbar(toggleMenu = { viewModel.toggleMainMenu(it) })
+                MapActionButtons({ Unit }, { Unit })
+                HomeScreenSearchbar(
+                    toggleMenu = {
+                        if (sheetState.isExpanded) {
+                            toggleSheetState(true)
+                            toggleSheetPeek(true)
+                        }
+                        viewModel.toggleMainMenu(it)
+                    },
+                    filterOptions = viewModel.homeScreenUiState.value.filters
+                )
 
                 if (viewModel.homeScreenUiState.value.isMainMenuVisible) {
                     HomeScreenDialogMenu(
@@ -168,7 +214,7 @@ fun HomeScreen(
                             }
                         },
                         onCloseMenu = { viewModel.toggleMainMenu(false) },
-                        userId= viewModel.homeScreenUiState.value.userId!!
+                        userId = viewModel.homeScreenUiState.value.userId!!
                     )
                 }
                 if (viewModel.homeScreenUiState.value.isLoading) {
@@ -183,14 +229,20 @@ fun HomeScreen(
                 }
             }
         }
-    } else{
+    } else {
         Box(
             Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
-        ){
-            Text("Unexpected Error :(\n Comeback Later", fontSize = 18.sp, fontWeight = FontWeight.Black, textAlign = TextAlign.Center)
+        ) {
+            Text(
+                "Unexpected Error :(\n Comeback Later",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Black,
+                textAlign = TextAlign.Center
+            )
         }
     }
+
 
 }
 
@@ -228,5 +280,81 @@ fun MapView.addHospitalToMap(
     invalidate()
     return newMarker
 
+}
+
+fun MapView.addRequestsToMap(
+    requests: List<Requests>,
+    onMarkerClick: (marker: Marker) -> Unit,
+): Marker {
+
+    val newMarker = Marker(this).apply {
+        position = hospital.location
+        icon = ResourcesCompat.getDrawable(context.resources, R.drawable.icmark_hospital, null)
+        title = hospital.name
+        setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        subDescription = "This is ${hospital.name} location on the map"
+        id = hospital.userId
+        Log.d("MarkerLogs", "Adding ${hospital.name}")
+        infoWindow = HospitalsCustomWindow(this@addHospitalToMap, hospital)
+        this.setOnMarkerClickListener { marker, mapView ->
+            onMarkerClick(marker)
+            showInfoWindow()
+            true
+        }
+    }
+
+    overlays.add(newMarker)
+    invalidate()
+    return newMarker
+
+}
+
+private fun getFilters(viewModel: HomeScreenViewModel): List<FilterOption> {
+
+    val filters = mutableListOf<FilterOption>()
+
+    for (item in MarkerFilters.values()) {
+
+        filters.add(
+            when (item) {
+                MarkerFilters.HOSPITALS -> FilterOption(
+                    type = item,
+                    title = "Hospitals",
+                    onClick = { viewModel.applyFilter(item) },
+                    item == viewModel.homeScreenUiState.value.selectedFilter
+                )
+
+                MarkerFilters.BLOODS -> FilterOption(
+                    type = item,
+                    title = "Bloods",
+                    onClick = { viewModel.applyFilter(item) },
+                    item == viewModel.homeScreenUiState.value.selectedFilter
+                )
+
+                MarkerFilters.PLASMA -> FilterOption(
+                    type = item,
+                    title = "PLASMA",
+                    onClick = { viewModel.applyFilter(item) },
+                    item == viewModel.homeScreenUiState.value.selectedFilter
+                )
+
+                MarkerFilters.PLATELETS -> FilterOption(
+                    type = item,
+                    title = "Platelets",
+                    onClick = { viewModel.applyFilter(item) },
+                    item == viewModel.homeScreenUiState.value.selectedFilter
+                )
+
+                MarkerFilters.REQUESTS -> FilterOption(
+                    type = item,
+                    title = "Requests",
+                    onClick = { viewModel.applyFilter(item) },
+                    item == viewModel.homeScreenUiState.value.selectedFilter
+                )
+            }
+        )
+    }
+
+    return filters
 }
 

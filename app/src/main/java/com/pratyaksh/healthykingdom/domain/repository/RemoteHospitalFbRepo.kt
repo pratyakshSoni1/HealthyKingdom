@@ -1,5 +1,6 @@
 package com.pratyaksh.healthykingdom.domain.repository
 
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.GeoPoint
 import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
 import com.pratyaksh.healthykingdom.domain.model.Users
@@ -13,6 +14,6 @@ interface RemoteHospitalFbRepo {
     suspend fun getHospitalsNearby(geoPoint: GeoPoint): List<Users.Hospital>
     suspend fun getHospitalById(id: String): HospitalsDto?
     suspend fun getHospitalByPhone(phone: String): HospitalsDto?
-    suspend fun addHospital(hospital: HospitalsDto): Boolean
+    suspend fun addHospital(hospital: HospitalsDto): Task<Void>
 
 }

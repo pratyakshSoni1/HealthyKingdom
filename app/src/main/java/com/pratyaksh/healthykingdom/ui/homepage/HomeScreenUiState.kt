@@ -1,6 +1,8 @@
 package com.pratyaksh.healthykingdom.ui.homepage
 
 import com.pratyaksh.healthykingdom.domain.model.Users
+import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.FilterOption
+import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.MarkerFilters
 import com.pratyaksh.healthykingdom.utils.AccountTypes
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
@@ -16,7 +18,9 @@ data class HomeScreenUiState(
     val isLoading: Boolean = false,
     val isError: Boolean = false,
     val isMainMenuVisible: Boolean = false,
-    val userId: String? = null
+    val userId: String? = null,
+    val filters: List<FilterOption> = emptyList(),
+    val selectedFilter: MarkerFilters
 
 ){
 

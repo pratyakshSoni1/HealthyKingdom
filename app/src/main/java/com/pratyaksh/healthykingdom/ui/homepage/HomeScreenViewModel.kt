@@ -12,12 +12,15 @@ import com.pratyaksh.healthykingdom.domain.model.getAvailGroups
 import com.pratyaksh.healthykingdom.domain.use_case.getFluidsData.GetFluidsByHospitalUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetAllHospitalsUseCase
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_detail_sheet.MarkerDetailSheetUiState
+import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.FilterOption
+import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.MarkerFilters
 import com.pratyaksh.healthykingdom.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
 import javax.inject.Inject
 
@@ -28,7 +31,9 @@ class HomeScreenViewModel @Inject constructor(
     val getHospitalFluidUseCase: GetFluidsByHospitalUseCase
 ): ViewModel() {
 
-    val homeScreenUiState = mutableStateOf( HomeScreenUiState() )
+    val homeScreenUiState = mutableStateOf( HomeScreenUiState(
+        selectedFilter = MarkerFilters.HOSPITALS
+    ) )
 
     val detailSheetUiState = mutableStateOf( MarkerDetailSheetUiState(
         hospitalName = "",
@@ -42,14 +47,14 @@ class HomeScreenViewModel @Inject constructor(
         getAllHospitals()
     }
 
-    fun initScreen(userId: String){
+    fun initScreen(userId: String, filters: List<FilterOption>){
         homeScreenUiState.value= homeScreenUiState.value.copy(
-            userId= userId
+            userId= userId,
+            filters = filters
         )
     }
 
     fun toggleError(setVisible: Boolean){
-        toggleBottomSheetState(true)
         homeScreenUiState.value = homeScreenUiState.value.copy(isError= setVisible, isLoading = false)
     }
 
@@ -133,6 +138,17 @@ class HomeScreenViewModel @Inject constructor(
             mapUiState = HomeScreenUiState.MapMarkersUiState(homeScreenUiState.value.mapUiState.markers + marker.position)
         )
     }
+    fun removeMarker(marker: GeoPoint){
+
+        val pos = homeScreenUiState.value.mapUiState.markers.indexOf(marker)
+
+        val leftList = homeScreenUiState.value.mapUiState.markers.subList(0, pos-1)
+        val rightList = homeScreenUiState.value.mapUiState.markers.subList(pos+1, homeScreenUiState.value.mapUiState.markers.size-1)
+
+        homeScreenUiState.value = homeScreenUiState.value.copy(
+            mapUiState = HomeScreenUiState.MapMarkersUiState(leftList + rightList )
+        )
+    }
 
     fun addMarkerWithInfoWindow(marker:Marker){
         homeScreenUiState.value = homeScreenUiState.value.copy(
@@ -147,31 +163,29 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     fun toggleMainMenu(setVisible: Boolean? = null ){
-        toggleBottomSheetState(true)
         homeScreenUiState.value = homeScreenUiState.value.copy(
             isMainMenuVisible = setVisible ?: !homeScreenUiState.value.isMainMenuVisible
         )
     }
 
     fun toggleLoadingScr(setVisible: Boolean){
-        toggleBottomSheetState(true)
         homeScreenUiState.value = homeScreenUiState.value.copy(
             isLoading = setVisible
         )
     }
 
-    fun toggleBottomSheetState(setToCollapse: Boolean){
-            detailSheetUiState.value = detailSheetUiState.value.copy (
-                isSheetCollapsed = setToCollapse
-            )
+    fun applyFilter(
+        filterType: MarkerFilters
+    ){
+
+        when(filterType){
+            MarkerFilters.HOSPITALS -> TODO()
+            MarkerFilters.BLOODS -> TODO()
+            MarkerFilters.PLASMA -> TODO()
+            MarkerFilters.PLATELETS -> TODO()
+            MarkerFilters.REQUESTS -> TODO()
+        }
+
     }
-
-    fun toggleSheetPeek(setVisible: Boolean){
-        detailSheetUiState.value = detailSheetUiState.value.copy(
-            sheetPeekState = if(setVisible) 90.dp else 0.dp
-        )
-    }
-
-
 
 }

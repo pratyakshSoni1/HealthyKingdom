@@ -1,6 +1,7 @@
 package com.pratyaksh.healthykingdom.data.repositories.remote
 
 import android.util.Log
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pratyaksh.healthykingdom.data.dto.AvailFluidsDto
 import com.pratyaksh.healthykingdom.data.dto.lifefluids.AvailBloodDto
@@ -28,15 +29,10 @@ class LifeFluidsRepoImpl(
     override suspend fun addHospitalLifeFluidData(
         hospitalId: String,
         lifeFluids: AvailFluidsDto
-    ): Boolean {
-        try{
-            fireStore.collection(Constants.Collections.LIFE_FLUIDS)
-                .document(hospitalId).set(lifeFluids).await()
-            return true
-        }catch (e: Exception){
-            e.printStackTrace()
-            throw e
-        }
+    ): Task<Void> {
+        return fireStore.collection(Constants.Collections.LIFE_FLUIDS)
+                .document(hospitalId).set(lifeFluids)
+
     }
 
     override suspend fun updateFluidByHospital(

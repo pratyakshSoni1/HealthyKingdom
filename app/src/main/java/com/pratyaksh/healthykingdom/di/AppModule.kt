@@ -6,10 +6,12 @@ import com.pratyaksh.healthykingdom.data.repositories.remote.FirebaseAmbulanceRe
 import com.pratyaksh.healthykingdom.data.repositories.remote.HospitalFbHospitalsRepoImpl
 import com.pratyaksh.healthykingdom.data.repositories.remote.LifeFluidsRepoImpl
 import com.pratyaksh.healthykingdom.data.repositories.remote.PublicUserFbRepoImpl
+import com.pratyaksh.healthykingdom.data.repositories.remote.RequestsRepoImpl
 import com.pratyaksh.healthykingdom.domain.repository.RemoteAmbulanceFbRepo
 import com.pratyaksh.healthykingdom.domain.repository.RemoteHospitalFbRepo
 import com.pratyaksh.healthykingdom.domain.repository.RemoteLifeFluidsFbRepo
 import com.pratyaksh.healthykingdom.domain.repository.RemotePublicUserFbRepo
+import com.pratyaksh.healthykingdom.domain.repository.RemoteRequestsRepo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,6 +21,14 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideRequestsRepo(
+        firestore: FirebaseFirestore
+    ): RemoteRequestsRepo{
+        return RequestsRepoImpl(firestore)
+    }
 
     @Provides
     @Singleton

@@ -1,5 +1,6 @@
 package com.pratyaksh.healthykingdom.domain.repository
 
+import com.google.android.gms.tasks.Task
 import com.pratyaksh.healthykingdom.data.dto.AvailFluidsDto
 import com.pratyaksh.healthykingdom.data.dto.lifefluids.AvailBloodDto
 import com.pratyaksh.healthykingdom.data.dto.lifefluids.AvailPlasmaDto
@@ -10,7 +11,7 @@ interface RemoteLifeFluidsFbRepo {
 
     suspend fun getLifeFluidFromHospital(hospitalId: String): AvailFluidsDto?
 
-    suspend fun addHospitalLifeFluidData(hospitalId: String, lifeFluids: AvailFluidsDto): Boolean
+    suspend fun addHospitalLifeFluidData(hospitalId: String, lifeFluids: AvailFluidsDto): Task<Void>
 
     suspend fun updateFluidByHospital(hospitalId: String, lifeFluids: AvailFluidsDto, lifeFluidToBeUpdated: LifeFluids): Boolean
 
