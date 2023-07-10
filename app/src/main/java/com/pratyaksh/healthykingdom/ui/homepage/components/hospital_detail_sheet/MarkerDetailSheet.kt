@@ -1,10 +1,26 @@
-package com.pratyaksh.healthykingdom.ui.homepage.components.marker_detail_sheet
+package com.pratyaksh.healthykingdom.ui.homepage.components.hospital_detail_sheet
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
@@ -21,34 +37,35 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pratyaksh.healthykingdom.R
 import com.pratyaksh.healthykingdom.ui.utils.GroupLabel
+import com.pratyaksh.healthykingdom.ui.utils.IconButton
 import com.pratyaksh.healthykingdom.utils.BloodGroups
 import com.pratyaksh.healthykingdom.utils.LifeFluids
-import com.pratyaksh.healthykingdom.utils.getOnlyGroup
-import com.pratyaksh.healthykingdom.ui.utils.IconButton
 import com.pratyaksh.healthykingdom.utils.PlasmaGroupInfo
+import com.pratyaksh.healthykingdom.utils.getOnlyGroup
 
 @Composable
-fun MarkerDetailsSheet(
+fun HospitalDetailsSheet(
     uiState: MarkerDetailSheetUiState,
-    onDetailsClick:(hospitalId: String)->Unit,
-    onCloseClick:()->Unit
-){
+    onDetailsClick: (hospitalId: String) -> Unit,
+    onCloseClick: () -> Unit
+) {
 
     Column(
-        modifier= Modifier
+        modifier = Modifier
             .fillMaxWidth()
             .background(Color.White)
             .padding(bottom = 16.dp, start = 14.dp, end = 14.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.Start
-    ){
-        Box(modifier=Modifier.fillMaxWidth(), contentAlignment = Alignment.Center){
+    ) {
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             Box(
                 Modifier
                     .width(64.dp)
                     .height(4.dp)
                     .clip(RoundedCornerShape(4.dp))
-                    .background(Color.LightGray))
+                    .background(Color.LightGray)
+            )
 
             Box(
                 Modifier.fillMaxWidth(),
@@ -61,16 +78,18 @@ fun MarkerDetailsSheet(
                 )
             }
         }
-        if(uiState.isLoading){
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .fillMaxHeight(0.8f)
-                    .padding(top = 18.dp, bottom = 26.dp, start = 14.dp, end = 14.dp),
-                color= Color.Blue
-            )
-        }else if(uiState.isError){
+        if (uiState.isLoading) {
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxHeight(0.8f)
+                        .padding(top = 18.dp, bottom = 26.dp, start = 14.dp, end = 14.dp),
+                    color = Color.Blue
+                )
+            }
+        } else if (uiState.isError) {
             Box(
-                modifier= Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Column {
@@ -89,7 +108,7 @@ fun MarkerDetailsSheet(
                     )
                 }
             }
-        }else{
+        } else {
             Box(contentAlignment = Alignment.Center) {
                 Column(
                     modifier = Modifier
@@ -114,21 +133,85 @@ fun MarkerDetailsSheet(
                 }
             }
             Spacer(modifier = Modifier.height(12.dp))
-            FluidGroupList(type = LifeFluids.BLOOD, fluidsAvailable = uiState.availBloodTypes.getOnlyGroup() )
+            FluidGroupList(
+                type = LifeFluids.BLOOD,
+                fluidsAvailable = uiState.availBloodTypes.getOnlyGroup()
+            )
             Spacer(modifier = Modifier.height(8.dp))
-            FluidGroupList(plasmaAvailable = uiState.availPlasmaTypes )
+            FluidGroupList(plasmaAvailable = uiState.availPlasmaTypes)
             Spacer(modifier = Modifier.height(8.dp))
-            FluidGroupList(type = LifeFluids.PLATELETS, fluidsAvailable = uiState.availPlateletsTypes.getOnlyGroup() )
+            FluidGroupList(
+                type = LifeFluids.PLATELETS,
+                fluidsAvailable = uiState.availPlateletsTypes.getOnlyGroup()
+            )
             Spacer(modifier = Modifier.height(16.dp))
 
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0x4DFFBF00))
+                    .padding(8.dp)
+
+            ) {
+                if (uiState.requests != null) {
+                    Column {
+                        Text(
+                            text = "Requests",
+                            modifier = Modifier
+                                .padding(top = 6.dp)
+                                .fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        FluidGroupList(
+                            type = LifeFluids.BLOOD,
+                            fluidsAvailable = uiState.requests.blood
+                        )
+                        Spacer(Modifier.height(6.dp))
+                        FluidGroupList(
+                            type = LifeFluids.PLATELETS,
+                            fluidsAvailable = uiState.requests.platelets
+                        )
+                        Spacer(Modifier.height(6.dp))
+                        FluidGroupList(plasmaAvailable = uiState.requests.plasma)
+                        Spacer(Modifier.height(8.dp))
+                    }
+                } else {
+                    Text(
+                        text = "No Requests",
+                        fontSize = 18.sp,
+                        color = Color(0x3E000000),
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+
             Button(
-                onClick={ onDetailsClick(uiState.hospitalId) },
-                modifier= Modifier.fillMaxWidth(),
+                onClick = { onDetailsClick(uiState.hospitalId) },
+                modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(Color(0xFF0027FF)),
                 shape = RoundedCornerShape(100.dp)
-            ){
-                Text( text= "Details", color= Color.White, modifier= Modifier.weight(1f), textAlign = TextAlign.Center   )
-                Icon(imageVector = Icons.Rounded.KeyboardArrowRight, contentDescription = null , tint = Color.White)
+            ) {
+                Text(
+                    text = "Details",
+                    color = Color.White,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center
+                )
+                Icon(
+                    imageVector = Icons.Rounded.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = Color.White
+                )
             }
 
 
@@ -139,12 +222,12 @@ fun MarkerDetailsSheet(
 }
 
 @Composable
-private fun FluidGroupList(type: LifeFluids, fluidsAvailable: List<BloodGroups>){
+private fun FluidGroupList(type: LifeFluids, fluidsAvailable: List<BloodGroups>) {
 
     var painterResId: Int
     var description: String
 
-    when(type){
+    when (type) {
         LifeFluids.PLASMA -> {
             painterResId = R.drawable.ic_plasma
             description = "available plasma groups"
@@ -165,28 +248,28 @@ private fun FluidGroupList(type: LifeFluids, fluidsAvailable: List<BloodGroups>)
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
-    ){
+    ) {
         Image(
-            painter = painterResource( painterResId ),
+            painter = painterResource(painterResId),
             contentDescription = description,
             modifier = Modifier.size(43.dp)
         )
 
         Text(
-            text=" :",
+            text = " :",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            color= Color.Black
+            color = Color.Black
         )
         Spacer(Modifier.width(8.dp))
-        if(fluidsAvailable.isNotEmpty()){
-            for( fluid in fluidsAvailable ){
-                GroupLabel(type = type, group = fluid )
+        if (fluidsAvailable.isNotEmpty()) {
+            for (fluid in fluidsAvailable) {
+                GroupLabel(type = type, group = fluid)
                 Spacer(Modifier.width(8.dp))
             }
-        }else{
+        } else {
             Icon(
-                painter = painterResource( R.drawable.ic_visibility ),
+                painter = painterResource(R.drawable.ic_visibility),
                 contentDescription = "not available",
                 modifier = Modifier.size(24.dp),
                 tint = Color.Red
@@ -198,33 +281,33 @@ private fun FluidGroupList(type: LifeFluids, fluidsAvailable: List<BloodGroups>)
 }
 
 @Composable
-private fun FluidGroupList(plasmaAvailable: List<PlasmaGroupInfo>){
+private fun FluidGroupList(plasmaAvailable: List<PlasmaGroupInfo>) {
 
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
-    ){
+    ) {
         Image(
-            painter = painterResource( R.drawable.ic_plasma ),
+            painter = painterResource(R.drawable.ic_plasma),
             contentDescription = "available plasma groups",
             modifier = Modifier.size(43.dp)
         )
         Text(
-            text=" :",
+            text = " :",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            color= Color.Black
+            color = Color.Black
         )
         Spacer(Modifier.width(8.dp))
-        if(plasmaAvailable.isNotEmpty()){
-            for( fluid in plasmaAvailable ){
-                GroupLabel( plasma = fluid.type )
+        if (plasmaAvailable.isNotEmpty()) {
+            for (fluid in plasmaAvailable) {
+                GroupLabel(plasma = fluid.type)
                 Spacer(Modifier.width(8.dp))
             }
-        }else{
+        } else {
             Icon(
-                painter = painterResource( R.drawable.ic_visibility ),
+                painter = painterResource(R.drawable.ic_visibility),
                 contentDescription = "not available",
                 modifier = Modifier.size(24.dp),
                 tint = Color.Red

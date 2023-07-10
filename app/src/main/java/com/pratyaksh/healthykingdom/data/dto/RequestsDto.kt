@@ -5,7 +5,7 @@ import com.pratyaksh.healthykingdom.data.dto.request_dtos.PlasmaReqDto
 import com.pratyaksh.healthykingdom.data.dto.request_dtos.PlateletsReqDto
 import com.pratyaksh.healthykingdom.domain.model.Requests
 import com.pratyaksh.healthykingdom.utils.BloodGroups
-import com.pratyaksh.healthykingdom.utils.Plasma
+import com.pratyaksh.healthykingdom.utils.PlasmaGroupInfo
 
 data class RequestsDto (
 
@@ -20,7 +20,7 @@ fun RequestsDto.toRequests(): Requests {
 
     val bloodReq = mutableListOf<BloodGroups>()
     val plateletsReq = mutableListOf<BloodGroups>()
-    val plasmaReq = mutableListOf<Plasma>()
+    val plasmaReq = mutableListOf<PlasmaGroupInfo>()
 
     bloods.run {
         if(a_pos) bloodReq.add(BloodGroups.A_POSITIVE)
@@ -45,10 +45,10 @@ fun RequestsDto.toRequests(): Requests {
     }
 
     plasma.run {
-        if(a_group) plasmaReq.add(Plasma.PLASMA_A)
-        if(b_group) plasmaReq.add(Plasma.PLASMA_B)
-        if(ab_group) plasmaReq.add(Plasma.PLASMA_AB)
-        if(o_group) plasmaReq.add(Plasma.PLASMA_O)
+        if(a_group) plasmaReq.add(PlasmaGroupInfo.Plasma_A)
+        if(b_group) plasmaReq.add(PlasmaGroupInfo.Plasma_B)
+        if(ab_group) plasmaReq.add(PlasmaGroupInfo.Plasma_AB)
+        if(o_group) plasmaReq.add(PlasmaGroupInfo.Plasma_O)
     }
 
 
@@ -56,6 +56,6 @@ fun RequestsDto.toRequests(): Requests {
         blood = bloodReq,
         platelets = plateletsReq,
         plasma = plasmaReq,
-        hospitalId= hospitalId!!
+        hospitalId = hospitalId!!
     )
 }

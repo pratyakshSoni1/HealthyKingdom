@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.FilterOption
+import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.HomeScreenFilters
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.MarkerFilters
 import com.pratyaksh.healthykingdom.ui.utils.IconButton
 import com.pratyaksh.healthykingdom.utils.Routes
@@ -25,7 +26,9 @@ import com.pratyaksh.healthykingdom.utils.Routes
 @Composable
 fun HomeScreenSearchbar(
     toggleMenu:(setVisible: Boolean)->Unit,
-    filterOptions: List<FilterOption>
+    selectedFilter: MarkerFilters,
+    filterOptions: List<FilterOption>,
+    onToggleFilter:(MarkerFilters)->Unit
 ) {
 
     Box(
@@ -34,7 +37,9 @@ fun HomeScreenSearchbar(
             .fillMaxWidth()
             .fillMaxHeight(),
     ) {
-        Column(){
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
             Row(
                 modifier = Modifier
                     .fillMaxWidth(0.95f)
@@ -67,13 +72,16 @@ fun HomeScreenSearchbar(
                     },
                     backgroundColor = Color(0xFFFF9800),
                     iconColor = Color.White,
-                    size = 2.5.dp
+                    size = 2.dp
                 )
 
             }
             Spacer(Modifier.height(8.dp))
 
-            MarkerFilters(filterOptions = filterOptions)
+            HomeScreenFilters(
+                filterOptions = filterOptions, selectedFilter = selectedFilter,
+                onClick= onToggleFilter
+            )
         }
     }
 

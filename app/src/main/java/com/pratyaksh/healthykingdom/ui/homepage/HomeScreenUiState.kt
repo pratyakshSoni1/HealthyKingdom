@@ -1,5 +1,6 @@
 package com.pratyaksh.healthykingdom.ui.homepage
 
+import com.pratyaksh.healthykingdom.domain.model.Requests
 import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.FilterOption
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.MarkerFilters
@@ -20,12 +21,13 @@ data class HomeScreenUiState(
     val isMainMenuVisible: Boolean = false,
     val userId: String? = null,
     val filters: List<FilterOption> = emptyList(),
-    val selectedFilter: MarkerFilters
+    val selectedFilter: MarkerFilters,
+    val requests: List<Requests> = emptyList()
 
 ){
 
     data class MapMarkersUiState(
-        val markers: List<GeoPoint>
+        val markers: List<Marker>
     )
 
     data class MapActionButtonsUiState(

@@ -1,5 +1,6 @@
 package com.pratyaksh.healthykingdom.data.repositories.test
 
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.GeoPoint
 import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
 import com.pratyaksh.healthykingdom.domain.model.Users
@@ -52,7 +53,7 @@ class TestRepositoryImpl: RemoteHospitalFbRepo {
         TODO("Not yet implemented")
     }
 
-    override suspend fun addHospital(hospital: HospitalsDto): Boolean {
+    override suspend fun addHospital(hospital: HospitalsDto): Task<Void> {
         TODO("Not yet implemented")
     }
 

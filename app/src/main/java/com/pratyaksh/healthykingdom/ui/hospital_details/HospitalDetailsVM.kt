@@ -15,6 +15,8 @@ import com.pratyaksh.healthykingdom.utils.PlateletsGroupInfo
 import com.pratyaksh.healthykingdom.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,9 +32,20 @@ class HospitalDetailsVM @Inject constructor(
         private set
 
     fun fetchHospital(id: String){
-        viewModelScope.launch {
-            uiState.value = uiState.value.copy(hospital = getHospitalById(id))
-        }
+            getHospitalById(id).onEach {
+                when(it){
+                    is Resource.Error -> {
+                        toggleError(true)
+                    }
+                    is Resource.Loading -> {
+                        toggleLoading(true)
+                    }
+                    is Resource.Success -> {
+                        toggleLoading(false)
+                        uiState.value = uiState.value.copy(hospital = it.data)
+                    }
+                }
+            }.launchIn(viewModelScope)
 
         viewModelScope.launch {
             getHospitalFluidUseCase(id).collectLatest {
