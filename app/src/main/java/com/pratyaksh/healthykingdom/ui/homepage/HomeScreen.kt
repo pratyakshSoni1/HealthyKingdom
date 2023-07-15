@@ -118,77 +118,32 @@ fun HomeScreen(
         }
     }
 
-    LaunchedEffect(key1 = viewModel.homeScreenUiState.value.requests.size, block = {
-
-        if( viewModel.homeScreenUiState.value.selectedFilter == MarkerFilters.REQUESTS ){
-
-            viewModel.homeScreenUiState.value.mapUiState.markers.forEach {
-                mapView.value.overlays.remove(it)
-                viewModel.removeMarker(it)
-            }
-            Log.d("MapMarkerLogs", "Removed OLD markers")
-
-            viewModel.clearHospitalList()
-            viewModel.homeScreenUiState.value.requests.forEach {
-                mapView.value.addRequestsToMap(
-                    requests = viewModel.homeScreenUiState.value.requests,
-                    onMarkerClick = { marker ->
-                        closeAllInfoWindow(viewModel)
-                        viewModel.setBottomSheet(
-                            hospital = viewModel.homeScreenUiState.value.hospitals
-                                .find { hosp ->
-                                    hosp.userId == it.hospitalId
-                                }!!
-                        )
-                        toggleSheetState(false)
-                        mapView.value.controller.animateTo(marker.position)
-                        viewModel.addMarkerWithInfoWindow(marker = marker)
-                        viewModel.addNewMarker(marker)
-                    },
-                    getHospitalNameAndLoc = {
-                        lateinit var reqHosp: Users.Hospital
-                        runBlocking {
-                            viewModel.getHospital(it).last().let {
-                                reqHosp = it.data!!
-                            }
-                        }
-                        reqHosp
-                    }
-                )
-            }
-
-        }
-
-    })
-
     LaunchedEffect(
-        key1 = viewModel.homeScreenUiState.value.hospitals.size,
+        key1 = viewModel.homeScreenUiState.value.selectedFilter,
+        key2 = viewModel.homeScreenUiState.value.requests.size,
+        key3 = viewModel.homeScreenUiState.value.hospitals.size,
         block = {
-            Log.d("MapMarkerLogs", "Adding map markers")
-
-            viewModel.homeScreenUiState.value.mapUiState.markers.forEach {
-                mapView.value.overlays.remove(it)
-                viewModel.removeMarker(it)
-            }
-            Log.d("MapMarkerLogs", "Removed OLD markers")
-
-            if (viewModel.homeScreenUiState.value.selectedFilter != MarkerFilters.REQUESTS) {
-                viewModel.homeScreenUiState.value.hospitals.forEach {
-                    mapView.value.addHospitalToMap(
-                        it,
-                        viewModel.homeScreenUiState.value.selectedFilter
-                    ) { marker ->
-                        closeAllInfoWindow(viewModel)
-                        viewModel.setBottomSheet(hospital = it)
-                        toggleSheetState(false)
-                        mapView.value.controller.animateTo(it.location)
-                        viewModel.addMarkerWithInfoWindow(marker = marker)
-                    }.let {
-                        viewModel.addNewMarker(it)
-                    }
-                }
+            Log.d("DEBUG", "In LaunchEffect")
+            if( viewModel.renderMapAgainOnMarkerChange ){
+                Log.d("DEBUG", "Aplly mapFilter Effect")
+                mapView.value.applyFilterToMap(
+                    viewModel = viewModel,
+                    onToggleSheetState = { toggleSheetState( it ) }
+                )
+                Log.d("DEBUG", "Added markers: ${viewModel.homeScreenUiState.value.mapUiState.markers.size}")
+            }else {
+                Log.d("DEBUG", "SKIP mapFilter Effect")
             }
         })
+
+//    LaunchedEffect(
+//        key1 = viewModel.homeScreenUiState.value.hospitals.size,
+//        block = {
+//            mapView.value.applyFilterToMap(
+//                viewModel = viewModel,
+//                onToggleSheetState = { toggleSheetState( it ) }
+//            )
+//        })
 
     if (!viewModel.homeScreenUiState.value.isError) {
         BottomSheetScaffold(
@@ -233,7 +188,20 @@ fun HomeScreen(
                     },
                     filterOptions = viewModel.homeScreenUiState.value.filters,
                     selectedFilter = viewModel.homeScreenUiState.value.selectedFilter,
-                    onToggleFilter = { viewModel.applyFilter(it) }
+                    onToggleFilter = {newFilter ->
+                        viewModel.toggleMapRender(false)
+                        viewModel.applyFilter(newFilter).invokeOnCompletion { _ ->
+                            Log.d("DEBUG","ViewModel filtered data")
+                            viewModel.toggleMapRender(true)
+                            viewModel.toggleFilter(newFilter)
+                            Log.d("DEBUG","In Invoke Completion")
+//                            mapView.value.applyFilterToMap(
+//                                viewModel = viewModel,
+//                                onToggleSheetState = { toggleSheetState(it) }
+//                            )
+//                            Log.d("DEBUG","Map changes applied")
+                        }
+                    }
                 )
 
                 if (viewModel.homeScreenUiState.value.isMainMenuVisible) {
@@ -320,6 +288,7 @@ fun MapView.addHospitalToMap(
     onMarkerClick: (marker: Marker) -> Unit,
 ): Marker {
 
+    Log.d("MarkerLogs", "Start Adding ${hospital.name}")
     val newMarker = Marker(this).apply {
         position = hospital.location
         icon = ResourcesCompat.getDrawable(
@@ -339,28 +308,29 @@ fun MapView.addHospitalToMap(
         id = hospital.userId
         Log.d("MarkerLogs", "Adding ${hospital.name}")
         infoWindow = HospitalsCustomWindow(this@addHospitalToMap, hospital)
-        this.setOnMarkerClickListener { marker, mapView ->
+        Log.d("DEBUG", "Added info window")
+        setOnMarkerClickListener { marker, mapView ->
             onMarkerClick(marker)
             showInfoWindow()
             true
         }
+        Log.d("DEBUG", "Added listener")
     }
 
     overlays.add(newMarker)
+    Log.d("DEBUG", "Added overlay")
     invalidate()
     return newMarker
 
 }
 
 fun MapView.addRequestsToMap(
-    requests: List<Requests>,
+    request: Requests,
     onMarkerClick: (marker: Marker) -> Unit,
     getHospitalNameAndLoc: (id: String) -> Users.Hospital
-): List<Marker> {
+): Marker {
 
-    val reqMarks = mutableListOf<Marker>()
-    for (req in requests) {
-        val hospital = getHospitalNameAndLoc(req.hospitalId)
+        val hospital = getHospitalNameAndLoc(request.hospitalId)
         val newMarker = Marker(this).apply {
             position = hospital.location
             icon = ResourcesCompat.getDrawable(context.resources, R.drawable.icmark_request, null)
@@ -379,9 +349,7 @@ fun MapView.addRequestsToMap(
 
         overlays.add(newMarker)
         invalidate()
-        reqMarks.add(newMarker)
-    }
-    return reqMarks
+        return newMarker
 }
 
 private fun getFilters(): List<FilterOption> {
@@ -426,5 +394,73 @@ private fun getFilters(): List<FilterOption> {
     }
 
     return filters
+}
+
+private fun MapView.applyFilterToMap(
+    viewModel: HomeScreenViewModel,
+    onToggleSheetState:(Boolean)->Unit
+){
+    val selectedFilter = viewModel.homeScreenUiState.value.selectedFilter
+    viewModel.homeScreenUiState.value.mapUiState.markers.forEach {
+        overlays.remove(it)
+        viewModel.removeMarker(it)
+    }
+    invalidate()
+    Log.d("MapMarkerLogs", "Removed OLD markers")
+
+    Log.d("DEBUG", "TO FILTER: ${selectedFilter}")
+    if( selectedFilter == MarkerFilters.REQUESTS ){
+        viewModel.clearHospitalList()
+        viewModel.homeScreenUiState.value.requests.forEach {
+            addRequestsToMap(
+                request= it,
+                onMarkerClick = { marker ->
+                    closeAllInfoWindow(viewModel)
+                    viewModel.setBottomSheet(
+                        hospital = viewModel.homeScreenUiState.value.hospitals
+                            .find { hosp ->
+                                hosp.userId == it.hospitalId
+                            }!!
+                    )
+                    onToggleSheetState(false)
+                    controller.animateTo(marker.position)
+                    viewModel.addMarkerWithInfoWindow(marker = marker)
+                },
+                getHospitalNameAndLoc = {
+                    lateinit var reqHosp: Users.Hospital
+                    runBlocking {
+                        viewModel.getHospital(it).last().let {
+                            reqHosp = it.data!!
+                        }
+                    }
+                    reqHosp
+                }
+            ).let{
+                viewModel.addNewMarker(it)
+            }
+        }
+
+    }else {
+
+        Log.d("DEBUG", "Going to add non-rq markers")
+        viewModel.homeScreenUiState.value.hospitals.forEach {
+            Log.d("DEBUG", "Going to Add ${it}")
+            addHospitalToMap(
+                it,
+                viewModel.homeScreenUiState.value.selectedFilter
+            ) { marker ->
+                closeAllInfoWindow(viewModel)
+                viewModel.setBottomSheet(hospital = it)
+                onToggleSheetState(false)
+                controller.animateTo(it.location)
+                viewModel.addMarkerWithInfoWindow(marker = marker)
+            }.let {
+                viewModel.addNewMarker(it)
+            }
+        }
+
+    }
+
+
 }
 

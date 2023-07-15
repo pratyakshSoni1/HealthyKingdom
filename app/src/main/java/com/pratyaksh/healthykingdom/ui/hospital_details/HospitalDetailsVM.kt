@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.domain.use_case.getFluidsData.GetFluidsByHospitalUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetHospitalByIdUseCase
+import com.pratyaksh.healthykingdom.domain.use_case.get_requests.GetRequestByHospitalUseCase
 import com.pratyaksh.healthykingdom.utils.BloodGroupsInfo
 import com.pratyaksh.healthykingdom.utils.LifeFluids
 import com.pratyaksh.healthykingdom.utils.PlasmaGroupInfo
@@ -15,6 +16,7 @@ import com.pratyaksh.healthykingdom.utils.PlateletsGroupInfo
 import com.pratyaksh.healthykingdom.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -24,15 +26,16 @@ import javax.inject.Inject
 @HiltViewModel
 class HospitalDetailsVM @Inject constructor(
     private val getHospitalById: GetHospitalByIdUseCase,
-    private val getHospitalFluidUseCase: GetFluidsByHospitalUseCase
+    private val getHospitalFluidUseCase: GetFluidsByHospitalUseCase,
+    private val getRequestByHospitalUseCase: GetRequestByHospitalUseCase
 ): ViewModel() {
 
 //    val hospital: MutableState<Users.Hospital?> = mutableStateOf(null)
     var uiState: MutableState<HospitalDetailsUiState> = mutableStateOf(HospitalDetailsUiState())
         private set
 
-    fun fetchHospital(id: String){
-            getHospitalById(id).onEach {
+    fun fetchHospital(hospitalId: String){
+            getHospitalById(hospitalId).onEach {
                 when(it){
                     is Resource.Error -> {
                         toggleError(true)
@@ -48,7 +51,7 @@ class HospitalDetailsVM @Inject constructor(
             }.launchIn(viewModelScope)
 
         viewModelScope.launch {
-            getHospitalFluidUseCase(id).collectLatest {
+            getHospitalFluidUseCase(hospitalId).collectLatest {
                 when(it){
                     is Resource.Error -> toggleError(true)
                     is Resource.Loading -> toggleLoading(true)
@@ -65,6 +68,18 @@ class HospitalDetailsVM @Inject constructor(
                             toggleError(true)
                         }
                     }
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            getRequestByHospitalUseCase(hospitalId).last().let {
+                if(it is Resource.Success){
+                    uiState.value = uiState.value.copy(
+                        requests = it.data
+                    )
+                }else{
+                    toggleError(true)
                 }
             }
         }

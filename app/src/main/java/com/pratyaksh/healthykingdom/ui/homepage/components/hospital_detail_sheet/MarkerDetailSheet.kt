@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,12 +35,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pratyaksh.healthykingdom.R
-import com.pratyaksh.healthykingdom.ui.utils.GroupLabel
+import com.pratyaksh.healthykingdom.ui.utils.FluidGroupList
 import com.pratyaksh.healthykingdom.ui.utils.IconButton
-import com.pratyaksh.healthykingdom.utils.BloodGroups
 import com.pratyaksh.healthykingdom.utils.LifeFluids
-import com.pratyaksh.healthykingdom.utils.PlasmaGroupInfo
-import com.pratyaksh.healthykingdom.utils.getOnlyGroup
+import com.pratyaksh.healthykingdom.utils.toBloodGroupsInfo
 
 @Composable
 fun HospitalDetailsSheet(
@@ -135,14 +132,19 @@ fun HospitalDetailsSheet(
             Spacer(modifier = Modifier.height(12.dp))
             FluidGroupList(
                 type = LifeFluids.BLOOD,
-                fluidsAvailable = uiState.availBloodTypes.getOnlyGroup()
+                fluidsAvailable = uiState.availBloodTypes
             )
             Spacer(modifier = Modifier.height(8.dp))
-            FluidGroupList(plasmaAvailable = uiState.availPlasmaTypes)
+            FluidGroupList(
+                plasmaAvailable = uiState.availPlasmaTypes,
+                onClick = { Unit }
+            )
             Spacer(modifier = Modifier.height(8.dp))
             FluidGroupList(
                 type = LifeFluids.PLATELETS,
-                fluidsAvailable = uiState.availPlateletsTypes.getOnlyGroup()
+                fluidsAvailable = uiState.availPlateletsTypes.map {
+                    it.toBloodGroupsInfo()
+                }
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -177,7 +179,9 @@ fun HospitalDetailsSheet(
                             fluidsAvailable = uiState.requests.platelets
                         )
                         Spacer(Modifier.height(6.dp))
-                        FluidGroupList(plasmaAvailable = uiState.requests.plasma)
+                        FluidGroupList(
+                            plasmaAvailable = uiState.requests.plasma
+                        )
                         Spacer(Modifier.height(8.dp))
                     }
                 } else {
@@ -221,101 +225,4 @@ fun HospitalDetailsSheet(
 
 }
 
-@Composable
-private fun FluidGroupList(type: LifeFluids, fluidsAvailable: List<BloodGroups>) {
-
-    var painterResId: Int
-    var description: String
-
-    when (type) {
-        LifeFluids.PLASMA -> {
-            painterResId = R.drawable.ic_plasma
-            description = "available plasma groups"
-        }
-
-        LifeFluids.BLOOD -> {
-            painterResId = R.drawable.ic_blood
-            description = "available plasma groups"
-        }
-
-        LifeFluids.PLATELETS -> {
-            painterResId = R.drawable.ic_platelets
-            description = "available platelet groups"
-        }
-    }
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
-    ) {
-        Image(
-            painter = painterResource(painterResId),
-            contentDescription = description,
-            modifier = Modifier.size(43.dp)
-        )
-
-        Text(
-            text = " :",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
-        Spacer(Modifier.width(8.dp))
-        if (fluidsAvailable.isNotEmpty()) {
-            for (fluid in fluidsAvailable) {
-                GroupLabel(type = type, group = fluid)
-                Spacer(Modifier.width(8.dp))
-            }
-        } else {
-            Icon(
-                painter = painterResource(R.drawable.ic_visibility),
-                contentDescription = "not available",
-                modifier = Modifier.size(24.dp),
-                tint = Color.Red
-            )
-        }
-    }
-
-
-}
-
-@Composable
-private fun FluidGroupList(plasmaAvailable: List<PlasmaGroupInfo>) {
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
-    ) {
-        Image(
-            painter = painterResource(R.drawable.ic_plasma),
-            contentDescription = "available plasma groups",
-            modifier = Modifier.size(43.dp)
-        )
-        Text(
-            text = " :",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
-        Spacer(Modifier.width(8.dp))
-        if (plasmaAvailable.isNotEmpty()) {
-            for (fluid in plasmaAvailable) {
-                GroupLabel(plasma = fluid.type)
-                Spacer(Modifier.width(8.dp))
-            }
-        } else {
-            Icon(
-                painter = painterResource(R.drawable.ic_visibility),
-                contentDescription = "not available",
-                modifier = Modifier.size(24.dp),
-                tint = Color.Red
-            )
-
-        }
-    }
-
-
-}
 

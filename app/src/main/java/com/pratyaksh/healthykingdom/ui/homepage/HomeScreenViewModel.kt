@@ -18,20 +18,13 @@ import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.Filter
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.MarkerFilters
 import com.pratyaksh.healthykingdom.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
 @HiltViewModel
 @OptIn(ExperimentalMaterialApi::class)
@@ -49,6 +42,12 @@ class HomeScreenViewModel @Inject constructor(
         )
     )
 
+    var renderMapAgainOnMarkerChange = true
+        private set
+    fun toggleMapRender(renderAgain: Boolean){
+        renderMapAgainOnMarkerChange = renderAgain
+    }
+
     val detailSheetUiState = mutableStateOf(
         MarkerDetailSheetUiState(
             hospitalName = "",
@@ -59,27 +58,8 @@ class HomeScreenViewModel @Inject constructor(
         )
     )
 
-    fun check(){
-
-        runBlocking {
-            withContext(this.coroutineContext){
-                test()
-            }
-        }
-        Log.d("TEST","Should be bye")
-
-    }
-
-    fun test(){
-        CoroutineScope(Dispatchers.IO).launch{
-            delay(2000)
-            Log.d("TEST", "HOIII")
-        }
-    }
-
     init {
         getAllHospitals()
-        check()
     }
 
     fun initScreen(userId: String, filters: List<FilterOption>) {
@@ -94,7 +74,7 @@ class HomeScreenViewModel @Inject constructor(
             homeScreenUiState.value.copy(isError = setVisible, isLoading = false)
     }
 
-    private fun getAllHospitals(inCoroutine: Boolean = true) {
+    private fun getAllHospitals() {
 
         getAllHospitalsUseCase().onEach {
             when (it) {
@@ -111,6 +91,7 @@ class HomeScreenViewModel @Inject constructor(
                     homeScreenUiState.value = homeScreenUiState.value.copy(
                         isLoading = true
                     )
+                    Log.d("DEBUG", "Hospitals Loading")
                 }
 
                 is Resource.Error -> {
@@ -175,14 +156,17 @@ class HomeScreenViewModel @Inject constructor(
                     )
                     homeScreenUiState.value.requests.forEach {
                         toggleLoadingScr(true)
-                        try{
+                        try {
                             addHospitalToList(getHospital(it.hospitalId).last().data!!)
-                        }catch(e: Exception){
+                        } catch (e: Exception) {
                             e.printStackTrace()
                         }
                         toggleLoadingScr(false)
                     }
-                    Log.d("MapMarkerLogs", "Requests fetched & filtered:\n ${homeScreenUiState.value.hospitals}")
+                    Log.d(
+                        "MapMarkerLogs",
+                        "Requests fetched & filtered:\n ${homeScreenUiState.value.hospitals}"
+                    )
                 }
             }
         }.launchIn(viewModelScope)
@@ -248,10 +232,11 @@ class HomeScreenViewModel @Inject constructor(
         val pos = homeScreenUiState.value.mapUiState.markers.indexOf(marker)
         val listSize = homeScreenUiState.value.mapUiState.markers.size
 
-        val leftList = homeScreenUiState.value.mapUiState.markers.subList(0, if (pos > 0) pos - 1 else 0)
+        val leftList =
+            homeScreenUiState.value.mapUiState.markers.subList(0, if (pos > 0) pos - 1 else 0)
 
         val rightList =
-            if (pos > listSize || homeScreenUiState.value.mapUiState.markers.isEmpty() || listSize <= 1 )
+            if (pos > listSize || homeScreenUiState.value.mapUiState.markers.isEmpty() || listSize <= 1)
                 emptyList()
             else
                 homeScreenUiState.value.mapUiState.markers.subList(
@@ -288,19 +273,45 @@ class HomeScreenViewModel @Inject constructor(
         )
     }
 
-    fun filterHospitalsByAvailFluid(fluidType: LifeFluids? = null) {
+    suspend fun filterHospitalsByAvailFluid(fluidType: LifeFluids? = null) {
+
+        toggleLoadingScr(true)
         val reqHospitals = mutableListOf<Users.Hospital>()
-        getAllHospitals( false )
+        clearHospitalList()
+        Log.d("DEBUG", "Current hospitals ${homeScreenUiState.value.hospitals.size}")
+        getAllHospitalsUseCase().last().let {
+            if (it is Resource.Success) {
+                homeScreenUiState.value = homeScreenUiState.value.copy(
+                    hospitals = it.data ?: emptyList()
+                )
+            } else {
+                Log.d("DEBUG", "Found ${it.msg}")
+                toggleError(true)
+                toggleLoadingScr(false)
+            }
+        }
+
+        Log.d(
+            "DEBUG",
+            "Got the hospitals loading finished ${homeScreenUiState.value.hospitals.size}"
+        )
         for (hospital in homeScreenUiState.value.hospitals) {
-            toggleLoadingScr(true)
-            getHospitalFluidUseCase(hospital.userId).onEach {
+            Log.d("DEBUG", "Getting fluids from: ${hospital.userId}")
+            if(hospital.userId.isNullOrEmpty()) {
+                Log.d("DEBUG","Id found blank")
+                continue
+            }
+            getHospitalFluidUseCase(hospital.userId).last().let {
+                Log.d("DEBUG", "Got fluids")
                 when (it) {
                     is Resource.Error -> {
-                        return@onEach
+                        toggleError(true)
+                        toggleLoadingScr(false)
                     }
 
                     is Resource.Loading -> Unit
                     is Resource.Success -> {
+                        Log.d("DEBUG", "Filtered the hospitals finished")
                         when (fluidType) {
                             LifeFluids.PLASMA -> {
                                 if (it.data!!.plasma.getAvailGroups().isNotEmpty())
@@ -319,58 +330,48 @@ class HomeScreenViewModel @Inject constructor(
 
                             else -> reqHospitals.add(hospital)
                         }
-                        return@onEach
+                        homeScreenUiState.value = homeScreenUiState.value.copy(
+                            hospitals = reqHospitals
+                        )
                     }
                 }
             }
         }
-        Log.d("DEBUG","ReqHospitals: ${reqHospitals.size}")
-        homeScreenUiState.value = homeScreenUiState.value.copy(
-            hospitals = reqHospitals
-        )
+
+        toggleLoadingScr(false)
+        Log.d("DEBUG", "ReqHospitals: ${reqHospitals.size}, added: ${homeScreenUiState.value.hospitals.size}")
     }
 
     fun applyFilter(
         filterType: MarkerFilters
-    ) {
-
+    ) = viewModelScope.launch {
         when (filterType) {
             MarkerFilters.HOSPITALS -> {
                 filterHospitalsByAvailFluid(null)
-                homeScreenUiState.value = homeScreenUiState.value.copy(
-                    selectedFilter = MarkerFilters.HOSPITALS
-                )
             }
 
             MarkerFilters.BLOODS -> {
                 filterHospitalsByAvailFluid(LifeFluids.BLOOD)
-                homeScreenUiState.value = homeScreenUiState.value.copy(
-                    selectedFilter = MarkerFilters.BLOODS
-                )
             }
 
             MarkerFilters.PLASMA -> {
                 filterHospitalsByAvailFluid(LifeFluids.PLASMA)
-                homeScreenUiState.value = homeScreenUiState.value.copy(
-                    selectedFilter = MarkerFilters.PLASMA
-                )
             }
 
             MarkerFilters.PLATELETS -> {
                 filterHospitalsByAvailFluid(LifeFluids.PLATELETS)
-                homeScreenUiState.value = homeScreenUiState.value.copy(
-                    selectedFilter = MarkerFilters.PLATELETS
-                )
             }
 
             MarkerFilters.REQUESTS -> {
                 getAllRequestsAndFilterHospitals()
-                homeScreenUiState.value = homeScreenUiState.value.copy(
-                    selectedFilter = MarkerFilters.REQUESTS,
-                    hospitals = emptyList()
-                )
             }
         }
+    }
+
+    fun toggleFilter(newFilter: MarkerFilters){
+        homeScreenUiState.value = homeScreenUiState.value.copy(
+            selectedFilter = newFilter
+        )
     }
 
 
@@ -378,13 +379,13 @@ class HomeScreenViewModel @Inject constructor(
         return getHospitalByIdUseCase(hospitalId)
     }
 
-    fun addHospitalToList(hospital: Users.Hospital){
+    fun addHospitalToList(hospital: Users.Hospital) {
         homeScreenUiState.value = homeScreenUiState.value.copy(
             hospitals = homeScreenUiState.value.hospitals + hospital
         )
     }
 
-    fun clearHospitalList(){
+    fun clearHospitalList() {
         homeScreenUiState.value = homeScreenUiState.value.copy(
             hospitals = emptyList()
         )

@@ -1,5 +1,6 @@
 package com.pratyaksh.healthykingdom.ui.hospital_details
 
+import com.pratyaksh.healthykingdom.domain.model.Requests
 import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.domain.model.lifefluids.AvailBlood
 import com.pratyaksh.healthykingdom.domain.model.lifefluids.AvailPlasma
@@ -21,6 +22,7 @@ data class HospitalDetailsUiState (
     val dialogFluidType: LifeFluids? = null,
     val dialogBloodGroup: BloodGroupsInfo? = null,
     val dialogPlateletsGroup: PlateletsGroupInfo? = null,
-    val dialogPlasmaGroup: PlasmaGroupInfo? = null
+    val dialogPlasmaGroup: PlasmaGroupInfo? = null,
+    val requests: Requests? = null
 
 )

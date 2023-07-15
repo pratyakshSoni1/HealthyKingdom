@@ -130,3 +130,26 @@ fun List<PlateletsGroupInfo>.getOnlyGroup(): List<BloodGroups> {
     }
 }
 
+fun BloodGroups.toPlateletsGroupInfo() = when(this){
+    BloodGroups.A_POSITIVE -> PlateletsGroupInfo.A_POSITIVE
+    BloodGroups.A_NEGATIVE -> PlateletsGroupInfo.A_NEGATIVE
+    BloodGroups.B_POSITIVE -> PlateletsGroupInfo.B_POSITIVE
+    BloodGroups.B_NEGATIVE -> PlateletsGroupInfo.B_NEGATIVE
+    BloodGroups.O_POSITIVE -> PlateletsGroupInfo.O_POSITIVE
+    BloodGroups.O_NEGATIVE -> PlateletsGroupInfo.O_NEGATIVE
+    BloodGroups.AB_POSITIVE -> PlateletsGroupInfo.AB_POSITIVE
+    BloodGroups.AB_NEGATIVE -> PlateletsGroupInfo.AB_NEGATIVE
+}
+
+fun PlateletsGroupInfo.toBloodGroupsInfo() = when(this){
+    PlateletsGroupInfo.A_POSITIVE -> BloodGroupsInfo.A_POSITIVE
+    PlateletsGroupInfo.A_NEGATIVE -> BloodGroupsInfo.A_NEGATIVE
+    PlateletsGroupInfo.B_POSITIVE -> BloodGroupsInfo.B_POSITIVE
+    PlateletsGroupInfo.B_NEGATIVE -> BloodGroupsInfo.B_NEGATIVE
+    PlateletsGroupInfo.O_POSITIVE -> BloodGroupsInfo.O_POSITIVE
+    PlateletsGroupInfo.O_NEGATIVE -> BloodGroupsInfo.O_NEGATIVE
+    PlateletsGroupInfo.AB_POSITIVE -> BloodGroupsInfo.AB_POSITIVE
+    PlateletsGroupInfo.AB_NEGATIVE -> BloodGroupsInfo.AB_NEGATIVE
+}
+
+

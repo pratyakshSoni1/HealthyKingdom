@@ -48,6 +48,7 @@ import com.pratyaksh.healthykingdom.ui.utils.GroupLabel
 import com.pratyaksh.healthykingdom.ui.utils.IconButton
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
 import com.pratyaksh.healthykingdom.ui.utils.MapLocationPreview
+import com.pratyaksh.healthykingdom.ui.utils.RequestsDisplayComponent
 import com.pratyaksh.healthykingdom.ui.utils.SimpleTopBar
 import com.pratyaksh.healthykingdom.utils.BloodGroups
 import com.pratyaksh.healthykingdom.utils.BloodGroupsInfo
@@ -79,12 +80,12 @@ fun HospitalDetailsScreen(
             topBar = {
                 SimpleTopBar(onBackPress = { navController.popBackStack() }, title = "Details")
             },
-            content = {
+            content = { paddingValues ->
 
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(it)
+                        .padding(paddingValues)
                         .padding(horizontal = 12.dp, vertical = 14.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
@@ -177,6 +178,29 @@ fun HospitalDetailsScreen(
                         }
                         Spacer(modifier = Modifier.height(32.dp))
 
+                        RequestsDisplayComponent(
+                            requests = uiState.value.requests,
+                            onBloodGroupClick = {
+                                viewModel.showFluidInfoDialog(
+                                    fluidType= LifeFluids.BLOOD,
+                                    fluidBloodGroup = it,
+                                )
+                            },
+                            onPlateletsGroupClick = {
+                                viewModel.showFluidInfoDialog(
+                                    fluidType= LifeFluids.PLATELETS,
+                                    fluidPlateletsGroup = it,
+                                )
+                            },
+                            onPlasmaGroupClick = {
+                                viewModel.showFluidInfoDialog(
+                                    fluidType = LifeFluids.PLASMA,
+                                    fluidPlasmaGroup = it
+                                )
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(22.dp))
+
                         Text(
                             text = "Available Fluids",
                             fontWeight = FontWeight.Bold,
@@ -195,7 +219,9 @@ fun HospitalDetailsScreen(
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 12.dp)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 12.dp)
                             ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_blood),
@@ -240,6 +266,7 @@ fun HospitalDetailsScreen(
                                     }
                                 }else{
                                     FluidNotAvailableTag()
+                                    Spacer(modifier = Modifier.height(12.dp))
                                 }
 
                             }
@@ -257,7 +284,9 @@ fun HospitalDetailsScreen(
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical= 12.dp)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 12.dp)
                             ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_plasma),
@@ -301,6 +330,7 @@ fun HospitalDetailsScreen(
                                     }
                                 }else{
                                     FluidNotAvailableTag()
+                                    Spacer(modifier = Modifier.height(12.dp))
                                 }
                             }
                         }
@@ -315,7 +345,9 @@ fun HospitalDetailsScreen(
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 12.dp)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 12.dp)
                             ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_platelets),
@@ -360,6 +392,7 @@ fun HospitalDetailsScreen(
                                     }
                                 } else {
                                     FluidNotAvailableTag()
+                                    Spacer(modifier = Modifier.height(12.dp))
                                 }
 
                             }
@@ -408,20 +441,23 @@ private fun FluidNotAvailableTag() {
 
     Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
     ) {
 
         Icon(
             painter = painterResource(id = R.drawable.ic_visibility),
             contentDescription = "null",
             tint = Color.Red,
-            modifier = Modifier.size(16.dp)
+            modifier = Modifier.size(18.dp)
         )
         Spacer(Modifier.width(6.dp))
         Text(
-            modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center,
-            text = "Fluid not available"
+            text = "Fluid not available",
+            color = Color(0x3E000000),
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp
         )
     }
 

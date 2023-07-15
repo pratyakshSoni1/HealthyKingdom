@@ -5,6 +5,7 @@ import com.pratyaksh.healthykingdom.data.dto.request_dtos.PlasmaReqDto
 import com.pratyaksh.healthykingdom.data.dto.request_dtos.PlateletsReqDto
 import com.pratyaksh.healthykingdom.domain.model.Requests
 import com.pratyaksh.healthykingdom.utils.BloodGroups
+import com.pratyaksh.healthykingdom.utils.BloodGroupsInfo
 import com.pratyaksh.healthykingdom.utils.PlasmaGroupInfo
 
 data class RequestsDto (
@@ -18,30 +19,30 @@ data class RequestsDto (
 
 fun RequestsDto.toRequests(): Requests {
 
-    val bloodReq = mutableListOf<BloodGroups>()
-    val plateletsReq = mutableListOf<BloodGroups>()
+    val bloodReq = mutableListOf<BloodGroupsInfo>()
+    val plateletsReq = mutableListOf<BloodGroupsInfo>()
     val plasmaReq = mutableListOf<PlasmaGroupInfo>()
 
     bloods.run {
-        if(a_pos) bloodReq.add(BloodGroups.A_POSITIVE)
-        if(a_neg) bloodReq.add(BloodGroups.A_NEGATIVE)
-        if(b_pos) bloodReq.add(BloodGroups.B_POSITIVE)
-        if(b_neg) bloodReq.add(BloodGroups.B_NEGATIVE)
-        if(ab_pos) bloodReq.add(BloodGroups.AB_POSITIVE)
-        if(ab_neg) bloodReq.add(BloodGroups.AB_NEGATIVE)
-        if(o_pos) bloodReq.add(BloodGroups.O_POSITIVE)
-        if(o_neg) bloodReq.add(BloodGroups.O_NEGATIVE)
+        if(a_pos) bloodReq.add(BloodGroupsInfo.A_POSITIVE)
+        if(a_neg) bloodReq.add(BloodGroupsInfo.A_NEGATIVE)
+        if(b_pos) bloodReq.add(BloodGroupsInfo.B_POSITIVE)
+        if(b_neg) bloodReq.add(BloodGroupsInfo.B_NEGATIVE)
+        if(ab_pos) bloodReq.add(BloodGroupsInfo.AB_POSITIVE)
+        if(ab_neg) bloodReq.add(BloodGroupsInfo.AB_NEGATIVE)
+        if(o_pos) bloodReq.add(BloodGroupsInfo.O_POSITIVE)
+        if(o_neg) bloodReq.add(BloodGroupsInfo.O_NEGATIVE)
     }
 
     platelets.run {
-        if(a_pos) plateletsReq.add(BloodGroups.A_POSITIVE)
-        if(a_neg) plateletsReq.add(BloodGroups.A_NEGATIVE)
-        if(b_pos) plateletsReq.add(BloodGroups.B_POSITIVE)
-        if(b_neg) plateletsReq.add(BloodGroups.B_NEGATIVE)
-        if(ab_pos) plateletsReq.add(BloodGroups.AB_POSITIVE)
-        if(ab_neg) plateletsReq.add(BloodGroups.AB_NEGATIVE)
-        if(o_pos) plateletsReq.add(BloodGroups.O_POSITIVE)
-        if(o_neg) plateletsReq.add(BloodGroups.O_NEGATIVE)
+        if(a_pos) plateletsReq.add(BloodGroupsInfo.A_POSITIVE)
+        if(a_neg) plateletsReq.add(BloodGroupsInfo.A_NEGATIVE)
+        if(b_pos) plateletsReq.add(BloodGroupsInfo.B_POSITIVE)
+        if(b_neg) plateletsReq.add(BloodGroupsInfo.B_NEGATIVE)
+        if(ab_pos) plateletsReq.add(BloodGroupsInfo.AB_POSITIVE)
+        if(ab_neg) plateletsReq.add(BloodGroupsInfo.AB_NEGATIVE)
+        if(o_pos) plateletsReq.add(BloodGroupsInfo.O_POSITIVE)
+        if(o_neg) plateletsReq.add(BloodGroupsInfo.O_NEGATIVE)
     }
 
     plasma.run {
