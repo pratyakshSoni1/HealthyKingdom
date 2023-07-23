@@ -417,10 +417,7 @@ private fun MapView.applyFilterToMap(
                 onMarkerClick = { marker ->
                     closeAllInfoWindow(viewModel)
                     viewModel.setBottomSheet(
-                        hospital = viewModel.homeScreenUiState.value.hospitals
-                            .find { hosp ->
-                                hosp.userId == it.hospitalId
-                            }!!
+                        hospital = viewModel.getHospital(it.hospitalId)
                     )
                     onToggleSheetState(false)
                     controller.animateTo(marker.position)
@@ -429,9 +426,7 @@ private fun MapView.applyFilterToMap(
                 getHospitalNameAndLoc = {
                     lateinit var reqHosp: Users.Hospital
                     runBlocking {
-                        viewModel.getHospital(it).last().let {
-                            reqHosp = it.data!!
-                        }
+                        reqHosp = viewModel.getHospital(it)
                     }
                     reqHosp
                 }

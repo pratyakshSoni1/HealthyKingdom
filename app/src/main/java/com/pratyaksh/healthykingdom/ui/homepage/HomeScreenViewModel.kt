@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.domain.model.getAvailGroups
+import com.pratyaksh.healthykingdom.domain.model.toHospitalDto
 import com.pratyaksh.healthykingdom.domain.use_case.getFluidsData.GetFluidsByHospitalUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetAllHospitalsUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetHospitalByIdUseCase
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.osmdroid.views.overlay.Marker
 import javax.inject.Inject
 
@@ -157,7 +159,7 @@ class HomeScreenViewModel @Inject constructor(
                     homeScreenUiState.value.requests.forEach {
                         toggleLoadingScr(true)
                         try {
-                            addHospitalToList(getHospital(it.hospitalId).last().data!!)
+                            addHospitalToList(getHospital(it.hospitalId))
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -374,11 +376,6 @@ class HomeScreenViewModel @Inject constructor(
         )
     }
 
-
-    fun getHospital(hospitalId: String): Flow<Resource<Users.Hospital?>> {
-        return getHospitalByIdUseCase(hospitalId)
-    }
-
     fun addHospitalToList(hospital: Users.Hospital) {
         homeScreenUiState.value = homeScreenUiState.value.copy(
             hospitals = homeScreenUiState.value.hospitals + hospital
@@ -389,6 +386,26 @@ class HomeScreenViewModel @Inject constructor(
         homeScreenUiState.value = homeScreenUiState.value.copy(
             hospitals = emptyList()
         )
+    }
+
+    fun getHospital( hospitalId:String ): Users.Hospital{
+        var searchRes: Users.Hospital? = null
+        searchRes = homeScreenUiState.value.hospitals.find {
+            it.userId == hospitalId
+        }
+        if(searchRes!=null) return searchRes
+        else{
+            runBlocking {
+                getHospitalByIdUseCase(hospitalId).last().let {
+                    if(it is Resource.Success && it.data != null){
+                        searchRes = it.data
+                    }else{
+                        toggleError(true)
+                    }
+                }
+            }
+            return searchRes!!
+        }
     }
 
     fun getHospNameAndLocForReqMarker(hospitalId: String): Users.Hospital {

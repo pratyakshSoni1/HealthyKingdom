@@ -47,6 +47,7 @@ import com.pratyaksh.healthykingdom.domain.model.getQuantityMap
 import com.pratyaksh.healthykingdom.ui.utils.FluidInfoDialog
 import com.pratyaksh.healthykingdom.ui.utils.GroupLabel
 import com.pratyaksh.healthykingdom.ui.utils.IconButton
+import com.pratyaksh.healthykingdom.ui.utils.LifeFluidTitle
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
 import com.pratyaksh.healthykingdom.ui.utils.MapLocationPreview
 import com.pratyaksh.healthykingdom.ui.utils.RequestsDisplayComponent
@@ -90,14 +91,7 @@ fun HospitalDetailsScreen(
                         .padding(horizontal = 12.dp, vertical = 14.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    if (uiState.value.isLoading) {
-                        Box(
-                            Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            LoadingComponent(modifier = Modifier.size(80.dp))
-                        }
-                    } else if (uiState.value.isError) {
+                    if (uiState.value.isError) {
                         Text(
                             "Unexpected Error\n Try again later.",
                             modifier = Modifier.fillMaxSize(),
@@ -218,25 +212,7 @@ fun HospitalDetailsScreen(
                                 .background(Color(0x33FF6060))
                                 .padding(8.dp)
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 12.dp, vertical = 12.dp)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_blood),
-                                    modifier = Modifier.size(33.dp),
-                                    contentDescription = null,
-                                    alignment = Alignment.Center,
-                                    contentScale = ContentScale.Fit
-                                )
-                                Spacer(Modifier.width(4.dp))
-                                Text(
-                                    text = "Available Bloods",
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
+                            LifeFluidTitle(fluidType = LifeFluids.BLOOD, titlePrefix = "Available")
 
                             FlowRow(
                                 maxItemsInEachRow = 4,
@@ -283,25 +259,8 @@ fun HospitalDetailsScreen(
                                 .background(Color(0x4DFCC60E))
                                 .padding(8.dp)
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 12.dp, vertical = 12.dp)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_plasma),
-                                    modifier = Modifier.size(33.dp),
-                                    contentDescription = null,
-                                    alignment = Alignment.Center,
-                                    contentScale = ContentScale.Fit
-                                )
-                                Spacer(Modifier.width(4.dp))
-                                Text(
-                                    text = "Available Plasma",
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
+
+                            LifeFluidTitle(fluidType = LifeFluids.PLASMA, titlePrefix = "Available")
 
                             FlowRow(
                                 maxItemsInEachRow = 4,
@@ -344,25 +303,8 @@ fun HospitalDetailsScreen(
                                 .background(Color(0x3BDD0000))
                                 .padding(8.dp)
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 12.dp, vertical = 12.dp)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_platelets),
-                                    modifier = Modifier.size(33.dp),
-                                    contentDescription = null,
-                                    alignment = Alignment.Center,
-                                    contentScale = ContentScale.Fit
-                                )
-                                Spacer(Modifier.width(4.dp))
-                                Text(
-                                    text = "Available Platelets",
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
+
+                            LifeFluidTitle(fluidType = LifeFluids.PLATELETS, titlePrefix = "Available")
 
                             FlowRow(
                                 maxItemsInEachRow = 4,
@@ -431,6 +373,15 @@ fun HospitalDetailsScreen(
                 )
             }
 
+        }
+
+        if (uiState.value.isLoading) {
+            Box(
+                Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                LoadingComponent(modifier = Modifier.size(80.dp))
+            }
         }
 
     }

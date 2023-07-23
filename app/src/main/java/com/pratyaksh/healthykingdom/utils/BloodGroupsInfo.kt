@@ -119,3 +119,14 @@ enum class BloodGroups {
 fun List<BloodGroupsInfo>.getOnlyGroup(): List<BloodGroups> {
     return this.map { it.type }
 }
+
+fun BloodGroups.toBloodGroupInfo() = when(this){
+    BloodGroups.A_POSITIVE -> BloodGroupsInfo.A_POSITIVE
+    BloodGroups.A_NEGATIVE -> BloodGroupsInfo.A_NEGATIVE
+    BloodGroups.B_POSITIVE -> BloodGroupsInfo.B_POSITIVE
+    BloodGroups.B_NEGATIVE -> BloodGroupsInfo.B_NEGATIVE
+    BloodGroups.O_POSITIVE -> BloodGroupsInfo.O_POSITIVE
+    BloodGroups.O_NEGATIVE -> BloodGroupsInfo.O_NEGATIVE
+    BloodGroups.AB_POSITIVE -> BloodGroupsInfo.AB_POSITIVE
+    BloodGroups.AB_NEGATIVE -> BloodGroupsInfo.AB_NEGATIVE
+}

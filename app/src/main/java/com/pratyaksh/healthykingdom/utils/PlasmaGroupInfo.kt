@@ -47,3 +47,10 @@ enum class Plasma {
     PLASMA_B,
     PLASMA_AB
 }
+
+fun Plasma.toPlasmaGroupInfo() = when(this){
+    Plasma.PLASMA_O -> PlasmaGroupInfo.Plasma_O
+    Plasma.PLASMA_A -> PlasmaGroupInfo.Plasma_A
+    Plasma.PLASMA_B -> PlasmaGroupInfo.Plasma_B
+    Plasma.PLASMA_AB -> PlasmaGroupInfo.Plasma_AB
+}

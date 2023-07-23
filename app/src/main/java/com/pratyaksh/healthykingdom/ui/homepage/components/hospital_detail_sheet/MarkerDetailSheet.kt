@@ -132,7 +132,7 @@ fun HospitalDetailsSheet(
             Spacer(modifier = Modifier.height(12.dp))
             FluidGroupList(
                 type = LifeFluids.BLOOD,
-                fluidsAvailable = uiState.availBloodTypes
+                fluidsAvailable = uiState.availBloodTypes.map { it.type}
             )
             Spacer(modifier = Modifier.height(8.dp))
             FluidGroupList(
@@ -143,7 +143,7 @@ fun HospitalDetailsSheet(
             FluidGroupList(
                 type = LifeFluids.PLATELETS,
                 fluidsAvailable = uiState.availPlateletsTypes.map {
-                    it.toBloodGroupsInfo()
+                    it.type
                 }
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -171,12 +171,12 @@ fun HospitalDetailsSheet(
                         Spacer(Modifier.height(8.dp))
                         FluidGroupList(
                             type = LifeFluids.BLOOD,
-                            fluidsAvailable = uiState.requests.blood
+                            fluidsAvailable = uiState.requests.blood.map{ it.type }
                         )
                         Spacer(Modifier.height(6.dp))
                         FluidGroupList(
                             type = LifeFluids.PLATELETS,
-                            fluidsAvailable = uiState.requests.platelets
+                            fluidsAvailable = uiState.requests.platelets.map { it.type }
                         )
                         Spacer(Modifier.height(6.dp))
                         FluidGroupList(

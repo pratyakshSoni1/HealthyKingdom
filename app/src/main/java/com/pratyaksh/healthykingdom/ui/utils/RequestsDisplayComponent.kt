@@ -77,13 +77,13 @@ fun RequestsDisplayComponent(
                 Spacer(Modifier.height(8.dp))
                 FluidGroupList(
                     type = LifeFluids.BLOOD,
-                    fluidsAvailable = requests.blood,
+                    fluidsAvailable = requests.blood.map { it.type },
                     onBloodClick = { onBloodGroupClick(it) }
                 )
                 Spacer(Modifier.height(6.dp))
                 FluidGroupList(
                     type = LifeFluids.PLATELETS,
-                    fluidsAvailable = requests.platelets,
+                    fluidsAvailable = requests.platelets.map{it.type},
                     onPlateletsClick = {
                         onPlateletsGroupClick( it )
                     }

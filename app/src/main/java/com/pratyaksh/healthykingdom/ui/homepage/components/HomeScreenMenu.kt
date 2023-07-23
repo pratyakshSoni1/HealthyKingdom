@@ -58,7 +58,7 @@ fun HomeScreenDialogMenu(
                 .wrapContentHeight()
                 .clip(RoundedCornerShape(18.dp))
                 .background(Color(0xFFD8EAFF))
-                .padding(start= 6.dp, end= 6.dp, top= 6.dp, bottom= 42.dp)
+                .padding(start = 6.dp, end = 6.dp, top = 6.dp, bottom = 42.dp)
         ) {
 
             Spacer(Modifier.height(6.dp))
@@ -124,8 +124,8 @@ fun HomeScreenDialogMenu(
                     NavMenuItem(title = "Update Fluids", imageIcon = Icons.Rounded.Edit) {
                         navController.navigate(Routes.FLUIDS_UPDATION_NAVGRAPH.route)
                     }
-                    NavMenuItem(title = "Donation Requests", imageIcon = Icons.Rounded.Info) {
-
+                    NavMenuItem(title = "Update Requests", imageIcon = painterResource(id = R.drawable.requests)) {
+                        navController.navigate(Routes.REQUESTS_UPDATION_SCREEN.withArgs(userId))
                     }
                 }
 

@@ -25,13 +25,14 @@ import com.pratyaksh.healthykingdom.utils.BloodGroupsInfo
 import com.pratyaksh.healthykingdom.utils.LifeFluids
 import com.pratyaksh.healthykingdom.utils.PlasmaGroupInfo
 import com.pratyaksh.healthykingdom.utils.PlateletsGroupInfo
+import com.pratyaksh.healthykingdom.utils.toBloodGroupInfo
 import com.pratyaksh.healthykingdom.utils.toPlateletsGroupInfo
 
 
 @Composable
 fun FluidGroupList(
     type: LifeFluids,
-    fluidsAvailable: List<BloodGroupsInfo> ,
+    fluidsAvailable: List<BloodGroups>,
     onBloodClick:(BloodGroupsInfo)->Unit = { Unit },
     onPlateletsClick:(PlateletsGroupInfo)->Unit = { Unit }
 ) {
@@ -78,11 +79,11 @@ fun FluidGroupList(
             for (fluid in fluidsAvailable) {
                 Box(
                     modifier= Modifier.clickable {
-                        if(type == LifeFluids.PLATELETS) onPlateletsClick(fluid.type.toPlateletsGroupInfo())
-                        else onBloodClick(fluid)
+                        if(type == LifeFluids.PLATELETS) onPlateletsClick(fluid.toPlateletsGroupInfo())
+                        else onBloodClick(fluid.toBloodGroupInfo())
                     }
                 ){
-                    GroupLabel(type = type, group = fluid.type)
+                    GroupLabel(type = type, group = fluid)
                 }
                 Spacer(Modifier.width(8.dp))
             }

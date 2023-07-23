@@ -20,5 +20,11 @@ sealed class Routes(val route: String) {
         }
     }
 
+    object REQUESTS_UPDATION_SCREEN: Routes("requests_updation_screen"){
+        fun withArgs(
+            hospitalId: String
+        ) = "$route/${hospitalId}"
+    }
+
 
 }

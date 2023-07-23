@@ -7,6 +7,7 @@ import com.pratyaksh.healthykingdom.domain.model.Requests
 import com.pratyaksh.healthykingdom.utils.BloodGroups
 import com.pratyaksh.healthykingdom.utils.BloodGroupsInfo
 import com.pratyaksh.healthykingdom.utils.PlasmaGroupInfo
+import com.pratyaksh.healthykingdom.utils.PlateletsGroupInfo
 
 data class RequestsDto (
 
@@ -20,7 +21,7 @@ data class RequestsDto (
 fun RequestsDto.toRequests(): Requests {
 
     val bloodReq = mutableListOf<BloodGroupsInfo>()
-    val plateletsReq = mutableListOf<BloodGroupsInfo>()
+    val plateletsReq = mutableListOf<PlateletsGroupInfo>()
     val plasmaReq = mutableListOf<PlasmaGroupInfo>()
 
     bloods.run {
@@ -35,14 +36,14 @@ fun RequestsDto.toRequests(): Requests {
     }
 
     platelets.run {
-        if(a_pos) plateletsReq.add(BloodGroupsInfo.A_POSITIVE)
-        if(a_neg) plateletsReq.add(BloodGroupsInfo.A_NEGATIVE)
-        if(b_pos) plateletsReq.add(BloodGroupsInfo.B_POSITIVE)
-        if(b_neg) plateletsReq.add(BloodGroupsInfo.B_NEGATIVE)
-        if(ab_pos) plateletsReq.add(BloodGroupsInfo.AB_POSITIVE)
-        if(ab_neg) plateletsReq.add(BloodGroupsInfo.AB_NEGATIVE)
-        if(o_pos) plateletsReq.add(BloodGroupsInfo.O_POSITIVE)
-        if(o_neg) plateletsReq.add(BloodGroupsInfo.O_NEGATIVE)
+        if(a_pos) plateletsReq.add(PlateletsGroupInfo.A_POSITIVE)
+        if(a_neg) plateletsReq.add(PlateletsGroupInfo.A_NEGATIVE)
+        if(b_pos) plateletsReq.add(PlateletsGroupInfo.B_POSITIVE)
+        if(b_neg) plateletsReq.add(PlateletsGroupInfo.B_NEGATIVE)
+        if(ab_pos) plateletsReq.add(PlateletsGroupInfo.AB_POSITIVE)
+        if(ab_neg) plateletsReq.add(PlateletsGroupInfo.AB_NEGATIVE)
+        if(o_pos) plateletsReq.add(PlateletsGroupInfo.O_POSITIVE)
+        if(o_neg) plateletsReq.add(PlateletsGroupInfo.O_NEGATIVE)
     }
 
     plasma.run {

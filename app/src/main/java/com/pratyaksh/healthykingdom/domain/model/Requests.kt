@@ -7,13 +7,14 @@ import com.pratyaksh.healthykingdom.data.dto.request_dtos.PlateletsReqDto
 import com.pratyaksh.healthykingdom.utils.BloodGroups
 import com.pratyaksh.healthykingdom.utils.BloodGroupsInfo
 import com.pratyaksh.healthykingdom.utils.PlasmaGroupInfo
+import com.pratyaksh.healthykingdom.utils.PlateletsGroupInfo
 
 data class Requests(
 
     val hospitalId: String,
     val blood: List<BloodGroupsInfo>,
     val plasma: List<PlasmaGroupInfo>,
-    val platelets: List<BloodGroupsInfo>
+    val platelets: List<PlateletsGroupInfo>
 
 )
 
@@ -31,14 +32,14 @@ fun Requests.toRequestsDto(): RequestsDto{
     )
 
     val plateletsReq = PlateletsReqDto(
-        a_pos= platelets.contains(BloodGroupsInfo.A_POSITIVE),
-        a_neg= platelets.contains(BloodGroupsInfo.A_NEGATIVE),
-        b_pos= platelets.contains(BloodGroupsInfo.B_POSITIVE),
-        b_neg= platelets.contains(BloodGroupsInfo.B_NEGATIVE),
-        ab_pos= platelets.contains(BloodGroupsInfo.AB_POSITIVE),
-        ab_neg= platelets.contains(BloodGroupsInfo.AB_NEGATIVE),
-        o_pos= platelets.contains(BloodGroupsInfo.O_POSITIVE),
-        o_neg= platelets.contains(BloodGroupsInfo.O_NEGATIVE),
+        a_pos= platelets.contains(PlateletsGroupInfo.A_POSITIVE),
+        a_neg= platelets.contains(PlateletsGroupInfo.A_NEGATIVE),
+        b_pos= platelets.contains(PlateletsGroupInfo.B_POSITIVE),
+        b_neg= platelets.contains(PlateletsGroupInfo.B_NEGATIVE),
+        ab_pos= platelets.contains(PlateletsGroupInfo.AB_POSITIVE),
+        ab_neg= platelets.contains(PlateletsGroupInfo.AB_NEGATIVE),
+        o_pos= platelets.contains(PlateletsGroupInfo.O_POSITIVE),
+        o_neg= platelets.contains(PlateletsGroupInfo.O_NEGATIVE),
     )
 
     val plasmaReq = PlasmaReqDto(
