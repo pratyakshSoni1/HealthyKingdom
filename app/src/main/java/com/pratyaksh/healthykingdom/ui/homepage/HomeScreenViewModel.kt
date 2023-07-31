@@ -1,6 +1,4 @@
 package com.pratyaksh.healthykingdom.ui.homepage
-
-
 import android.util.Log
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.mutableStateOf
@@ -9,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.domain.model.getAvailGroups
 import com.pratyaksh.healthykingdom.domain.model.toHospitalDto
+import com.pratyaksh.healthykingdom.domain.use_case.ambulance_live_loc.GetAllOnlineAmbulanceLocUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.getFluidsData.GetFluidsByHospitalUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetAllHospitalsUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetHospitalByIdUseCase
@@ -19,6 +18,7 @@ import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.Filter
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.MarkerFilters
 import com.pratyaksh.healthykingdom.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.launchIn
@@ -35,8 +35,11 @@ class HomeScreenViewModel @Inject constructor(
     val getHospitalFluidUseCase: GetFluidsByHospitalUseCase,
     val getRequestsUseCase: GetAllRequests,
     val getRequestsByHospitalUseCase: GetRequestByHospitalUseCase,
-    val getHospitalByIdUseCase: GetHospitalByIdUseCase
+    val getHospitalByIdUseCase: GetHospitalByIdUseCase,
+    val getLiveAmbulance: GetAllOnlineAmbulanceLocUseCase
 ) : ViewModel() {
+
+    var isInitialized: Boolean = false
 
     val homeScreenUiState = mutableStateOf(
         HomeScreenUiState(
@@ -69,6 +72,26 @@ class HomeScreenViewModel @Inject constructor(
             userId = userId,
             filters = filters
         )
+    }
+
+    fun startSyncingAmbulanceLoc(){
+        homeScreenUiState.value = homeScreenUiState.value.copy(
+            isSyncingAmbulance = true
+        )
+        viewModelScope.launch{
+            while(homeScreenUiState.value.isSyncingAmbulance){
+                getLiveAmbulance().last().let {
+                    if(it is Resource.Success){
+                        homeScreenUiState.value = homeScreenUiState.value.copy(
+                            liveAmbulances = it.data ?: emptyList()
+                        )
+                    }else if( it is Resource.Error || it.data.isNullOrEmpty() ){
+                        Log.d("AMBULANCES", "No live ambulances found")
+                    }
+                }
+            }
+            delay(1000L * 10L)
+        }
     }
 
     fun toggleError(setVisible: Boolean) {

@@ -26,5 +26,7 @@ sealed class Routes(val route: String) {
         ) = "$route/${hospitalId}"
     }
 
+    object SETTINGS_SCREEN: Routes("settings_screen")
+
 
 }

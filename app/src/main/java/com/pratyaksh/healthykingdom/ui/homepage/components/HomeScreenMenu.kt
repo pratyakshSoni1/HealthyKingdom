@@ -41,6 +41,7 @@ import com.pratyaksh.healthykingdom.ui.fluid_update.NavMenuItem
 import com.pratyaksh.healthykingdom.ui.utils.IconButton
 import com.pratyaksh.healthykingdom.utils.AccountTypes
 import com.pratyaksh.healthykingdom.utils.Routes
+import com.pratyaksh.healthykingdom.utils.identifyUserTypeFromId
 
 @Composable
 fun HomeScreenDialogMenu(
@@ -120,7 +121,7 @@ fun HomeScreenDialogMenu(
                 }
 
 
-                if ( userId.split("-")[0] == AccountTypes.HOSPITAL.type ) {
+                if ( identifyUserTypeFromId(userId)!!.equals(AccountTypes.HOSPITAL) ) {
                     NavMenuItem(title = "Update Fluids", imageIcon = Icons.Rounded.Edit) {
                         navController.navigate(Routes.FLUIDS_UPDATION_NAVGRAPH.route)
                     }
@@ -130,7 +131,7 @@ fun HomeScreenDialogMenu(
                 }
 
                 NavMenuItem(title = "Settings", imageIcon = Icons.Rounded.Settings) {
-
+                    navController.navigate(Routes.SETTINGS_SCREEN.route)
                 }
                 NavMenuItem(title = "Log out", imageIcon = Icons.Rounded.ExitToApp) {
                     onLogout()

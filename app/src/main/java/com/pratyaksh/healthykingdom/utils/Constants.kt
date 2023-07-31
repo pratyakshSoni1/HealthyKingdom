@@ -17,6 +17,12 @@ object Constants{
         val hospitalId = "hospitalId"
     }
 
+    object UserDocField{
+        val userId = "userId"
+        val goLive = "online"
+        val location = "location"
+    }
+
     object LifeFluidFieldNames{
 
         val blood = "bloods"
@@ -47,11 +53,7 @@ object Constants{
 
 }
 
-enum class LoginSignupStatus{
+enum class NotificationChannelsId{
 
-    LOGIN_SUCCESS,
-    INVALID_PASSWORD,
-    INVALID_PHONE,
-    INVALID_NAME_OR_LOCATION,
-
+    AMBULANCE_LIVE_LOC
 }

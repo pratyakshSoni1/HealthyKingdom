@@ -9,14 +9,14 @@ data class AmbulanceDto(
     val ambulanceNumber: String = "",
     val driverAge: Int = 0,
     val driverGender: String = "",
-    val isVacant: Boolean = false,
-    val isOnline: Boolean = false,
+    val vacant: Boolean = false,
+    val online: Boolean = false,
     val password: String? = null,
     val phone: String? = null,
     val location: GeoPoint? = null,
     val userId: String? = null,
     val mail: String = "",
-    val lastLocUpdated: Timestamp? = null
+    val lastLocUpdated: Timestamp? = null,
 )
 
 fun AmbulanceDto.toAmbulance(): Users.Ambulance{
@@ -35,8 +35,8 @@ fun AmbulanceDto.toAmbulance(): Users.Ambulance{
         driverAge = driverAge,
         vehicleLocation = location!!.toMapsGeopoint(),
         vehicleNumber = ambulanceNumber,
-        isOnline = isOnline,
-        isVacant = isVacant,
+        isOnline = online,
+        isVacant = vacant,
         lastLocUpdated = lastLocUpdated,
         userId = userId,
         password = password,

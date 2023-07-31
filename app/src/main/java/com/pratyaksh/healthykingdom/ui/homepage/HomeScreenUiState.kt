@@ -22,7 +22,9 @@ data class HomeScreenUiState(
     val userId: String? = null,
     val filters: List<FilterOption> = emptyList(),
     val selectedFilter: MarkerFilters,
-    val requests: List<Requests> = emptyList()
+    val requests: List<Requests> = emptyList(),
+    val liveAmbulances: List<Users.Ambulance> = emptyList() ,
+    val isSyncingAmbulance: Boolean = false
 
 ){
 

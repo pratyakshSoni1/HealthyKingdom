@@ -1,12 +1,20 @@
 package com.pratyaksh.healthykingdom.di
 
+import android.app.Application
+import android.provider.Settings
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.pratyaksh.healthykingdom.data.database.SettingsDao
+import com.pratyaksh.healthykingdom.data.database.UserSettingsDB
+import com.pratyaksh.healthykingdom.data.repositories.local.UserSettingRepoImpl
 import com.pratyaksh.healthykingdom.data.repositories.remote.FirebaseAmbulanceRepoImpl
 import com.pratyaksh.healthykingdom.data.repositories.remote.HospitalFbHospitalsRepoImpl
 import com.pratyaksh.healthykingdom.data.repositories.remote.LifeFluidsRepoImpl
 import com.pratyaksh.healthykingdom.data.repositories.remote.PublicUserFbRepoImpl
 import com.pratyaksh.healthykingdom.data.repositories.remote.RequestsRepoImpl
+import com.pratyaksh.healthykingdom.domain.repository.LocalUserSettingRepo
 import com.pratyaksh.healthykingdom.domain.repository.RemoteAmbulanceFbRepo
 import com.pratyaksh.healthykingdom.domain.repository.RemoteHospitalFbRepo
 import com.pratyaksh.healthykingdom.domain.repository.RemoteLifeFluidsFbRepo
@@ -74,8 +82,29 @@ object AppModule {
         return LifeFluidsRepoImpl(firestore)
     }
 
+    @Provides
+    @Singleton
+    fun provideSettingsRepo(
+        userSettingsDao: SettingsDao
+    ) :LocalUserSettingRepo{
+        return UserSettingRepoImpl(userSettingsDao)
+    }
 
+    @Provides
+    @Singleton
+    fun provideSettingDB(
+        app: Application
+    ): UserSettingsDB{
+        return Room.databaseBuilder(
+            app,
+            UserSettingsDB::class.java,
+            "user_settings_db"
+        ).build()
+    }
 
+    @Provides
+    @Singleton
+    fun provideSettingsDao( db: UserSettingsDB ): SettingsDao = db.dao
 
 
 }

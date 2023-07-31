@@ -1,7 +1,7 @@
 package com.pratyaksh.healthykingdom.data.repositories.remote
 
-import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import com.pratyaksh.healthykingdom.data.dto.AmbulanceDto
 import com.pratyaksh.healthykingdom.domain.repository.RemoteAmbulanceFbRepo
 import com.pratyaksh.healthykingdom.utils.Constants
@@ -13,13 +13,34 @@ class FirebaseAmbulanceRepoImpl(
     override suspend fun addAmbulance(ambulanceDto: AmbulanceDto): Boolean {
         try {
             firestore.collection(Constants.Collections.AMBLANCE_DRIVERS)
-                .document().set(ambulanceDto)
+                .document(ambulanceDto.userId!!).set(ambulanceDto)
                 .await()
             return true
         }catch(e: Exception){
             throw e
         }
 
+    }
+
+    override suspend fun updateAmbulance(ambulanceDto: AmbulanceDto) {
+        firestore.collection(Constants.Collections.AMBLANCE_DRIVERS)
+            .document(ambulanceDto.userId!!)
+            .set(ambulanceDto)
+            .await()
+
+    }
+
+    override suspend fun updateAmbulanceLoc(userId:String, location: GeoPoint) {
+        firestore.collection(Constants.Collections.AMBLANCE_DRIVERS)
+            .document(userId)
+            .update(Constants.UserDocField.location, location)
+            .await()
+    }
+    override suspend fun updateAmbulanceLivePermit(userId:String, permit: Boolean) {
+        firestore.collection(Constants.Collections.AMBLANCE_DRIVERS)
+            .document(userId)
+            .update(Constants.UserDocField.goLive, permit)
+            .await()
     }
 
     override suspend fun getAmbulanceByPhone(phone: String): AmbulanceDto? {
@@ -29,6 +50,13 @@ class FirebaseAmbulanceRepoImpl(
             .find {
                 it.phone == phone
             }
+    }
+
+    override suspend fun getAmbulanceById(userId: String): AmbulanceDto? {
+        return firestore.collection(Constants.Collections.AMBLANCE_DRIVERS)
+            .document(userId)
+            .get().await()
+            .toObject(AmbulanceDto::class.java)
     }
 
     override suspend fun getAllAmbulances(): List<AmbulanceDto> =
@@ -41,7 +69,7 @@ class FirebaseAmbulanceRepoImpl(
             .get().await()
             .toObjects(AmbulanceDto::class.java)
             .filter {
-                it.isOnline && it.isVacant
+                it.online && it.vacant
             }
     }
 
@@ -50,7 +78,7 @@ class FirebaseAmbulanceRepoImpl(
             .get().await()
             .toObjects(AmbulanceDto::class.java)
             .filter {
-                it.isOnline && !it.isVacant
+                it.online && !it.vacant
             }
     }
 
@@ -59,7 +87,7 @@ class FirebaseAmbulanceRepoImpl(
             .get().await()
             .toObjects(AmbulanceDto::class.java)
             .filter {
-                it.isOnline
+                it.online
             }
     }
 
@@ -68,7 +96,7 @@ class FirebaseAmbulanceRepoImpl(
             .get().await()
             .toObjects(AmbulanceDto::class.java)
             .filter {
-               !it.isOnline
+               !it.online
             }
     }
 

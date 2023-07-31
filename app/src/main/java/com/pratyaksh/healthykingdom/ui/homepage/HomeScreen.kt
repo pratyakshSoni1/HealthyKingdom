@@ -39,8 +39,10 @@ import com.pratyaksh.healthykingdom.ui.homepage.components.hospital_detail_sheet
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.FilterOption
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.MarkerFilters
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
+import com.pratyaksh.healthykingdom.utils.AccountTypes
 import com.pratyaksh.healthykingdom.utils.Resource
 import com.pratyaksh.healthykingdom.utils.Routes
+import com.pratyaksh.healthykingdom.utils.identifyUserTypeFromId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -94,6 +96,20 @@ fun HomeScreen(
             toggleSheetPeek(true)
         }
     }
+
+    LaunchedEffect(key1 = true, block = {
+        viewModel.startSyncingAmbulanceLoc()
+    })
+
+    LaunchedEffect(key1 = viewModel.homeScreenUiState.value.liveAmbulances.size, block = {
+        for (ambulance in viewModel.homeScreenUiState.value.liveAmbulances){
+            mapView.value.addAmbulanceToMap( ambulance ){
+                closeAllInfoWindow(viewModel)
+            }.let{
+                viewModel.addMarkerWithInfoWindow( it )
+            }
+        }
+    })
 
     LaunchedEffect(Unit) {
         Configuration.getInstance().userAgentValue = context.packageName
@@ -195,11 +211,6 @@ fun HomeScreen(
                             viewModel.toggleMapRender(true)
                             viewModel.toggleFilter(newFilter)
                             Log.d("DEBUG","In Invoke Completion")
-//                            mapView.value.applyFilterToMap(
-//                                viewModel = viewModel,
-//                                onToggleSheetState = { toggleSheetState(it) }
-//                            )
-//                            Log.d("DEBUG","Map changes applied")
                         }
                     }
                 )
@@ -323,6 +334,41 @@ fun MapView.addHospitalToMap(
     return newMarker
 
 }
+
+
+fun MapView.addAmbulanceToMap(
+    ambulance: Users.Ambulance,
+    onMarkerClick: (marker: Marker) -> Unit,
+): Marker {
+
+    Log.d("MarkerLogs", "Start Adding ${ambulance.driverName}")
+    val newMarker = Marker(this).apply {
+        position = ambulance.vehicleLocation
+        icon = ResourcesCompat.getDrawable(
+            context.resources,
+            R.drawable.ambulance,
+            null
+        )
+        title = ambulance.driverName
+        setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        subDescription = "This is ${ambulance.driverName} location on the map"
+        id = ambulance.userId
+        Log.d("MarkerLogs", "Adding ${ambulance.driverName}")
+        setOnMarkerClickListener { marker, mapView ->
+            onMarkerClick(marker)
+            true
+        }
+        Log.d("DEBUG", "Added listener")
+    }
+
+    overlays.add(newMarker)
+    Log.d("DEBUG", "Added overlay")
+    invalidate()
+    return newMarker
+
+}
+
+
 
 fun MapView.addRequestsToMap(
     request: Requests,

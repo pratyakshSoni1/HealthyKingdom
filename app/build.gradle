@@ -54,6 +54,12 @@ android {
     }
 }
 
+configurations {
+    cleanedAnnotations
+    implementation.exclude group: 'org.jetbrains' , module:'annotations'
+}
+
+
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.7.0'
@@ -93,6 +99,13 @@ dependencies {
 
     //lottie
     implementation "com.airbnb.android:lottie-compose:4.0.0"
+
+    //Room
+    implementation "androidx.room:room-ktx:2.5.2"
+    implementation "androidx.room:room-runtime:2.5.2"
+    kapt "androidx.room:room-compiler:2.5.2"
+
+    implementation "androidx.work:work-runtime-ktx:2.8.1"
 
 }
 

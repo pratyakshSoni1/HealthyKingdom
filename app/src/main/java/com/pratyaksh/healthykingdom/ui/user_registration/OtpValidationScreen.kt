@@ -42,6 +42,9 @@ import com.pratyaksh.healthykingdom.ui.utils.ErrorDialog
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
 import com.pratyaksh.healthykingdom.ui.utils.OtpTextDisplay
 import com.pratyaksh.healthykingdom.ui.utils.SimpleTopBar
+import com.pratyaksh.healthykingdom.utils.Resource
+import com.pratyaksh.healthykingdom.utils.Routes
+import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun OtpVerifyScreen(
@@ -52,7 +55,8 @@ fun OtpVerifyScreen(
     resendToken: PhoneAuthProvider.ForceResendingToken,
     viewModel: OtpValidationVM = hiltViewModel(),
     navController: NavHostController,
-    user: Users
+    user: Users,
+    updateCurrentLoggedUser: (userId: String) -> Flow<Resource<Boolean>>
 ){
 
     LaunchedEffect(Unit){
@@ -130,8 +134,12 @@ fun OtpVerifyScreen(
                                     activity,
                                     resendToken = viewModel.uiState.resendToken!!,
                                     onVerificationComplete = {
-                                        viewModel.addHospitalToFB()
-                                        onVerify()
+                                        viewModel.addUserToFB { updateCurrentLoggedUser(it) }
+                                        if( viewModel.afterVerificationDest == OtpValidationVM.VerificationDestinations.HOMESCREEN ){
+                                            onVerify()
+                                        }else{
+                                            navController.navigate(Routes.LOGIN_SCREEN.route)
+                                        }
                                     },
                                     onVerificationFailed = {
                                         Log.d("VerificationLogs", "Can't verify otp${it.message}")
@@ -160,8 +168,12 @@ fun OtpVerifyScreen(
                             activity,
                             PhoneAuthProvider.getCredential(viewModel.uiState.verificationId, viewModel.uiState.code),
                             onVerifySuccess= {
-                                viewModel.addHospitalToFB()
-                                onVerify()
+                                viewModel.addUserToFB { updateCurrentLoggedUser(it) }
+                                if( viewModel.afterVerificationDest == OtpValidationVM.VerificationDestinations.HOMESCREEN ){
+                                    onVerify()
+                                }else{
+                                    navController.navigate(Routes.LOGIN_SCREEN.route)
+                                }
                             },
                             onVerificationFailed = {
                                 viewModel.toggleErrorDialog(true, "Verification failed, try later")

@@ -107,7 +107,7 @@ fun NavGraphBuilder.registrationNavgraph(
         ){
             OtpVerifyScreen(
                 onVerify = {
-                    navController.navigate(Routes.HOMESCREEN.route){
+                    navController.navigate(Routes.HOME_NAVGRAPH.route){
                         popUpTo(Routes.SIGNUP_NAVGRAPH.route){ inclusive = true }
                     }
                 },
@@ -116,7 +116,8 @@ fun NavGraphBuilder.registrationNavgraph(
                 resendToken = resendToken!!,
                 activity = activity,
                 navController = navController,
-                user = user!!
+                user = user!!,
+                updateCurrentLoggedUser = updateCurrentLoggedUser
             )
         }
     }

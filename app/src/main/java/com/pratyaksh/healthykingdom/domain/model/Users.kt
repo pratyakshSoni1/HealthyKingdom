@@ -5,9 +5,6 @@ import com.pratyaksh.healthykingdom.data.dto.AmbulanceDto
 import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
 import com.pratyaksh.healthykingdom.data.dto.PublicUserDto
 import com.pratyaksh.healthykingdom.data.dto.toFBGeopoint
-import com.pratyaksh.healthykingdom.utils.BloodGroupsInfo
-import com.pratyaksh.healthykingdom.utils.PlasmaGroupInfo
-import com.pratyaksh.healthykingdom.utils.PlateletsGroupInfo
 import org.osmdroid.util.GeoPoint
 
 

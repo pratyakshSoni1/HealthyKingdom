@@ -87,6 +87,7 @@ fun Divider(){
 fun NavMenuItem(
     title: String,
     imageIcon: Painter,
+    tint: Color = Color.Black,
     onClick:()->Unit
 ){
 
@@ -106,8 +107,12 @@ fun NavMenuItem(
 
         Spacer(Modifier.width(6.dp))
 
-        Text(text= title, fontSize= 18.sp, modifier= Modifier.weight(1f))
-        Icon(imageVector = Icons.Rounded.KeyboardArrowRight, contentDescription = null, modifier=Modifier.size(32.dp))
+        Text(text= title, fontSize= 18.sp, modifier= Modifier.weight(1f), color= tint)
+        Icon(
+            imageVector = Icons.Rounded.KeyboardArrowRight,
+            contentDescription = null, modifier=Modifier.size(32.dp),
+            tint= tint
+        )
 
     }
 
@@ -117,6 +122,7 @@ fun NavMenuItem(
 fun NavMenuItem(
     title: String,
     imageIcon: ImageVector,
+    tint: Color = Color.Black,
     onClick:()->Unit
 ){
 
@@ -132,11 +138,11 @@ fun NavMenuItem(
             modifier= Modifier.size(28.dp),
             imageVector = imageIcon,
             contentDescription = null,
-            tint = Color.DarkGray
+            tint = tint
         )
         Spacer(Modifier.width(6.dp))
 
-        Text(text= title, fontSize= 16.sp, modifier= Modifier.weight(1f))
+        Text(text= title, fontSize= 16.sp, modifier= Modifier.weight(1f), color = tint)
 //        Icon(imageVector = Icons.Rounded.KeyboardArrowRight, contentDescription = null, modifier=Modifier.size(28.dp), tint= Color.LightGray)
 
     }

@@ -14,10 +14,14 @@ import com.pratyaksh.healthykingdom.domain.use_case.add_hospital.AddHospitalUseC
 import com.pratyaksh.healthykingdom.domain.use_case.add_public_user.AddPublicUserCase
 import com.pratyaksh.healthykingdom.domain.use_case.number_verification.OtpSendUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.number_verification.OtpSignInUseCase
+import com.pratyaksh.healthykingdom.domain.use_case.settings.AddSettingsUseCase
 import com.pratyaksh.healthykingdom.utils.Resource
+import com.pratyaksh.healthykingdom.utils.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,6 +32,7 @@ class OtpValidationVM @Inject constructor(
     private val addHospitalUseCase: AddHospitalUseCase,
     private val addPublicUseCse: AddPublicUserCase,
     private val addAmbulanceUseCase: AddAmbulanceUserCase,
+    private val settingsRepo: AddSettingsUseCase
 ) : ViewModel() {
 
     var uiState by mutableStateOf(OtpValidationUiState())
@@ -92,17 +97,38 @@ class OtpValidationVM @Inject constructor(
         )
     }
 
-    fun addHospitalToFB(){
+    fun addUserToFB(
+        onUpdateUser:(userId: String) -> Flow<Resource<Boolean>>
+    ){
         viewModelScope.launch {
             val user = uiState.user!!
+            lateinit var userId: String
             when(user){
                 is Users.Ambulance -> {
-                    addAmbulanceUseCase(user)
+                    userId = user.userId!!
+                    settingsRepo(
+                        isGoingLive = false,
+                        userId = user.userId,
+                        showLocaOnMap = false
+                    )
+                    addAmbulanceUseCase(user.copy(isOnline = false))
                 }
                 is Users.Hospital -> {
+                    userId = user.userId!!
+                    settingsRepo(
+                        isGoingLive = false,
+                        userId = user.userId,
+                        showLocaOnMap = false
+                    )
                     addHospitalUseCase(user)
                 }
                 is Users.PublicUser -> {
+                    userId = user.userId!!
+                    settingsRepo(
+                        isGoingLive = false,
+                        userId = user.userId,
+                        showLocaOnMap = false
+                    )
                     addPublicUseCse(user)
                 }
 
@@ -116,13 +142,27 @@ class OtpValidationVM @Inject constructor(
                         toggleLoadingCmp(true)
                     }
                     is Resource.Success -> {
-                        toggleLoadingCmp(false)
+
+                        onUpdateUser(userId).last().let{
+                            if(it is Resource.Success)
+                                toggleLoadingCmp(false)
+                            else
+                                afterVerificationDest = VerificationDestinations.LOGINPAGE
+                                Log.d("VMLOGS", "Unable to add hospital to current user")
+                        }
                         Log.d("VMLOGS","Adding hospital: success - ${it.data}")
                     }
                 }
             }
 
         }
+
+    }
+
+    var afterVerificationDest = VerificationDestinations.HOMESCREEN
+    enum class VerificationDestinations{
+        LOGINPAGE,
+        HOMESCREEN
     }
 
 
