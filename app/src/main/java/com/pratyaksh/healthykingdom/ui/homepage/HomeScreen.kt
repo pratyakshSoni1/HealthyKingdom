@@ -1,6 +1,7 @@
 package com.pratyaksh.healthykingdom.ui.homepage
 
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -102,10 +103,16 @@ fun HomeScreen(
     })
 
     LaunchedEffect(key1 = viewModel.homeScreenUiState.value.liveAmbulances.size, block = {
+        for( ambulances in viewModel.homeScreenUiState.value.mapUiState.ambulanceMarkers){
+            mapView.value.overlays.remove(ambulances)
+            viewModel.removeLiveAmbulanceMarker(ambulances)
+        }
+
         for (ambulance in viewModel.homeScreenUiState.value.liveAmbulances){
             mapView.value.addAmbulanceToMap( ambulance ){
                 closeAllInfoWindow(viewModel)
             }.let{
+                viewModel.addNewAmbulanceMarker(it)
                 viewModel.addMarkerWithInfoWindow( it )
             }
         }
@@ -193,7 +200,18 @@ fun HomeScreen(
                     toggleSheetState(true)
                     toggleSheetPeek(viewModel.homeScreenUiState.value.markersWithInfoWindow.isNotEmpty())
                 }
-                MapActionButtons({ Unit }, { Unit })
+                MapActionButtons(
+                    onToggleAmbulances = { isVisible ->
+                         if(isVisible){
+                             if(!viewModel.homeScreenUiState.value.isSyncingAmbulance)
+                                 viewModel.startSyncingAmbulanceLoc()
+                         }else{
+                             viewModel.stopSyncingAmbulanceLoc()
+                             viewModel.removeAllAmbulanceAndWithMarkers()
+                         }
+                    },
+                    isAmbulancesVisble = viewModel.homeScreenUiState.value.mapUiState.isAmbulancesVisible
+                )
                 HomeScreenSearchbar(
                     toggleMenu = {
                         if (sheetState.isExpanded) {
@@ -222,8 +240,8 @@ fun HomeScreen(
                         onLogout = {
                             viewModel.toggleLoadingScr(true)
                             CoroutineScope(Dispatchers.IO).launch {
-                                logoutUser()
-                                    .collectLatest {
+                                if(viewModel.updateUserLogoutToFB()){
+                                    logoutUser().collectLatest {
                                         if (it.data == true) {
                                             withContext(Dispatchers.Main) {
                                                 viewModel.toggleLoadingScr(false)
@@ -237,6 +255,9 @@ fun HomeScreen(
                                             viewModel.toggleLoadingScr(false)
                                         }
                                     }
+                                }else{
+                                    Toast.makeText(context, "Can't logout, try agin later", Toast.LENGTH_LONG).show()
+                                }
                             }
                         },
                         onCloseMenu = { viewModel.toggleMainMenu(false) },
@@ -346,7 +367,7 @@ fun MapView.addAmbulanceToMap(
         position = ambulance.vehicleLocation
         icon = ResourcesCompat.getDrawable(
             context.resources,
-            R.drawable.ambulance,
+            R.drawable.icmark_ambulance,
             null
         )
         title = ambulance.driverName

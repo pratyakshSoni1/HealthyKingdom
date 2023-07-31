@@ -148,18 +148,22 @@ fun SettingsScreen(
                             title = "Log out",
                             imageIcon = Icons.Rounded.ExitToApp,
                             onClick = {
-                                logoutUser().onEach {
-                                    when (it) {
-                                        is Resource.Error -> viewModel.toggleError(true)
-                                        is Resource.Loading -> viewModel.toggleLoading(true)
-                                        is Resource.Success -> {
-                                            navController.navigate(Routes.SIGNUP_NAVGRAPH.route) {
-                                                popUpTo(Routes.HOME_NAVGRAPH.route) {
-                                                    inclusive = true
+                                if(viewModel.updateUserLogoutToFB()){
+                                    logoutUser().onEach {
+                                        when (it) {
+                                            is Resource.Error -> viewModel.toggleError(true)
+                                            is Resource.Loading -> viewModel.toggleLoading(true)
+                                            is Resource.Success -> {
+                                                navController.navigate(Routes.SIGNUP_NAVGRAPH.route) {
+                                                    popUpTo(Routes.HOME_NAVGRAPH.route) {
+                                                        inclusive = true
+                                                    }
                                                 }
                                             }
                                         }
                                     }
+                                }else{
+                                    Toast.makeText(context, "Unable to logout, try again later !", Toast.LENGTH_LONG).show()
                                 }
                             })
 

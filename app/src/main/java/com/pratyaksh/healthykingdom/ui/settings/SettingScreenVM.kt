@@ -36,7 +36,7 @@ class SettingScreenVM @Inject constructor(
     private val getHospitalByIdUseCase: GetHospitalByIdUseCase,
     private val getPublicUserById: GetPublicUserById,
     private val getAmbulanceUserCase: GetAmbulanceUserCase,
-    val updateLocUseCase: UpdateAmbulanceLivePermit
+    val updateLivePermitUseCase: UpdateAmbulanceLivePermit
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -92,7 +92,7 @@ class SettingScreenVM @Inject constructor(
         viewModelScope.launch{
             getAmbulanceUserCase.getAmbulanceByUserId(uiState.value.userId!!).last().let {
                 if(it is Resource.Success) {
-                    updateLocUseCase(uiState.value.userId!!, setToLive).last().let{
+                    updateLivePermitUseCase(uiState.value.userId!!, setToLive).last().let{
                         if (!(it is Resource.Success))
                             toggleError(true)
                         else
@@ -193,6 +193,23 @@ class SettingScreenVM @Inject constructor(
     fun updateDialogPassTxt( newTxt: String ){
         _uiState.update {
             it.copy( verifyDialogPassTxt = newTxt )
+        }
+    }
+
+    fun updateUserLogoutToFB(): Boolean{
+        var isSuccess = false
+        if(identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.AMBULANCE)){
+            runBlocking{
+                updateLivePermitUseCase(uiState.value.userId!!, false).last().let{
+                    if(!(it is Resource.Success))
+                        Log.d("LogOut Error","${it.msg}")
+                    else
+                        isSuccess = true
+                }
+            }
+            return isSuccess
+        }else{
+            return true
         }
     }
 

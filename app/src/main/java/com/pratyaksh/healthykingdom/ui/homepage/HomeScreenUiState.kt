@@ -13,7 +13,7 @@ data class HomeScreenUiState(
     val accountType: AccountTypes = AccountTypes.PUBLIC_USER,
     val searchText: String= "",
     val hospitals: List<Users.Hospital> = emptyList(),
-    val mapUiState: MapMarkersUiState = MapMarkersUiState( emptyList() ),
+    val mapUiState: MapMarkersUiState = MapMarkersUiState( emptyList(), isAmbulancesVisible = true ),
     val markersWithInfoWindow: List<Marker> = emptyList(),
     val mapActionButtonsUiState: MapActionButtonsUiState = MapActionButtonsUiState(true, false),
     val isLoading: Boolean = false,
@@ -29,7 +29,9 @@ data class HomeScreenUiState(
 ){
 
     data class MapMarkersUiState(
-        val markers: List<Marker>
+        val markers: List<Marker>,
+        val ambulanceMarkers: List<Marker> = emptyList(),
+        val isAmbulancesVisible: Boolean
     )
 
     data class MapActionButtonsUiState(

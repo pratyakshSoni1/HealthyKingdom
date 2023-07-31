@@ -8,6 +8,7 @@ import com.pratyaksh.healthykingdom.domain.model.Users
 import com.pratyaksh.healthykingdom.domain.model.getAvailGroups
 import com.pratyaksh.healthykingdom.domain.model.toHospitalDto
 import com.pratyaksh.healthykingdom.domain.use_case.ambulance_live_loc.GetAllOnlineAmbulanceLocUseCase
+import com.pratyaksh.healthykingdom.domain.use_case.ambulance_live_loc.UpdateAmbulanceLivePermit
 import com.pratyaksh.healthykingdom.domain.use_case.getFluidsData.GetFluidsByHospitalUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetAllHospitalsUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetHospitalByIdUseCase
@@ -36,7 +37,8 @@ class HomeScreenViewModel @Inject constructor(
     val getRequestsUseCase: GetAllRequests,
     val getRequestsByHospitalUseCase: GetRequestByHospitalUseCase,
     val getHospitalByIdUseCase: GetHospitalByIdUseCase,
-    val getLiveAmbulance: GetAllOnlineAmbulanceLocUseCase
+    val getLiveAmbulance: GetAllOnlineAmbulanceLocUseCase,
+    val updateAmbulanceLocPermit: UpdateAmbulanceLivePermit
 ) : ViewModel() {
 
     var isInitialized: Boolean = false
@@ -76,7 +78,8 @@ class HomeScreenViewModel @Inject constructor(
 
     fun startSyncingAmbulanceLoc(){
         homeScreenUiState.value = homeScreenUiState.value.copy(
-            isSyncingAmbulance = true
+            isSyncingAmbulance = true,
+            mapUiState = homeScreenUiState.value.mapUiState.copy(isAmbulancesVisible = true)
         )
         viewModelScope.launch{
             while(homeScreenUiState.value.isSyncingAmbulance){
@@ -92,6 +95,13 @@ class HomeScreenViewModel @Inject constructor(
             }
             delay(1000L * 10L)
         }
+    }
+
+    fun stopSyncingAmbulanceLoc(){
+        homeScreenUiState.value = homeScreenUiState.value.copy(
+            isSyncingAmbulance = false,
+            mapUiState = homeScreenUiState.value.mapUiState.copy(isAmbulancesVisible = false)
+        )
     }
 
     fun toggleError(setVisible: Boolean) {
@@ -246,12 +256,14 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
+    /** Only adds marker to list, to add marker to map user MapView.overlays.add(overlay: Overlay) **/
     fun addNewMarker(marker: Marker) {
         homeScreenUiState.value = homeScreenUiState.value.copy(
-            mapUiState = HomeScreenUiState.MapMarkersUiState(homeScreenUiState.value.mapUiState.markers + marker)
+            mapUiState = homeScreenUiState.value.mapUiState.copy(homeScreenUiState.value.mapUiState.markers + marker)
         )
     }
 
+    /** Only removes marker from list, to remove marker from map user MapView.remove(overlay: Overlay) **/
     fun removeMarker(marker: Marker) {
 
         val pos = homeScreenUiState.value.mapUiState.markers.indexOf(marker)
@@ -270,7 +282,7 @@ class HomeScreenViewModel @Inject constructor(
                 )
 
         homeScreenUiState.value = homeScreenUiState.value.copy(
-            mapUiState = HomeScreenUiState.MapMarkersUiState(leftList + rightList)
+            mapUiState = homeScreenUiState.value.mapUiState.copy(leftList + rightList)
         )
     }
 
@@ -435,6 +447,65 @@ class HomeScreenViewModel @Inject constructor(
         return homeScreenUiState.value.hospitals.find {
             it.userId == hospitalId
         }!!
+    }
+
+    fun updateUserLogoutToFB(): Boolean{
+        var isSuccess = false
+        if(identifyUserTypeFromId(homeScreenUiState.value.userId!!)!!.equals(AccountTypes.AMBULANCE)){
+            runBlocking{
+                updateAmbulanceLocPermit(homeScreenUiState.value.userId!!, false).last().let{
+                    if(!(it is Resource.Success))
+                        Log.d("LogOut Error","${it.msg}")
+                    else
+                        isSuccess = true
+                }
+            }
+            return isSuccess
+        }else{
+            return true
+        }
+    }
+
+    fun removeAllAmbulanceAndWithMarkers(){
+        homeScreenUiState.value = homeScreenUiState.value.copy(
+            mapUiState = homeScreenUiState.value.mapUiState.copy(
+                ambulanceMarkers = emptyList()
+            ),
+            liveAmbulances = emptyList()
+        )
+    }
+
+
+    /** Only adds marker to ambulance markers list, to add marker to map user MapView.overlays.add(overlay: Overlay) **/
+    fun addNewAmbulanceMarker(marker: Marker) {
+        homeScreenUiState.value = homeScreenUiState.value.copy(
+            mapUiState = homeScreenUiState.value.mapUiState.copy(
+                ambulanceMarkers = homeScreenUiState.value.mapUiState.ambulanceMarkers + marker
+            )
+        )
+    }
+
+    /** Only removes marker from list, to remove marker from map user MapView.remove(overlay: Overlay) **/
+    fun removeLiveAmbulanceMarker(marker: Marker){
+
+        val pos = homeScreenUiState.value.mapUiState.ambulanceMarkers.indexOf(marker)
+        val listSize = homeScreenUiState.value.mapUiState.ambulanceMarkers.size
+
+        val leftList =
+            homeScreenUiState.value.mapUiState.ambulanceMarkers.subList(0, if (pos > 0) pos - 1 else 0)
+
+        val rightList =
+            if (pos > listSize || homeScreenUiState.value.mapUiState.ambulanceMarkers.isEmpty() || listSize <= 1)
+                emptyList()
+            else
+                homeScreenUiState.value.mapUiState.ambulanceMarkers.subList(
+                    pos + 1,
+                    homeScreenUiState.value.mapUiState.ambulanceMarkers.size - 1
+                )
+
+        homeScreenUiState.value = homeScreenUiState.value.copy(
+            mapUiState = homeScreenUiState.value.mapUiState.copy( ambulanceMarkers = leftList + rightList)
+        )
     }
 
 }
