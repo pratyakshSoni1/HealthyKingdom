@@ -10,6 +10,13 @@ class PublicUserFbRepoImpl(
     val fireStore: FirebaseFirestore
 ): RemotePublicUserFbRepo {
 
+    override suspend fun updateUser( user: PublicUserDto){
+        fireStore.collection(Constants.Collections.PUBLIC_USERS)
+            .document(user.userId!!)
+            .set(user)
+            .await()
+    }
+
     override suspend fun getAllUsers(): List<PublicUserDto> {
         return fireStore.collection(Constants.Collections.PUBLIC_USERS)
             .get()
@@ -56,5 +63,10 @@ class PublicUserFbRepoImpl(
         }catch(e: Exception){
             throw e
         }
+    }
+
+    override suspend fun deleteUser(userId: String) {
+        fireStore.collection(Constants.Collections.PUBLIC_USERS)
+            .document(userId).delete().await()
     }
 }

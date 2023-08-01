@@ -1,6 +1,7 @@
 package com.pratyaksh.healthykingdom.ui.utils
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -31,7 +32,8 @@ fun AppTextField(
     onValueChange:(newValue: String) -> Unit,
     keyboard: KeyboardType = KeyboardType.Text,
     maxLines: Int = 1,
-    hint: String= ""
+    hint: String= "",
+    isEditable: Boolean = true
 ){
 
     TextField(
@@ -43,6 +45,7 @@ fun AppTextField(
         keyboardOptions = KeyboardOptions(
             keyboardType = keyboard
         ),
+        enabled = isEditable,
         maxLines = maxLines,
         modifier = Modifier
             .fillMaxWidth()
@@ -56,6 +59,9 @@ fun AppTextField(
             cursorColor = Color.Blue,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent,
+            disabledPlaceholderColor = Color.LightGray,
+            disabledTextColor = Color.Black
         )
     )
 

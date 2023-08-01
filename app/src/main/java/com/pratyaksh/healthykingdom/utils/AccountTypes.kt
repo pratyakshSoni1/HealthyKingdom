@@ -1,7 +1,9 @@
 package com.pratyaksh.healthykingdom.utils
 
 import android.util.Log
+import com.google.firebase.firestore.auth.User
 import com.pratyaksh.healthykingdom.R
+import com.pratyaksh.healthykingdom.domain.model.Users
 
 sealed class AccountTypes(
     val type: String,

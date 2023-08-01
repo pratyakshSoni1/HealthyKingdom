@@ -42,9 +42,9 @@ fun MapActionButtons(
                 onClick = {
                     onToggleAmbulances(it)
                     Log.d("UI_LOGS", "Clicked Icon button")
-                          },
+                },
                 backgroundColor = Color.White,
-                isVisible = isAmbulancesVisble
+                isVisible = isAmbulancesVisble,
             )
             Spacer(modifier = Modifier.height(6.dp))
 

@@ -10,6 +10,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 
 class TestRepositoryImpl: RemoteHospitalFbRepo {
+
     override suspend fun getAllHospitals(): List<HospitalsDto> {
         delay(700L)
         return listOf(
@@ -54,6 +55,14 @@ class TestRepositoryImpl: RemoteHospitalFbRepo {
     }
 
     override suspend fun addHospital(hospital: HospitalsDto): Task<Void> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateHospital(hospital: HospitalsDto) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteHospital(userId: String) {
         TODO("Not yet implemented")
     }
 

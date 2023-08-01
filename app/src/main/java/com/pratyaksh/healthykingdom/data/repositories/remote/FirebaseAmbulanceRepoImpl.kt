@@ -52,6 +52,11 @@ class FirebaseAmbulanceRepoImpl(
             }
     }
 
+    override suspend fun deleteAmbulance(userId: String) {
+        firestore.collection(Constants.Collections.AMBLANCE_DRIVERS)
+            .document(userId).delete().await()
+    }
+
     override suspend fun getAmbulanceById(userId: String): AmbulanceDto? {
         return firestore.collection(Constants.Collections.AMBLANCE_DRIVERS)
             .document(userId)

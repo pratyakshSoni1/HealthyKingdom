@@ -27,6 +27,7 @@ sealed class Routes(val route: String) {
     }
 
     object SETTINGS_SCREEN: Routes("settings_screen")
+    object PROFILE_SCREEN: Routes("profile_screen")
 
 
 }

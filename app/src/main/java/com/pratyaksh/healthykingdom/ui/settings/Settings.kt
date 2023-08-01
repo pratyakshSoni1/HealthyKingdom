@@ -9,19 +9,26 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.ExitToApp
+import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -34,14 +41,19 @@ import com.pratyaksh.healthykingdom.domain.use_case.share_ambulance_loc.ShareAmb
 import com.pratyaksh.healthykingdom.ui.fluid_update.NavMenuItem
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
 import com.pratyaksh.healthykingdom.ui.utils.SimpleTopBar
-import com.pratyaksh.healthykingdom.ui.utils.VerifyPasswordDialog
 import com.pratyaksh.healthykingdom.utils.AccountTypes
 import com.pratyaksh.healthykingdom.utils.Resource
 import com.pratyaksh.healthykingdom.utils.Routes
 import com.pratyaksh.healthykingdom.utils.identifyUserTypeFromId
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.osmdroid.views.overlay.Marker
 
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
@@ -60,7 +72,9 @@ fun SettingsScreen(
         viewModel.initVM(getCurrentUser())
     })
 
-    Box {
+    Box(
+        contentAlignment= Alignment.Center
+    ) {
         if (uiState.userId != null) {
             Scaffold(
                 topBar = {
@@ -80,8 +94,18 @@ fun SettingsScreen(
                     Column {
                         if (identifyUserTypeFromId(uiState.userId)!!.equals(AccountTypes.AMBULANCE)) {
                             Row(
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 6.dp, horizontal = 14.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
+                                Icon(
+                                    modifier= Modifier.size(28.dp),
+                                    imageVector = Icons.Rounded.LocationOn,
+                                    contentDescription = null,
+                                    tint = Color.Black
+                                )
+                                Spacer(Modifier.width(6.dp))
                                 Text("Go Live", fontSize = 16.sp, modifier = Modifier.weight(1f))
                                 Switch(
                                     checked = uiState.goLive,
@@ -97,30 +121,6 @@ fun SettingsScreen(
                                                 context.stopService(Intent( context.applicationContext, ShareAmbulanceLocSerice::class.java ))
                                             }
                                         }
-
-//                                        if (it)
-//                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-//                                                context.startForegroundService(
-//                                                    Intent(
-//                                                        context.applicationContext,
-//                                                        ShareAmbulanceLocSerice::class.java
-//                                                    )
-//                                                )
-//                                            else
-//                                                context.startService(
-//                                                    Intent(
-//                                                        context.applicationContext,
-//                                                        ShareAmbulanceLocSerice::class.java
-//                                                    )
-//                                                )
-//                                        else
-//                                            context.stopService(
-//                                                Intent(
-//                                                    context,
-//                                                    ShareAmbulanceLocSerice::class.java
-//                                                )
-//                                            )
-
                                     }
                                 )
                             }
@@ -128,8 +128,18 @@ fun SettingsScreen(
 
                         if (identifyUserTypeFromId(uiState.userId)!!.equals(AccountTypes.PUBLIC_USER)) {
                             Row(
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 6.dp, horizontal = 14.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
+                                Icon(
+                                    modifier= Modifier.size(28.dp),
+                                    imageVector = Icons.Rounded.LocationOn,
+                                    contentDescription = null,
+                                    tint = Color.Black
+                                )
+                                Spacer(Modifier.width(6.dp))
                                 Text(
                                     "Show Current Location",
                                     fontSize = 16.sp,
@@ -149,14 +159,26 @@ fun SettingsScreen(
                             imageIcon = Icons.Rounded.ExitToApp,
                             onClick = {
                                 if(viewModel.updateUserLogoutToFB()){
-                                    logoutUser().onEach {
-                                        when (it) {
-                                            is Resource.Error -> viewModel.toggleError(true)
-                                            is Resource.Loading -> viewModel.toggleLoading(true)
-                                            is Resource.Success -> {
-                                                navController.navigate(Routes.SIGNUP_NAVGRAPH.route) {
-                                                    popUpTo(Routes.HOME_NAVGRAPH.route) {
-                                                        inclusive = true
+                                    CoroutineScope(Dispatchers.IO).launch{
+                                        logoutUser().collectLatest {
+                                            when (it) {
+                                                is Resource.Error -> viewModel.toggleError(true)
+                                                is Resource.Loading -> viewModel.toggleLoading(true)
+                                                is Resource.Success -> {
+                                                    if(identifyUserTypeFromId(uiState.userId)!!.equals(AccountTypes.AMBULANCE)) {
+                                                        context.stopService(
+                                                            Intent(
+                                                                context.applicationContext,
+                                                                ShareAmbulanceLocSerice::class.java
+                                                            )
+                                                        )
+                                                    }
+                                                    withContext(Dispatchers.Main) {
+                                                        navController.navigate(Routes.SIGNUP_NAVGRAPH.route) {
+                                                            popUpTo(Routes.HOME_NAVGRAPH.route) {
+                                                                inclusive = true
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
@@ -169,42 +191,10 @@ fun SettingsScreen(
 
                         NavMenuItem(
                             title = "Delete Account",
-                            imageIcon = Icons.Rounded.ExitToApp,
+                            imageIcon = Icons.Rounded.Delete,
                             onClick = {
-
+                                viewModel.toggleVerifyDialog(true)
                             })
-                    }
-
-                    //Should be at last so it's the first layer like a dialog
-                    if (uiState.showVerifyPassDialog) {
-                        VerifyPasswordDialog(
-                            password = uiState.verifyDialogPassTxt,
-                            onPassTxtChange = {
-                                viewModel.updateDialogPassTxt(it)
-                            },
-                            onVerify = {
-                                if (viewModel.verifyUser(uiState.verifyDialogPassTxt)) {
-                                    Toast.makeText(
-                                        context,
-                                        "Deleting Account...",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    viewModel.deleteUser()
-                                    navController.navigate(Routes.SIGNUP_NAVGRAPH.route) {
-                                        popUpTo(Routes.HOME_NAVGRAPH.route) {
-                                            inclusive = true
-                                        }
-                                    }
-                                } else
-                                    Toast.makeText(
-                                        context,
-                                        "Verification failed",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                viewModel.toggleVerifyDialog(false)
-                            },
-                            onClose = { viewModel.toggleVerifyDialog(false) }
-                        )
                     }
 
                 }
@@ -216,6 +206,38 @@ fun SettingsScreen(
                     .fillMaxWidth(0.8f)
                     .aspectRatio(1f)
             )
+        }
+
+        if(uiState.showVerifyPassDialog){
+                VerifyPasswordDialog(
+                    pass = uiState.verifyDialogPassTxt,
+                    onPassChange = { viewModel.updatePassTxt(it) },
+                    onDelete = {
+                        myCoroutine.launch {
+                            viewModel.isAccVerifiedAndDeleted().last().let {
+                                when(it){
+                                    is Resource.Success -> {
+                                        if(identifyUserTypeFromId(uiState.userId!!)!!.equals(AccountTypes.AMBULANCE)){
+                                            context.stopService(Intent(context.applicationContext, ShareAmbulanceLocSerice::class.java))
+                                        }
+                                        navController.navigate(Routes.HOME_NAVGRAPH.route) {
+                                            popUpTo(Routes.HOME_NAVGRAPH.route, { inclusive = true })
+                                        }
+                                    }
+                                    is Resource.Error -> {
+                                        Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+                                    }
+
+                                    is Resource.Loading -> {
+                                        Unit
+                                    }
+                                }
+
+                            }
+                        }
+                    },
+                    onCancel = { viewModel.dismissPassVerification() }
+                )
         }
 
         if (uiState.isLoading) {

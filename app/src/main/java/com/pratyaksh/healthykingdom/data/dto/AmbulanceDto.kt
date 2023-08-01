@@ -12,7 +12,7 @@ data class AmbulanceDto(
     val vacant: Boolean = false,
     val online: Boolean = false,
     val password: String? = null,
-    val phone: String? = null,
+    var phone: String? = null,
     val location: GeoPoint? = null,
     val userId: String? = null,
     val mail: String = "",

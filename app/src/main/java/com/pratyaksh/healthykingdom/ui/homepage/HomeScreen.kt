@@ -107,6 +107,7 @@ fun HomeScreen(
             mapView.value.overlays.remove(ambulances)
             viewModel.removeLiveAmbulanceMarker(ambulances)
         }
+        mapView.value.invalidate()
 
         for (ambulance in viewModel.homeScreenUiState.value.liveAmbulances){
             mapView.value.addAmbulanceToMap( ambulance ){
@@ -159,15 +160,6 @@ fun HomeScreen(
             }
         })
 
-//    LaunchedEffect(
-//        key1 = viewModel.homeScreenUiState.value.hospitals.size,
-//        block = {
-//            mapView.value.applyFilterToMap(
-//                viewModel = viewModel,
-//                onToggleSheetState = { toggleSheetState( it ) }
-//            )
-//        })
-
     if (!viewModel.homeScreenUiState.value.isError) {
         BottomSheetScaffold(
             scaffoldState = scaffoldState,
@@ -202,12 +194,14 @@ fun HomeScreen(
                 }
                 MapActionButtons(
                     onToggleAmbulances = { isVisible ->
-                         if(isVisible){
+                        viewModel.updateAmbulancesVisibility(isVisible)
+                        if(isVisible){
                              if(!viewModel.homeScreenUiState.value.isSyncingAmbulance)
                                  viewModel.startSyncingAmbulanceLoc()
                          }else{
+                             Log.d("DEBUG", "AmbulanceVisiblity: $isVisible")
                              viewModel.stopSyncingAmbulanceLoc()
-                             viewModel.removeAllAmbulanceAndWithMarkers()
+                             viewModel.removeAllLiveAmbulance()
                          }
                     },
                     isAmbulancesVisble = viewModel.homeScreenUiState.value.mapUiState.isAmbulancesVisible

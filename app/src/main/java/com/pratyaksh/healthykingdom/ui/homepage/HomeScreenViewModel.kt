@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
 import javax.inject.Inject
 
@@ -41,11 +42,10 @@ class HomeScreenViewModel @Inject constructor(
     val updateAmbulanceLocPermit: UpdateAmbulanceLivePermit
 ) : ViewModel() {
 
-    var isInitialized: Boolean = false
-
     val homeScreenUiState = mutableStateOf(
         HomeScreenUiState(
-            selectedFilter = MarkerFilters.HOSPITALS
+            selectedFilter = MarkerFilters.HOSPITALS,
+            mapUiState = HomeScreenUiState.MapMarkersUiState( markers = emptyList(), isAmbulancesVisible = true )
         )
     )
 
@@ -92,8 +92,9 @@ class HomeScreenViewModel @Inject constructor(
                         Log.d("AMBULANCES", "No live ambulances found")
                     }
                 }
+                delay(1000L * 5L)
+                Log.d("DEBUG", "Syncing ambulances")
             }
-            delay(1000L * 10L)
         }
     }
 
@@ -466,11 +467,8 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
-    fun removeAllAmbulanceAndWithMarkers(){
+    fun removeAllLiveAmbulance(){
         homeScreenUiState.value = homeScreenUiState.value.copy(
-            mapUiState = homeScreenUiState.value.mapUiState.copy(
-                ambulanceMarkers = emptyList()
-            ),
             liveAmbulances = emptyList()
         )
     }
@@ -505,6 +503,22 @@ class HomeScreenViewModel @Inject constructor(
 
         homeScreenUiState.value = homeScreenUiState.value.copy(
             mapUiState = homeScreenUiState.value.mapUiState.copy( ambulanceMarkers = leftList + rightList)
+        )
+    }
+
+    fun removeFromLiveAmbulance(location: GeoPoint){
+        homeScreenUiState.value = homeScreenUiState.value.copy(
+            liveAmbulances = homeScreenUiState.value.liveAmbulances.filter {
+                !(it.vehicleLocation.longitude == location.longitude && it.vehicleLocation.latitude == location.latitude)
+            }
+        )
+    }
+
+    fun updateAmbulancesVisibility(isVisible: Boolean) {
+        homeScreenUiState.value = homeScreenUiState.value.copy(
+            mapUiState = homeScreenUiState.value.mapUiState.copy(
+                isAmbulancesVisible = isVisible
+            )
         )
     }
 

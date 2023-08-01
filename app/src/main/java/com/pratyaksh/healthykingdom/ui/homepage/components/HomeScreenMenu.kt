@@ -117,7 +117,7 @@ fun HomeScreenDialogMenu(
                 }
 
                 NavMenuItem(title = "Profile", imageIcon = Icons.Rounded.AccountCircle) {
-
+                    navController.navigate(Routes.PROFILE_SCREEN.route)
                 }
 
 

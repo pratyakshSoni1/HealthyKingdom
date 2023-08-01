@@ -7,14 +7,29 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.GeoPoint
 import com.pratyaksh.healthykingdom.data.dto.AvailFluidsDto
 import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
+import com.pratyaksh.healthykingdom.data.dto.PublicUserDto
 import com.pratyaksh.healthykingdom.data.dto.lifefluids.AvailBloodDto
 import com.pratyaksh.healthykingdom.data.dto.lifefluids.AvailPlasmaDto
 import com.pratyaksh.healthykingdom.data.dto.lifefluids.AvailPlateletsDto
 import com.pratyaksh.healthykingdom.domain.model.Users
+import com.pratyaksh.healthykingdom.utils.Constants
 import com.pratyaksh.healthykingdom.utils.Constants.Collections
 import kotlinx.coroutines.tasks.await
 
 class HospitalFbHospitalsRepoImpl(private val fireStore: FirebaseFirestore): RemoteHospitalFbRepo {
+
+    override suspend fun deleteHospital(userId: String) {
+        fireStore.collection(Constants.Collections.HOSPITALS_COLLECTION)
+            .document(userId).delete().await()
+    }
+
+    override suspend fun updateHospital( user: HospitalsDto){
+        fireStore.collection(Constants.Collections.HOSPITALS_COLLECTION)
+            .document(user.userId)
+            .set(user)
+            .await()
+    }
+
     override suspend fun getAllHospitals(): List<HospitalsDto> {
         try{
             return fireStore.collection(Collections.HOSPITALS_COLLECTION)

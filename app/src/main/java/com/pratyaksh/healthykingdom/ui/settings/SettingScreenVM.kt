@@ -4,14 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pratyaksh.healthykingdom.domain.model.Users
-import com.pratyaksh.healthykingdom.domain.model.toAmbulanceDto
-import com.pratyaksh.healthykingdom.domain.use_case.add_ambulance.AddAmbulanceUserCase
 import com.pratyaksh.healthykingdom.domain.use_case.ambulance_live_loc.UpdateAmbulanceLivePermit
 import com.pratyaksh.healthykingdom.domain.use_case.delete_user.DeleteUserUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetHospitalByIdUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.get_ambulance.GetAmbulanceUserCase
-import com.pratyaksh.healthykingdom.domain.use_case.get_ambulance.UpdateAmbulanceLocUseCase
-import com.pratyaksh.healthykingdom.domain.use_case.get_ambulance.UpdateAmbulanceUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.get_public_user.GetPublicUserById
 import com.pratyaksh.healthykingdom.domain.use_case.settings.GetSettingsUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.settings.UpdateSettingUseCase
@@ -22,6 +18,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -36,7 +33,8 @@ class SettingScreenVM @Inject constructor(
     private val getHospitalByIdUseCase: GetHospitalByIdUseCase,
     private val getPublicUserById: GetPublicUserById,
     private val getAmbulanceUserCase: GetAmbulanceUserCase,
-    val updateLivePermitUseCase: UpdateAmbulanceLivePermit
+    private val updateLivePermitUseCase: UpdateAmbulanceLivePermit,
+    private val delUserUseCase: DeleteUserUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -46,12 +44,12 @@ class SettingScreenVM @Inject constructor(
 
     fun initVM(userIdFlow: Flow<Resource<String?>>) {
         var userId: String?
-        runBlocking{
+        runBlocking {
             userId = userIdFlow.last().data
             Log.d("DEBUG_SETTINGS", "Got id $userId")
         }
 
-        if(userId == null) {
+        if (userId == null) {
             Log.d("INIT_SETTING_USER", "Got Id: $userId")
             toggleError(true)
             return Unit
@@ -89,17 +87,16 @@ class SettingScreenVM @Inject constructor(
 
 
     fun updateGoLive(setToLive: Boolean) {
-        viewModelScope.launch{
+        viewModelScope.launch {
             getAmbulanceUserCase.getAmbulanceByUserId(uiState.value.userId!!).last().let {
-                if(it is Resource.Success) {
-                    updateLivePermitUseCase(uiState.value.userId!!, setToLive).last().let{
+                if (it is Resource.Success) {
+                    updateLivePermitUseCase(uiState.value.userId!!, setToLive).last().let {
                         if (!(it is Resource.Success))
                             toggleError(true)
                         else
                             Log.d("SETTINGS", "Updated fb settings")
                     }
-                }
-                else
+                } else
                     toggleError(true)
             }
             refreshUiState()
@@ -135,28 +132,28 @@ class SettingScreenVM @Inject constructor(
         }
     }
 
-    fun verifyUser(password: String): Boolean{
+    fun verifyUser(password: String): Boolean {
         var isVerified: Boolean = false
-        runBlocking{
+        runBlocking {
             toggleLoading(true)
             if (identifyUserTypeFromId(userId = uiState.value.userId!!)!!.equals(AccountTypes.PUBLIC_USER)) {
                 lateinit var tmpUser: Users.PublicUser
-                getPublicUserById(uiState.value.userId!!).last().let{
-                    if(it is Resource.Success) tmpUser = it.data!!
+                getPublicUserById(uiState.value.userId!!).last().let {
+                    if (it is Resource.Success) tmpUser = it.data!!
                     else toggleError(true)
                     isVerified = (tmpUser.password == password)
                 }
             } else if (identifyUserTypeFromId(userId = uiState.value.userId!!)!!.equals(AccountTypes.AMBULANCE)) {
                 lateinit var tmpUser: Users.Ambulance
-                getAmbulanceUserCase.getAmbulanceByUserId(uiState.value.userId!!).last().let{
-                    if(it is Resource.Success) tmpUser = it.data!!
+                getAmbulanceUserCase.getAmbulanceByUserId(uiState.value.userId!!).last().let {
+                    if (it is Resource.Success) tmpUser = it.data!!
                     else toggleError(true)
                     isVerified = (tmpUser.password == password)
                 }
             } else if (identifyUserTypeFromId(userId = uiState.value.userId!!)!!.equals(AccountTypes.HOSPITAL)) {
                 lateinit var tmpUser: Users.Hospital
-                getHospitalByIdUseCase(uiState.value.userId!!).last().let{
-                    if(it is Resource.Success) tmpUser = it.data!!
+                getHospitalByIdUseCase(uiState.value.userId!!).last().let {
+                    if (it is Resource.Success) tmpUser = it.data!!
                     else toggleError(true)
                     isVerified = (tmpUser.password == password)
                 }
@@ -168,49 +165,121 @@ class SettingScreenVM @Inject constructor(
     fun deleteUser() {
         runBlocking {
             toggleLoading(true)
-            try{
+            try {
                 if (identifyUserTypeFromId(userId = uiState.value.userId!!)!!.equals(AccountTypes.PUBLIC_USER)) {
                     deleteUserUseCase.deletePublicUser(uiState.value.userId!!)
-                } else if (identifyUserTypeFromId(userId = uiState.value.userId!!)!!.equals(AccountTypes.AMBULANCE)) {
+                } else if (identifyUserTypeFromId(userId = uiState.value.userId!!)!!.equals(
+                        AccountTypes.AMBULANCE
+                    )
+                ) {
                     deleteUserUseCase.deleteAmbulance(uiState.value.userId!!)
-                } else if (identifyUserTypeFromId(userId = uiState.value.userId!!)!!.equals(AccountTypes.HOSPITAL)) {
+                } else if (identifyUserTypeFromId(userId = uiState.value.userId!!)!!.equals(
+                        AccountTypes.HOSPITAL
+                    )
+                ) {
                     deleteUserUseCase.deleteHospital(uiState.value.userId!!)
                 }
                 toggleLoading(false)
-            }catch(e: Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
                 toggleError(true)
             }
         }
     }
 
-    fun toggleVerifyDialog( setToVisible: Boolean ){
+    fun toggleVerifyDialog(setToVisible: Boolean) {
         _uiState.update {
-            it.copy( showVerifyPassDialog = setToVisible )
+            it.copy(showVerifyPassDialog = setToVisible)
         }
     }
 
-    fun updateDialogPassTxt( newTxt: String ){
+    fun updateDialogPassTxt(newTxt: String) {
         _uiState.update {
-            it.copy( verifyDialogPassTxt = newTxt )
+            it.copy(verifyDialogPassTxt = newTxt)
         }
     }
 
-    fun updateUserLogoutToFB(): Boolean{
+    fun updateUserLogoutToFB(): Boolean {
         var isSuccess = false
-        if(identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.AMBULANCE)){
-            runBlocking{
-                updateLivePermitUseCase(uiState.value.userId!!, false).last().let{
-                    if(!(it is Resource.Success))
-                        Log.d("LogOut Error","${it.msg}")
+        if (identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.AMBULANCE)) {
+            runBlocking {
+                updateLivePermitUseCase(uiState.value.userId!!, false).last().let {
+                    if (!(it is Resource.Success))
+                        Log.d("LogOut Error", "${it.msg}")
                     else
                         isSuccess = true
                 }
             }
             return isSuccess
-        }else{
+        } else {
             return true
         }
+    }
+
+    fun deleteAccount() {
+
+    }
+
+    fun updatePassTxt(newTxt: String) {
+
+        _uiState.update {
+            it.copy(verifyDialogPassTxt = newTxt)
+        }
+    }
+
+    fun isAccVerifiedAndDeleted(): Flow<Resource<Boolean>> = flow {
+        var isSuccess: Boolean = false
+        toggleLoading(true)
+        if (identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.AMBULANCE)) {
+            getAmbulanceUserCase.getAmbulanceByUserId(uiState.value.userId!!).last().let {
+                if (it is Resource.Success) {
+                    if (it.data!!.password!! == uiState.value.verifyDialogPassTxt) {
+                        deleteUserUseCase.deleteAmbulance(uiState.value.userId!!).last().let {
+                            if ( it is Resource.Success)
+                                isSuccess = true
+                        }
+                    }
+                } else {
+                    toggleError(true)
+                }
+            }
+        } else if (identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.HOSPITAL)) {
+            getHospitalByIdUseCase(uiState.value.userId!!).last().let {
+                if (it is Resource.Success) {
+                    if (it.data!!.password!! == uiState.value.verifyDialogPassTxt) {
+                        deleteUserUseCase.deleteHospital(uiState.value.userId!!).last().let {
+                            if ( it is Resource.Success)
+                                isSuccess = true
+                        }
+                    }
+                } else {
+                    toggleError(true)
+                }
+            }
+        } else if (identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.PUBLIC_USER)) {
+            getPublicUserById(uiState.value.userId!!).last().let {
+                if (it is Resource.Success) {
+                    if (it.data!!.password!! == uiState.value.verifyDialogPassTxt) {
+                        deleteUserUseCase.deletePublicUser(uiState.value.userId!!).last().let {
+                            if ( it is Resource.Success)
+                                isSuccess = true
+                        }
+                    }
+                } else {
+                    toggleError(true)
+                }
+            }
+        }
+        if(isSuccess)
+            emit(Resource.Success(true))
+        else
+            emit(Resource.Error("Wrong Password !"))
+        toggleLoading(false)
+
+    }
+
+    fun dismissPassVerification() {
+        toggleVerifyDialog(false)
     }
 
 }

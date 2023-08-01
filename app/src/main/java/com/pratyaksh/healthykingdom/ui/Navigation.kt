@@ -7,22 +7,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.pratyaksh.healthykingdom.SettingsNavGraph
 import com.pratyaksh.healthykingdom.fluidsUpdationNavGraph
 import com.pratyaksh.healthykingdom.homeScreenNavGraph
 import com.pratyaksh.healthykingdom.registrationNavgraph
+import com.pratyaksh.healthykingdom.ui.profile_screen.ProfileScreen
 import com.pratyaksh.healthykingdom.ui.request_update.RequestUpdationScreen
 import com.pratyaksh.healthykingdom.ui.settings.SettingsScreen
 import com.pratyaksh.healthykingdom.utils.Resource
 import com.pratyaksh.healthykingdom.utils.Routes
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.last
 
 @Composable
 fun Navigation(
     startDestination: Routes,
     activity: Activity,
-    getCurrentLoggedUser:() -> Flow<Resource<String?>>,
+    getCurrentLoggedUser: () -> Flow<Resource<String?>>,
     updateCurrentLoggedUser: (userId: String?) -> Flow<Resource<Boolean>>
 ) {
 
@@ -31,7 +30,7 @@ fun Navigation(
     NavHost(
         navController = navController,
         startDestination = startDestination.route,
-    ){
+    ) {
 
         homeScreenNavGraph(
             navController,
@@ -43,7 +42,7 @@ fun Navigation(
             startDestination = Routes.LOGIN_SCREEN,
             activity = activity,
             navController = navController,
-            updateCurrentLoggedUser= { updateCurrentLoggedUser(it) }
+            updateCurrentLoggedUser = { updateCurrentLoggedUser(it) }
         )
 
         fluidsUpdationNavGraph(
@@ -52,22 +51,25 @@ fun Navigation(
         )
 
         composable(
-            route = Routes.REQUESTS_UPDATION_SCREEN.route+"/{hospitalId}",
+            route = Routes.REQUESTS_UPDATION_SCREEN.route + "/{hospitalId}",
             arguments = listOf(
                 navArgument(
-                    name= "hospitalId"
+                    name = "hospitalId"
                 ) {
                     type = NavType.StringType
                     nullable = false
                 }
             )
-        ){
-            RequestUpdationScreen(navController = navController, hospitalId = it.arguments?.getString("hospitalId") )
+        ) {
+            RequestUpdationScreen(
+                navController = navController,
+                hospitalId = it.arguments?.getString("hospitalId")
+            )
         }
 
         composable(
             route = Routes.SETTINGS_SCREEN.route
-        ){
+        ) {
             SettingsScreen(
                 getCurrentUser = getCurrentLoggedUser,
                 logoutUser = { updateCurrentLoggedUser(null) },
@@ -75,8 +77,13 @@ fun Navigation(
             )
         }
 
-    }
+        composable(
+            route = Routes.PROFILE_SCREEN.route
+        ) {
+            ProfileScreen(getCurrentUserId = getCurrentLoggedUser(), navController = navController)
+        }
 
+    }
 
 
 }

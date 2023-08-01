@@ -17,6 +17,7 @@ interface RemoteAmbulanceFbRepo {
     suspend fun updateAmbulance( ambulanceDto: AmbulanceDto )
     suspend fun updateAmbulanceLoc( userId:String, location: GeoPoint )
     suspend fun updateAmbulanceLivePermit(userId:String, permit: Boolean)
+    suspend fun deleteAmbulance(userId:String)
 
 
 

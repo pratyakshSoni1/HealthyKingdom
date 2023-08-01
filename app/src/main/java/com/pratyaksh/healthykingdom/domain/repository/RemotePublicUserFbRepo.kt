@@ -13,5 +13,7 @@ interface RemotePublicUserFbRepo {
     suspend fun getUsersWhoProvideLoc(): List<PublicUserDto>
 
     suspend fun addUser(userDto: PublicUserDto): Boolean
+    suspend fun updateUser(userDto: PublicUserDto)
+    suspend fun deleteUser(userId: String)
 
 }

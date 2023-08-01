@@ -9,7 +9,7 @@ import kotlinx.coroutines.tasks.await
 
 class RequestsRepoImpl(
     val firestore: FirebaseFirestore
-): RemoteRequestsRepo {
+) : RemoteRequestsRepo {
 
     override suspend fun getAllRequests(): List<RequestsDto> {
         val resp = firestore.collection(Constants.Collections.REQUESTS)
@@ -41,5 +41,11 @@ class RequestsRepoImpl(
                     Constants.RequestsDocField.platelets to request.platelets
                 )
             )
+    }
+
+    override suspend fun deleteRequest(userId: String) {
+        firestore.collection(Constants.Collections.REQUESTS)
+            .document(userId).delete().await()
+
     }
 }
