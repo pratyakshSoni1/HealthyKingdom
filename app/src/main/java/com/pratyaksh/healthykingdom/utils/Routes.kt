@@ -26,6 +26,15 @@ sealed class Routes(val route: String) {
         ) = "$route/${hospitalId}"
     }
 
+    object CHANGE_PHONE_SCREEN: Routes("change_phone_screen")
+    object CHANGE_PASSWORD_SCREEN: Routes("change_password_screen")
+
+    object OTP_VERIFICATION_SCREEN: Routes("opt_verification_screen")
+    object FORGOT_PASSWORD_SCREEN: Routes("forgot_password_screen")
+
+    object CHANGE_PASS_OR_PHONE_NAVGRAPH: Routes("change_password_or_phone_navgraph")
+
+
     object SETTINGS_SCREEN: Routes("settings_screen")
     object PROFILE_SCREEN: Routes("profile_screen")
 

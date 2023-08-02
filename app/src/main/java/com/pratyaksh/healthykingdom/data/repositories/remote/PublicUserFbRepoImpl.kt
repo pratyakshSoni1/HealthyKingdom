@@ -65,6 +65,12 @@ class PublicUserFbRepoImpl(
         }
     }
 
+    override suspend fun updatePassword(userId: String, newPass: String) {
+        fireStore.collection(Constants.Collections.PUBLIC_USERS)
+            .document(userId)
+            .update(Constants.UserDocField.password, newPass)
+            .await()
+    }
     override suspend fun deleteUser(userId: String) {
         fireStore.collection(Constants.Collections.PUBLIC_USERS)
             .document(userId).delete().await()

@@ -41,7 +41,7 @@ fun VerifyPasswordDialog(
     ) {
 
         Column(
-            Modifier.fillMaxWidth(0.9f).padding(horizontal = 12.dp).clip(RoundedCornerShape(12.dp)).background(Color.White)
+            Modifier.fillMaxWidth(0.9f).clip(RoundedCornerShape(12.dp)).padding(horizontal = 12.dp).background(Color.White)
         ) {
 
             Text(

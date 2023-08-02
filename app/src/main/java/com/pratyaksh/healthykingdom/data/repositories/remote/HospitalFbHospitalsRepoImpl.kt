@@ -23,6 +23,13 @@ class HospitalFbHospitalsRepoImpl(private val fireStore: FirebaseFirestore): Rem
             .document(userId).delete().await()
     }
 
+    override suspend fun updatePassword(userId: String, newPass: String) {
+        fireStore.collection(Constants.Collections.HOSPITALS_COLLECTION)
+            .document(userId)
+            .update(Constants.UserDocField.password, newPass)
+            .await()
+    }
+
     override suspend fun updateHospital( user: HospitalsDto){
         fireStore.collection(Constants.Collections.HOSPITALS_COLLECTION)
             .document(user.userId)

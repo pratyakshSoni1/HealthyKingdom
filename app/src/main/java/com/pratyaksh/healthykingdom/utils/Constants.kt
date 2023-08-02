@@ -21,6 +21,7 @@ object Constants{
         val userId = "userId"
         val goLive = "online"
         val location = "location"
+        val password = "password"
     }
 
     object LifeFluidFieldNames{

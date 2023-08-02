@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.ExitToApp
 import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -195,6 +196,20 @@ fun SettingsScreen(
                             onClick = {
                                 viewModel.toggleVerifyDialog(true)
                             })
+
+                        NavMenuItem(
+                            title = "Change Phone",
+                            imageIcon = Icons.Rounded.Phone,
+                            onClick = {
+                                navController.navigate(Routes.CHANGE_PHONE_SCREEN.route)
+                            })
+
+                        NavMenuItem(
+                            title = "Change Password",
+                            imageIcon = Icons.Rounded.Phone,
+                            onClick = {
+                                navController.navigate(Routes.CHANGE_PASSWORD_SCREEN.route)
+                            })
                     }
 
                 }
@@ -220,7 +235,7 @@ fun SettingsScreen(
                                         if(identifyUserTypeFromId(uiState.userId!!)!!.equals(AccountTypes.AMBULANCE)){
                                             context.stopService(Intent(context.applicationContext, ShareAmbulanceLocSerice::class.java))
                                         }
-                                        navController.navigate(Routes.HOME_NAVGRAPH.route) {
+                                        navController.navigate(Routes.SIGNUP_NAVGRAPH.route) {
                                             popUpTo(Routes.HOME_NAVGRAPH.route, { inclusive = true })
                                         }
                                     }

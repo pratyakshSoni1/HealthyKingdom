@@ -14,6 +14,7 @@ interface RemotePublicUserFbRepo {
 
     suspend fun addUser(userDto: PublicUserDto): Boolean
     suspend fun updateUser(userDto: PublicUserDto)
+    suspend fun updatePassword(userId: String, newPass: String)
     suspend fun deleteUser(userId: String)
 
 }

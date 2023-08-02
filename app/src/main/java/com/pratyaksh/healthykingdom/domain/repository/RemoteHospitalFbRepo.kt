@@ -16,6 +16,7 @@ interface RemoteHospitalFbRepo {
     suspend fun getHospitalByPhone(phone: String): HospitalsDto?
     suspend fun addHospital(hospital: HospitalsDto): Task<Void>
     suspend fun updateHospital(hospital: HospitalsDto)
+    suspend fun updatePassword(userId: String, newPass: String)
     suspend fun deleteHospital(userId: String)
 
 }

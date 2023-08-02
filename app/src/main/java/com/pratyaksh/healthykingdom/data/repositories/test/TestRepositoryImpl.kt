@@ -40,6 +40,10 @@ class TestRepositoryImpl: RemoteHospitalFbRepo {
         )
     }
 
+    override suspend fun updatePassword(userId: String, newPass: String) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun getHospitalById(id: String): HospitalsDto? {
         return HospitalsDto(
             name = "Second Hospital",

@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.pratyaksh.healthykingdom.changePasswordOrPhoneNavGraph
 import com.pratyaksh.healthykingdom.fluidsUpdationNavGraph
 import com.pratyaksh.healthykingdom.homeScreenNavGraph
 import com.pratyaksh.healthykingdom.registrationNavgraph
@@ -31,6 +32,12 @@ fun Navigation(
         navController = navController,
         startDestination = startDestination.route,
     ) {
+
+        changePasswordOrPhoneNavGraph(
+            activity = activity,
+            navController,
+            getCurrentLoggedUser
+        )
 
         homeScreenNavGraph(
             navController,

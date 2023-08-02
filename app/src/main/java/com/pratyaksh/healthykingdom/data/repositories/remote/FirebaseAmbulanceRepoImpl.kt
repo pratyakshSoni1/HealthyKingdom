@@ -57,6 +57,13 @@ class FirebaseAmbulanceRepoImpl(
             .document(userId).delete().await()
     }
 
+    override suspend fun updatePassword(userId: String, newPass: String) {
+        firestore.collection(Constants.Collections.AMBLANCE_DRIVERS)
+            .document(userId)
+            .update(Constants.UserDocField.password, newPass)
+            .await()
+    }
+
     override suspend fun getAmbulanceById(userId: String): AmbulanceDto? {
         return firestore.collection(Constants.Collections.AMBLANCE_DRIVERS)
             .document(userId)
