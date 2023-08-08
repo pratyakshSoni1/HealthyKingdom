@@ -82,28 +82,25 @@ class ProfileScreenVM @Inject constructor(
         } else if (identifyUserTypeFromId(userId)!!.equals(AccountTypes.HOSPITAL)) {
             getHospital(userId).last().let {
                 if (it is Resource.Success)
-                    it.data!!.apply {
                         uiState = uiState.copy(
-                            name = name,
-                            location = location,
+                            name = it.data!!.name,
+                            location = it.data.location,
                             accountType = AccountTypes.HOSPITAL,
-                            mail = mail
+                            mail = it.data!!.mail
                         )
-                    }
                 else
                     toggleErrorDialog(true, "Can't Retrieve details from database")
             }
         } else if (identifyUserTypeFromId(userId)!!.equals(AccountTypes.PUBLIC_USER)) {
             getPublicUser(userId).last().let {
                 if (it is Resource.Success)
-                    it.data!!.apply {
                         uiState = uiState.copy(
-                            name = userName!!,
-                            providesLocation = providesLocation ?: false,
+                            gender = it.data!!.gender,
+                            name = it.data.userName!!,
+                            providesLocation = it.data.providesLocation ?: false,
                             accountType = AccountTypes.PUBLIC_USER,
-                            mail = mail ?: ""
+                            mail = it.data.mail ?: ""
                         )
-                    }
                 else
                     toggleErrorDialog(true, "Can't Retrieve details from database")
             }

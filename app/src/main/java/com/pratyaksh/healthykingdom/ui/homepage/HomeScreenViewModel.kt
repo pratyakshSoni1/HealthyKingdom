@@ -14,6 +14,7 @@ import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetAllHospitalsU
 import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetHospitalByIdUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.get_requests.GetAllRequests
 import com.pratyaksh.healthykingdom.domain.use_case.get_requests.GetRequestByHospitalUseCase
+import com.pratyaksh.healthykingdom.domain.use_case.settings.UpdateSettingUseCase
 import com.pratyaksh.healthykingdom.ui.homepage.components.hospital_detail_sheet.MarkerDetailSheetUiState
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.FilterOption
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.MarkerFilters
@@ -39,7 +40,8 @@ class HomeScreenViewModel @Inject constructor(
     val getRequestsByHospitalUseCase: GetRequestByHospitalUseCase,
     val getHospitalByIdUseCase: GetHospitalByIdUseCase,
     val getLiveAmbulance: GetAllOnlineAmbulanceLocUseCase,
-    val updateAmbulanceLocPermit: UpdateAmbulanceLivePermit
+    val updateAmbulanceLocPermit: UpdateAmbulanceLivePermit,
+    val deleteLocalSettingsUseCase: UpdateSettingUseCase
 ) : ViewModel() {
 
     val homeScreenUiState = mutableStateOf(
@@ -448,6 +450,14 @@ class HomeScreenViewModel @Inject constructor(
         return homeScreenUiState.value.hospitals.find {
             it.userId == hospitalId
         }!!
+    }
+
+    fun deleteSettingsDb(){
+        toggleLoadingScr(true)
+        runBlocking {
+            deleteLocalSettingsUseCase.deleteSettings(homeScreenUiState.value.userId!!)
+            toggleLoadingScr(false)
+        }
     }
 
     fun updateUserLogoutToFB(): Boolean{

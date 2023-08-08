@@ -5,6 +5,7 @@ import com.pratyaksh.healthykingdom.data.dto.AmbulanceDto
 import com.pratyaksh.healthykingdom.data.dto.HospitalsDto
 import com.pratyaksh.healthykingdom.data.dto.PublicUserDto
 import com.pratyaksh.healthykingdom.data.dto.toFBGeopoint
+import com.pratyaksh.healthykingdom.utils.Gender
 import org.osmdroid.util.GeoPoint
 
 
@@ -42,7 +43,8 @@ sealed class Users(){
         val phone: String?,
         val location: org.osmdroid.util.GeoPoint? = null,
         val password: String?,
-        val mail: String?
+        val mail: String?,
+        val gender: Gender
     ): Users()
 
 }
@@ -52,7 +54,7 @@ fun Users.Ambulance.toAmbulanceDto(): AmbulanceDto {
         driverName, vehicleNumber,
         driverAge, driverName, isVacant,
         isOnline, password, phone,
-        vehicleLocation.toFBGeopoint(), userId
+        vehicleLocation.toFBGeopoint(), userId, mail ?: ""
     )
 }
 
@@ -60,7 +62,7 @@ fun Users.PublicUser.toPublicUserDto(): PublicUserDto {
     return PublicUserDto(
         userName, userId,
         providesLocation, phone,
-        location?.toFBGeopoint(), password
+        location?.toFBGeopoint(), password, mail ?: ""
     )
 }
 

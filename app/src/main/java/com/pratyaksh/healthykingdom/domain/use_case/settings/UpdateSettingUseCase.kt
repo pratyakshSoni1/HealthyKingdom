@@ -8,6 +8,24 @@ class UpdateSettingUseCase @Inject constructor(
     private val settingsRepo: LocalUserSettingRepo
 ) {
 
+    suspend fun logoutUser(userId: String){
+        settingsRepo.deleteSettings(userId)
+    }
+
+    suspend fun addLocalSettings(
+        userId: String,
+        showLocOnMap: Boolean,
+        goLive: Boolean
+    ){
+        settingsRepo.addSettings(
+            SettingsDto(
+                userId,
+                showYourLocOnMap = showLocOnMap,
+                goLive
+            )
+        )
+    }
+
     suspend fun updateSettings(
         userId: String,
         showLocOnMap: Boolean,

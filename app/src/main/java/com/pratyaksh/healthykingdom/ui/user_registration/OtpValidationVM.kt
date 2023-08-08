@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel()
@@ -97,7 +98,7 @@ class OtpValidationVM @Inject constructor(
         )
     }
 
-    fun addUserToFB(
+    suspend fun addUserToFB(
         onUpdateUser:(userId: String) -> Flow<Resource<Boolean>>
     ){
         viewModelScope.launch {
@@ -127,12 +128,12 @@ class OtpValidationVM @Inject constructor(
                     settingsRepo(
                         isGoingLive = false,
                         userId = user.userId,
-                        showLocaOnMap = false
+                        showLocaOnMap = user.providesLocation ?: false
                     )
                     addPublicUseCse(user)
                 }
 
-            }.collectLatest {
+            }.last().let {
                 when(it){
                     is Resource.Error -> {
                         toggleLoadingCmp(false)

@@ -2,6 +2,7 @@ package com.pratyaksh.healthykingdom.data.dto
 
 import com.google.firebase.firestore.GeoPoint
 import com.pratyaksh.healthykingdom.domain.model.Users
+import com.pratyaksh.healthykingdom.utils.Gender
 
 data class PublicUserDto(
     val userName: String? = null,
@@ -10,7 +11,8 @@ data class PublicUserDto(
     val phone: String? =null,
     val location: GeoPoint? = null,
     val password: String? = null,
-    val mail: String = ""
+    val mail: String = "",
+    val gender: String = ""
 )
 
 fun PublicUserDto.toPublicUser(): Users.PublicUser = Users.PublicUser(
@@ -20,5 +22,10 @@ fun PublicUserDto.toPublicUser(): Users.PublicUser = Users.PublicUser(
     phone,
     location?.toMapsGeopoint(),
     password,
-    mail
+    mail,
+    gender = when(gender){
+        "M" -> Gender.MALE
+        "F" -> Gender.FEMALE
+        else -> Gender.OTHERS
+    }
 )

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -79,19 +80,21 @@ fun OtpVerificationScreen(
                     .padding(vertical = 16.dp, horizontal = 14.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(Modifier.height(6.dp))
                 Text(
                     text = "Enter Verification code",
-                    modifier=Modifier.fillMaxWidth(),
+                    modifier=Modifier.fillMaxWidth().padding(horizontal = 12.dp),
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp
                 )
 
                 Text(
                     text = "sent to +${viewModel.uiState.phone}",
-                    modifier=Modifier.fillMaxWidth(),
+                    modifier=Modifier.fillMaxWidth().padding(horizontal = 12.dp),
                     fontSize = 14.sp
                 )
 
+                Spacer(Modifier.height(8.dp))
                 Box(
                     Modifier
                         .fillMaxWidth()
@@ -114,12 +117,13 @@ fun OtpVerificationScreen(
                     }
 
                 }
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(6.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
 
                     Text(
@@ -144,43 +148,54 @@ fun OtpVerificationScreen(
                         },
                         textAlign = TextAlign.Center
                     )
-                    Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.width(4.dp))
 
                     CircularProgressIndicator(
                         progress = viewModel.uiState.resendTimeout / 60f,
-                        modifier = Modifier.size(36.dp),
+                        modifier = Modifier.size(26.dp),
                         strokeWidth = 4.dp,
                         color = Color.Blue
                     )
 
                 }
 
-                Button(
-                    onClick = {
-                        viewModel.otpSignInUseCase(
-                            activity,
-                            PhoneAuthProvider.getCredential(viewModel.uiState.verificationId, viewModel.uiState.code),
-                            onVerifySuccess= {
-                                onVerify()
-                            },
-                            onVerificationFailed = {
-                                viewModel.toggleErrorDialog(true, "Verification failed, try later")
-                            },
-                            onInvalidCoe= {
-                                viewModel.toggleErrorDialog(true, "Invalid Code")
-                            }
-
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(0.75f),
-                    shape= RoundedCornerShape(100.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color(0xFF0166FF),
-                    )
+                Box(
+                    Modifier.weight(1f).fillMaxSize(),
+                    contentAlignment = Alignment.BottomCenter
                 ) {
-                    Text(
-                        text = "Verify", color= Color.White
-                    )
+                    Button(
+                        onClick = {
+                            viewModel.otpSignInUseCase(
+                                activity,
+                                PhoneAuthProvider.getCredential(
+                                    viewModel.uiState.verificationId,
+                                    viewModel.uiState.code
+                                ),
+                                onVerifySuccess = {
+                                    onVerify()
+                                },
+                                onVerificationFailed = {
+                                    viewModel.toggleErrorDialog(
+                                        true,
+                                        "Verification failed, try later"
+                                    )
+                                },
+                                onInvalidCoe = {
+                                    viewModel.toggleErrorDialog(true, "Invalid Code")
+                                }
+
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth(0.75f),
+                        shape = RoundedCornerShape(100.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color(0xFF0166FF),
+                        )
+                    ) {
+                        Text(
+                            text = "Verify", color = Color.White
+                        )
+                    }
                 }
             }
 

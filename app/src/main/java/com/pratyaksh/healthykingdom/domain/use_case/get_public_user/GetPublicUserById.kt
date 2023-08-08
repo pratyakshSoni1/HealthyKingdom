@@ -18,7 +18,7 @@ class GetPublicUserById @Inject constructor(
         emit(Resource.Loading("Finding user"))
         try{
             val user = fbRepo.getUserWithId(userId)?.toPublicUser()
-            if(user == null ){
+            if(user != null ){
                 emit(Resource.Success(user))
             }else{
                 emit(Resource.Error("User Not found"))

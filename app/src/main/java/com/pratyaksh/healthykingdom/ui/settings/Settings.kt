@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.ExitToApp
 import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -174,6 +175,7 @@ fun SettingsScreen(
                                                             )
                                                         )
                                                     }
+                                                    viewModel.deleteLocalUserSettings()
                                                     withContext(Dispatchers.Main) {
                                                         navController.navigate(Routes.SIGNUP_NAVGRAPH.route) {
                                                             popUpTo(Routes.HOME_NAVGRAPH.route) {
@@ -206,7 +208,7 @@ fun SettingsScreen(
 
                         NavMenuItem(
                             title = "Change Password",
-                            imageIcon = Icons.Rounded.Phone,
+                            imageIcon = Icons.Rounded.Lock,
                             onClick = {
                                 navController.navigate(Routes.CHANGE_PASSWORD_SCREEN.route)
                             })
@@ -235,8 +237,14 @@ fun SettingsScreen(
                                         if(identifyUserTypeFromId(uiState.userId!!)!!.equals(AccountTypes.AMBULANCE)){
                                             context.stopService(Intent(context.applicationContext, ShareAmbulanceLocSerice::class.java))
                                         }
-                                        navController.navigate(Routes.SIGNUP_NAVGRAPH.route) {
-                                            popUpTo(Routes.HOME_NAVGRAPH.route, { inclusive = true })
+                                        logoutUser().last().let{
+                                            if( it is Resource.Success ){
+                                                navController.navigate(Routes.SIGNUP_NAVGRAPH.route) {
+                                                    popUpTo(Routes.HOME_NAVGRAPH.route, { inclusive = true })
+                                                }
+                                            }else{
+                                                viewModel.toggleError(true)
+                                            }
                                         }
                                     }
                                     is Resource.Error -> {

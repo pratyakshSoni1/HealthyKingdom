@@ -26,12 +26,10 @@ class PublicUserFbRepoImpl(
 
     override suspend fun getUserWithId(userId: String): PublicUserDto? {
         return fireStore.collection(Constants.Collections.PUBLIC_USERS)
+            .document(userId)
             .get()
             .await()
-            .toObjects(PublicUserDto::class.java)
-            .find {
-                it.userId == userId
-            }
+            .toObject(PublicUserDto::class.java)
     }
 
     override suspend fun getUserWithPhone(phone: String): PublicUserDto? {
@@ -57,7 +55,7 @@ class PublicUserFbRepoImpl(
     override suspend fun addUser(userDto: PublicUserDto): Boolean {
         try {
             fireStore.collection(Constants.Collections.PUBLIC_USERS)
-                .document().set(userDto)
+                .document(userDto.userId!!).set(userDto)
                 .await()
             return true
         }catch(e: Exception){

@@ -41,7 +41,7 @@ fun VerifyPasswordDialog(
     ) {
 
         Column(
-            Modifier.fillMaxWidth(0.9f).clip(RoundedCornerShape(12.dp)).padding(horizontal = 12.dp).background(Color.White)
+            Modifier.fillMaxWidth(0.9f).clip(RoundedCornerShape(12.dp)).background(Color.White).padding(horizontal = 12.dp)
         ) {
 
             Text(
@@ -50,24 +50,25 @@ fun VerifyPasswordDialog(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = 8.dp),
+                color= Color.Red
             )
-
 
             Text(
                 text = "Confirm that it's really you trying deleting your account",
                 fontSize = 14.sp,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp, horizontal = 12.dp)
+                    .padding(vertical = 8.dp)
             )
 
+            Spacer(Modifier.height(6.dp))
             AppTextField(
                 value = pass,
                 onValueChange = onPassChange,
                 keyboard = KeyboardType.Password
             )
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(12.dp))
             Row(
                 Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically

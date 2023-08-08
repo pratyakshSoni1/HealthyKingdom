@@ -23,53 +23,50 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 
 @Composable
 fun ErrorDialog(
     text: String,
-    onClose: ()->Unit
-){
+    onClose: () -> Unit
+) {
     Dialog(onDismissRequest = { onClose() }) {
 
-        Column(
-            modifier = Modifier
+        Box(
+            Modifier
                 .height(240.dp)
                 .fillMaxWidth(0.9f)
                 .clip(RoundedCornerShape(12.dp))
                 .background(Color.White)
-                .padding(vertical = 2.dp, horizontal = 4.dp),
+                .padding(vertical = 2.dp, horizontal = 4.dp)
         ) {
             Box(
-                Modifier.fillMaxSize()
+                Modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopEnd
+            ) {
+                IconButton(icon = Icons.Rounded.Close, onClick = { onClose() })
+            }
+            Column(
+                modifier = Modifier.fillMaxSize(),
             ) {
 
-                Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.TopEnd
-                ) {
-                    IconButton(icon = Icons.Rounded.Close, onClick = { onClose() })
-                }
 
+                Icon(
+                    imageVector = Icons.Rounded.Warning,
+                    tint = Color.Red,
+                    modifier = Modifier.fillMaxSize(0.4f),
+                    contentDescription = text
+                )
+                Spacer(Modifier.height(4.dp))
 
+                Text(
+                    text = text,
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp)
+                )
             }
-
-            Icon(
-                imageVector = Icons.Rounded.Warning,
-                tint = Color.Red,
-                modifier = Modifier.fillMaxSize(0.4f),
-                contentDescription = text
-            )
-            Spacer(Modifier.height(4.dp))
-
-            Text(
-                text = text,
-                color = Color.Black,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 4.dp)
-            )
 
         }
     }

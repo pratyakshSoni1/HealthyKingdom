@@ -149,7 +149,7 @@ fun HomeScreen(
         block = {
             Log.d("DEBUG", "In LaunchEffect")
             if( viewModel.renderMapAgainOnMarkerChange ){
-                Log.d("DEBUG", "Aplly mapFilter Effect")
+                Log.d("DEBUG", "Apply mapFilter Effect")
                 mapView.value.applyFilterToMap(
                     viewModel = viewModel,
                     onToggleSheetState = { toggleSheetState( it ) }
@@ -237,6 +237,7 @@ fun HomeScreen(
                                 if(viewModel.updateUserLogoutToFB()){
                                     logoutUser().collectLatest {
                                         if (it.data == true) {
+                                            viewModel.deleteSettingsDb()
                                             withContext(Dispatchers.Main) {
                                                 viewModel.toggleLoadingScr(false)
                                                 navController.navigate(Routes.SIGNUP_NAVGRAPH.route) {

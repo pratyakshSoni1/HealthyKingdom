@@ -1,6 +1,8 @@
 package com.pratyaksh.healthykingdom.domain.use_case.update_users
 
+import com.pratyaksh.healthykingdom.data.dto.SettingsDto
 import com.pratyaksh.healthykingdom.data.dto.toAmbulance
+import com.pratyaksh.healthykingdom.domain.repository.LocalUserSettingRepo
 import com.pratyaksh.healthykingdom.domain.repository.RemoteAmbulanceFbRepo
 import com.pratyaksh.healthykingdom.domain.repository.RemoteHospitalFbRepo
 import com.pratyaksh.healthykingdom.domain.repository.RemoteLifeFluidsFbRepo
@@ -15,19 +17,28 @@ class UpdatePhoneUseCase @Inject constructor(
     val ambulanceFbRepo: RemoteAmbulanceFbRepo,
     val publicUserFbRepo: RemotePublicUserFbRepo,
     val requestFbRepo: RemoteRequestsRepo,
-    val lifeFluidsRepo: RemoteLifeFluidsFbRepo
+    val lifeFluidsRepo: RemoteLifeFluidsFbRepo,
+    val localSettingsRepo: LocalUserSettingRepo
 ){
     fun updateAmbulancePhone(userId: String, newPhone: String) = flow<Resource<Unit>>{
         try{
             var doc = ambulanceFbRepo.getAmbulanceById(userId)
+            val newUserId: String = "${userId.split(" - ")[0]}-${newPhone.substring(8..11)}"
             doc = doc?.copy(
                 phone = newPhone,
-                userId = "${userId.split(" - ")[0]}-${newPhone.substring(8..11)}"
+                userId = newUserId
             )
 
             if(doc != null) {
                 ambulanceFbRepo.deleteAmbulance(userId)
                 ambulanceFbRepo.addAmbulance(doc)
+                localSettingsRepo.updateSetting(
+                    SettingsDto(
+                        newUserId,
+                        false,
+                        doc.online
+                    )
+                )
             }else{
                 throw NoSuchFieldException()
             }
@@ -42,14 +53,22 @@ class UpdatePhoneUseCase @Inject constructor(
     fun updatePublicUserPhone(userId: String, newPhone: String) = flow<Resource<Unit>>{
         try{
             var doc = publicUserFbRepo.getUserWithId(userId)
+            val newUserId = "${userId.split(" - ")[0]}-${newPhone.substring(8..11)}"
             doc = doc?.copy(
                 phone = newPhone,
-                userId = "${userId.split(" - ")[0]}-${newPhone.substring(8..11)}"
+                userId = newUserId
             )
 
             if(doc != null) {
                 publicUserFbRepo.deleteUser(userId)
                 publicUserFbRepo.addUser(doc)
+                localSettingsRepo.updateSetting(
+                    SettingsDto(
+                        newUserId,
+                        doc.providesLocation ?: false,
+                        false
+                    )
+                )
             }else{
                 throw NoSuchFieldException()
             }
@@ -89,6 +108,13 @@ class UpdatePhoneUseCase @Inject constructor(
                 if(fluidDoc != null) {
                     lifeFluidsRepo.deleteHospitalLifeFluidData(userId)
                     lifeFluidsRepo.addHospitalLifeFluidData(newUserId, fluidDoc)
+                    localSettingsRepo.updateSetting(
+                        SettingsDto(
+                            newUserId,
+                            false,
+                            false
+                        )
+                    )
                 }else{
                     throw NoSuchFieldException()
                 }

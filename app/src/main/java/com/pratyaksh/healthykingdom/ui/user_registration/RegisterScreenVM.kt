@@ -179,10 +179,11 @@ class RegisterScreenVM @Inject constructor(
                 phone= uiState.phone,
                 userName = uiState.name,
                 mail= uiState.mail,
-                location = uiState.location!!,
+                location = uiState.location ?: GeoPoint(0.0, 0.0),
                 userId= "${AccountTypes.PUBLIC_USER.type}-${userId}",
                 providesLocation = uiState.providesLocation,
                 password = uiState.password,
+                gender = uiState.gender
             )
 
         }

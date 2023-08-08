@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun SimpleTopBar(
@@ -40,10 +41,10 @@ fun SimpleTopBar(
                 .padding(end = 8.dp),
             verticalAlignment= Alignment.CenterVertically
         ) {
-            IconButton(icon = Icons.Rounded.KeyboardArrowLeft, onClick = onBackPress)
-            Spacer(Modifier.width(4.dp))
+            IconButton(icon = Icons.Rounded.KeyboardArrowLeft, onClick = onBackPress, size= 16.dp)
+            Spacer(Modifier.width(6.dp))
 
-            Text(text = title, fontWeight = FontWeight.Bold, modifier=Modifier.weight(1f), color = Color.Black)
+            Text(text = title, fontWeight = FontWeight.Bold, modifier=Modifier.weight(1f), color = Color.Black, fontSize= 16.sp)
             EndButtons()
         }
     }

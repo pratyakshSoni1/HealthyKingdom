@@ -33,8 +33,7 @@ class SettingScreenVM @Inject constructor(
     private val getHospitalByIdUseCase: GetHospitalByIdUseCase,
     private val getPublicUserById: GetPublicUserById,
     private val getAmbulanceUserCase: GetAmbulanceUserCase,
-    private val updateLivePermitUseCase: UpdateAmbulanceLivePermit,
-    private val delUserUseCase: DeleteUserUseCase
+    private val updateLivePermitUseCase: UpdateAmbulanceLivePermit
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -57,6 +56,7 @@ class SettingScreenVM @Inject constructor(
         viewModelScope.launch {
             toggleLoading(true)
             try {
+                syncCloudSettingsToLocal(userId!!)
                 _uiState.update {
                     Log.d("DEBUG", "ID: $userId")
                     it.copy(
@@ -72,6 +72,46 @@ class SettingScreenVM @Inject constructor(
                 e.printStackTrace()
             }
         }
+    }
+
+    suspend fun syncCloudSettingsToLocal(userId: String){
+            if(identifyUserTypeFromId(userId)!!.equals(AccountTypes.AMBULANCE)){
+                getAmbulanceUserCase.getAmbulanceByUserId(userId).last().let{
+                    if(it is Resource.Success){
+                        updateLocalSettingUseCase.updateSettings(
+                            userId,
+                            false,
+                            it.data!!.isOnline
+                        )
+                    }else{
+                        toggleError(true)
+                    }
+                }
+            } else if(identifyUserTypeFromId(userId)!!.equals(AccountTypes.HOSPITAL)){
+                getHospitalByIdUseCase(userId).last().let{
+                    if(it is Resource.Success){
+                        updateLocalSettingUseCase.updateSettings(
+                            userId,
+                            false,
+                            false
+                        )
+                    }else{
+                        toggleError(true)
+                    }
+                }
+            }else if(identifyUserTypeFromId(userId)!!.equals(AccountTypes.PUBLIC_USER)){
+                getPublicUserById(userId).last().let{
+                    if(it is Resource.Success){
+                        updateLocalSettingUseCase.updateSettings(
+                            userId,
+                            it.data!!.providesLocation ?: false,
+                            false
+                        )
+                    }else{
+                        toggleError(true)
+                    }
+                }
+            }
     }
 
     fun refreshUiState() {
@@ -132,72 +172,12 @@ class SettingScreenVM @Inject constructor(
         }
     }
 
-    fun verifyUser(password: String): Boolean {
-        var isVerified: Boolean = false
-        runBlocking {
-            toggleLoading(true)
-            if (identifyUserTypeFromId(userId = uiState.value.userId!!)!!.equals(AccountTypes.PUBLIC_USER)) {
-                lateinit var tmpUser: Users.PublicUser
-                getPublicUserById(uiState.value.userId!!).last().let {
-                    if (it is Resource.Success) tmpUser = it.data!!
-                    else toggleError(true)
-                    isVerified = (tmpUser.password == password)
-                }
-            } else if (identifyUserTypeFromId(userId = uiState.value.userId!!)!!.equals(AccountTypes.AMBULANCE)) {
-                lateinit var tmpUser: Users.Ambulance
-                getAmbulanceUserCase.getAmbulanceByUserId(uiState.value.userId!!).last().let {
-                    if (it is Resource.Success) tmpUser = it.data!!
-                    else toggleError(true)
-                    isVerified = (tmpUser.password == password)
-                }
-            } else if (identifyUserTypeFromId(userId = uiState.value.userId!!)!!.equals(AccountTypes.HOSPITAL)) {
-                lateinit var tmpUser: Users.Hospital
-                getHospitalByIdUseCase(uiState.value.userId!!).last().let {
-                    if (it is Resource.Success) tmpUser = it.data!!
-                    else toggleError(true)
-                    isVerified = (tmpUser.password == password)
-                }
-            }
-        }
-        return isVerified
-    }
-
-    fun deleteUser() {
-        runBlocking {
-            toggleLoading(true)
-            try {
-                if (identifyUserTypeFromId(userId = uiState.value.userId!!)!!.equals(AccountTypes.PUBLIC_USER)) {
-                    deleteUserUseCase.deletePublicUser(uiState.value.userId!!)
-                } else if (identifyUserTypeFromId(userId = uiState.value.userId!!)!!.equals(
-                        AccountTypes.AMBULANCE
-                    )
-                ) {
-                    deleteUserUseCase.deleteAmbulance(uiState.value.userId!!)
-                } else if (identifyUserTypeFromId(userId = uiState.value.userId!!)!!.equals(
-                        AccountTypes.HOSPITAL
-                    )
-                ) {
-                    deleteUserUseCase.deleteHospital(uiState.value.userId!!)
-                }
-                toggleLoading(false)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                toggleError(true)
-            }
-        }
-    }
-
     fun toggleVerifyDialog(setToVisible: Boolean) {
         _uiState.update {
             it.copy(showVerifyPassDialog = setToVisible)
         }
     }
 
-    fun updateDialogPassTxt(newTxt: String) {
-        _uiState.update {
-            it.copy(verifyDialogPassTxt = newTxt)
-        }
-    }
 
     fun updateUserLogoutToFB(): Boolean {
         var isSuccess = false
@@ -214,10 +194,6 @@ class SettingScreenVM @Inject constructor(
         } else {
             return true
         }
-    }
-
-    fun deleteAccount() {
-
     }
 
     fun updatePassTxt(newTxt: String) {
@@ -281,5 +257,13 @@ class SettingScreenVM @Inject constructor(
     fun dismissPassVerification() {
         toggleVerifyDialog(false)
     }
+
+    fun deleteLocalUserSettings(){
+        toggleLoading(true)
+        runBlocking{
+            updateLocalSettingUseCase.deleteSettings(uiState.value.userId!!)
+        }
+    }
+
 
 }

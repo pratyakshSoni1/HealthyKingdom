@@ -12,7 +12,7 @@ sealed class AccountTypes(
 
     object AMBULANCE : AccountTypes(type = "Ambulance", img = R.drawable.ambulance)
     object HOSPITAL : AccountTypes(type = "Hospital", img = R.drawable.hospital)
-    object PUBLIC_USER : AccountTypes(type = "Public User", img = R.drawable.ic_person)
+    object PUBLIC_USER : AccountTypes(type = "PublicUser", img = R.drawable.ic_person)
 
 }
 

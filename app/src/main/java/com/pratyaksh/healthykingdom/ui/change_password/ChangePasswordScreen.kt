@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -46,7 +47,7 @@ fun ChangePasswordScreen(
     getCurrentUser: Flow<Resource<String?>>,
     navController: NavHostController,
     setSuccessOtpVerification: (onVerify: () -> Unit) -> Unit,
-    setResendToken: ( resendToken: PhoneAuthProvider.ForceResendingToken ) -> Unit
+    setResendToken: (resendToken: PhoneAuthProvider.ForceResendingToken) -> Unit
 ) {
 
     val viewModel: ChangePasswordVM = hiltViewModel()
@@ -61,7 +62,11 @@ fun ChangePasswordScreen(
             SimpleTopBar(onBackPress = { navController.popBackStack() }, title = "Change Password")
         }
     ) {
-        Box(Modifier.padding(it), contentAlignment = Alignment.Center) {
+        Box(
+            Modifier
+                .padding(it)
+                .padding(14.dp, 8.dp), contentAlignment = Alignment.Center
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -89,8 +94,8 @@ fun ChangePasswordScreen(
                         .fillMaxWidth()
                         .clickable {
                             viewModel.sendOtpUseCase(
-                                phone= uiState.phone,
-                                activity= activity,
+                                phone = uiState.phone,
+                                activity = activity,
                                 onVerificationComplete = {
                                     navController.navigate(Routes.FORGOT_PASSWORD_SCREEN.route)
                                 },
@@ -100,35 +105,58 @@ fun ChangePasswordScreen(
                                 onCodeSent = { verId, resendToken ->
                                     setResendToken(resendToken)
                                     viewModel.updateVerificationId(verId)
-                                    setSuccessOtpVerification{
+                                    setSuccessOtpVerification {
                                         navController.navigate(Routes.FORGOT_PASSWORD_SCREEN.route)
                                     }
-                                    navController.navigate(Routes.OTP_VERIFICATION_SCREEN.route+"/${uiState.phone}/${uiState.verificationId}")
+                                    navController.navigate(Routes.OTP_VERIFICATION_SCREEN.route + "/${uiState.phone}/$verId")
                                 }
                             )
                         },
                     textAlign = TextAlign.Center
                 )
 
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .weight(1f), verticalAlignment = Alignment.CenterVertically
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.BottomCenter
                 ) {
-
-                    Text("cancel", modifier = Modifier.weight(1f), color = Color.Red)
-
-                    Button(
-                        onClick = { viewModel.onChangePassword() },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color(0xFF0027FF)
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .padding(bottom = 14.dp)
+                    Row(
+                        Modifier
+                            .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Change Password", color = Color.White)
+
+                        Text(
+                            "cancel",
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth(),
+                            color = Color.Red,
+                            textAlign = TextAlign.Center
+                        )
+
+                        Button(
+                            onClick = {
+                                viewModel.onChangePassword().invokeOnCompletion {
+                                    navController.popBackStack()
+                                    navController.popBackStack()
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color(0xFF0027FF)
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .padding(bottom = 14.dp),
+                            shape = RoundedCornerShape(100.dp)
+                        ) {
+                            Text(
+                                "Change",
+                                color = Color.White,
+                                modifier = Modifier.padding(vertical = 2.dp)
+                            )
+                        }
                     }
                 }
 

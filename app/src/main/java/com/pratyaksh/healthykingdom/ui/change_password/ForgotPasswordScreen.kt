@@ -1,7 +1,6 @@
 package com.pratyaksh.healthykingdom.ui.change_password
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -31,12 +31,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.google.firebase.auth.PhoneAuthProvider
 import com.pratyaksh.healthykingdom.ui.utils.AppTextField
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
 import com.pratyaksh.healthykingdom.ui.utils.SimpleTopBar
 import com.pratyaksh.healthykingdom.utils.Resource
-import com.pratyaksh.healthykingdom.utils.Routes
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -57,7 +55,10 @@ fun ForgotPasswordScreen(
             SimpleTopBar(onBackPress = { navController.popBackStack() }, title = "Change Password")
         }
     ) {
-        Box(Modifier.padding(it), contentAlignment = Alignment.Center) {
+        Box(
+            Modifier
+                .padding(it)
+                .padding(14.dp, 8.dp), contentAlignment = Alignment.Center) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -71,25 +72,49 @@ fun ForgotPasswordScreen(
                     keyboard = KeyboardType.Password
                 )
 
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .weight(1f), verticalAlignment = Alignment.CenterVertically
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.BottomCenter
                 ) {
-
-                    Text("cancel", modifier = Modifier.weight(1f), color = Color.Red)
-
-                    Button(
-                        onClick = { viewModel.onChangePassword() },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color(0xFF0027FF)
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .padding(bottom = 14.dp)
+                    Row(
+                        Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Change", color = Color.White)
+
+                        Text(
+                            "cancel",
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth(),
+                            color = Color.Red,
+                            textAlign = TextAlign.Center
+                        )
+
+                        Button(
+                            onClick = {
+                                viewModel.onChangePassword().invokeOnCompletion {
+                                    navController.popBackStack()
+                                    navController.popBackStack()
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color(0xFF0027FF)
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .padding(bottom = 14.dp),
+                            shape = RoundedCornerShape(100.dp)
+                        ) {
+                            Text(
+                                "Change",
+                                color = Color.White,
+                                modifier = Modifier.padding(vertical = 2.dp)
+                            )
+                        }
                     }
                 }
 

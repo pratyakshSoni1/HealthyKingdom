@@ -13,7 +13,7 @@ class UserSettingRepoImpl (
 
     override suspend fun isSharingLocAllowed(
         id: String
-    ) = settingsDao.isSharingLocAllowed(id = id)
+    ) = settingsDao.isSharingLocAllowed(id = id) ?: false
 
 
     override suspend fun isSharingLive(id: String

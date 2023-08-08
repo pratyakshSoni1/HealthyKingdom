@@ -15,7 +15,7 @@ interface SettingsDao {
     suspend fun addSettings( settingEntity: SettingsDto )
 
     @Query( "SELECT showYourLocOnMap FROM SettingsDto WHERE userId =:id" )
-    suspend fun isSharingLocAllowed(id: String): Boolean
+    suspend fun isSharingLocAllowed(id: String): Boolean?
 
     @Query( "SELECT goLive FROM SettingsDto WHERE userId =:id" )
     suspend fun isSharingLive(id: String): Boolean

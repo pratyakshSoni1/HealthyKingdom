@@ -7,13 +7,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pratyaksh.healthykingdom.domain.use_case.add_ambulance.LoginAmbulanceUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.getHospital.HospitalLoginUseCase
+import com.pratyaksh.healthykingdom.domain.use_case.get_ambulance.GetAmbulanceUserCase
+import com.pratyaksh.healthykingdom.domain.use_case.get_public_user.GetPublicUserById
 import com.pratyaksh.healthykingdom.domain.use_case.get_public_user.PublicUserLoginUseCase
+import com.pratyaksh.healthykingdom.domain.use_case.settings.UpdateSettingUseCase
 import com.pratyaksh.healthykingdom.utils.AccountTypes
 import com.pratyaksh.healthykingdom.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,6 +26,9 @@ class LoginScreenVM @Inject constructor(
     private val hospitalLoginUseCase: HospitalLoginUseCase,
     private val ambulanceLoginUseCase: LoginAmbulanceUseCase,
     private val publicUserLoginUseCase: PublicUserLoginUseCase,
+    private val addLocalSettingsDb: UpdateSettingUseCase,
+    private val getAmbulanceUserCase: GetAmbulanceUserCase,
+    private val getPublicUserUserCase: GetPublicUserById
 ): ViewModel() {
 
     var uiState by mutableStateOf(LoginScreenUiState())
@@ -37,11 +45,45 @@ class LoginScreenVM @Inject constructor(
         )
     }
 
-    fun onErrTxtChange(newValue: String){
-        uiState = uiState.copy(
-            errorText = newValue
-        )
+    fun addLocalSettings(userId: String){
+        runBlocking{
+            if(uiState.accountType.equals(AccountTypes.AMBULANCE) ){
+                getAmbulanceUserCase.getAmbulanceByUserId(userId).last().let {
+                    if(it is Resource.Success){
+                        addLocalSettingsDb.addLocalSettings(
+                            userId,
+                            false,
+                            it.data!!.isOnline
+                        )
+                    }else{
+                        toggleErrorDialog(true)
+                    }
+                }
+            }else if(uiState.accountType.equals(AccountTypes.HOSPITAL) ){
+                addLocalSettingsDb.addLocalSettings(
+                            userId,
+                            false,
+                            false
+                )
+            }else if(uiState.accountType.equals(AccountTypes.PUBLIC_USER) ){
+                getPublicUserUserCase(userId).last().let {
+                    if(it is Resource.Success){
+                        addLocalSettingsDb.addLocalSettings(
+                            userId,
+                            false,
+                            it.data!!.providesLocation ?: false
+                        )
+                    }else{
+                        toggleErrorDialog(true)
+                    }
+                }
+            }else{
+                toggleErrorDialog(false)
+            }
+        }
+
     }
+
 
     fun toggleErrorDialog(setToVisible: Boolean, text: String = "Something went wrong"){
         uiState = uiState.copy(

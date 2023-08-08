@@ -47,6 +47,82 @@ class ChangePhoneVM @Inject constructor(
                     toggleError(true, "Can't retrieve user")
             }
         }
+        viewModelScope.launch {
+            if( uiState.value.userId != null ) {
+                updateoldPhoneUiState(uiState.value.userId!!)
+            }
+        }
+    }
+
+    suspend fun updateoldPhoneUiState(userId: String): Boolean{
+        var isUpdated = false
+        if(identifyUserTypeFromId(userId = userId)!!.equals(AccountTypes.AMBULANCE)){
+            getAmbulance.getAmbulanceByUserId(userId =userId).last().let{ ambulance ->
+                if(ambulance is Resource.Success){
+                    _uiState.update {
+                        it.copy(
+                            oldPhone = ambulance.data?.phone
+                        )
+                    }
+                    isUpdated = true
+                }
+            }
+        }else if(identifyUserTypeFromId(userId = userId)!!.equals(AccountTypes.HOSPITAL)) {
+            getHospital(userId).last().let{ hosp ->
+                if(hosp is Resource.Success){
+                    _uiState.update {
+                        it.copy(
+                            oldPhone = hosp.data?.phone
+                        )
+                    }
+                    isUpdated = true
+                }
+            }
+        }else if(identifyUserTypeFromId(userId = userId)!!.equals(AccountTypes.PUBLIC_USER)){
+            getPublicUserById(userId =userId).last().let{ user ->
+                if(user is Resource.Success){
+                    _uiState.update {
+                        it.copy(
+                            oldPhone = user.data?.phone
+                        )
+                    }
+                    isUpdated = true
+                }
+            }
+        }
+        return isUpdated
+    }
+
+    fun getCurrentPhone(): String{
+        var phone = ""
+        runBlocking{
+            if( identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.PUBLIC_USER)){
+                getPublicUserById(uiState.value.userId!!).last().let{
+                    if( it is Resource.Success ){
+                        phone = it.data!!.phone!!
+                    }else{
+                        toggleError(true, "Unable fetch user")
+                    }
+                }
+            }else if( identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.HOSPITAL)){
+                getHospital(uiState.value.userId!!).last().let{
+                    if( it is Resource.Success ){
+                        phone = it.data!!.phone!!
+                    }else{
+                        toggleError(true, "Unable fetch user")
+                    }
+                }
+            }else if( identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.AMBULANCE)){
+                getPublicUserById(uiState.value.userId!!).last().let{
+                    if( it is Resource.Success ){
+                        phone = it.data!!.phone!!
+                    }else{
+                        toggleError(true, "Unable fetch user")
+                    }
+                }
+            }
+        }
+        return phone
     }
 
     fun changePhone() {
@@ -108,19 +184,19 @@ class ChangePhoneVM @Inject constructor(
             if (identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.AMBULANCE)) {
                 getAmbulance.getAmbulanceByUserId(uiState.value.userId!!).last().let {
                     if (it is Resource.Success) {
-                        isVerified = uiState.value.oldPassTxt == (it.data!!.password ?: "")
+                        isVerified = uiState.value.passTxt == (it.data!!.password ?: "")
                     } else toggleError(true, "Unexpected error, try again later")
                 }
             } else if (identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.HOSPITAL)) {
                 getHospital(uiState.value.userId!!).last().let {
                     if (it is Resource.Success) {
-                        isVerified = uiState.value.oldPassTxt == (it.data!!.password ?: "")
+                        isVerified = uiState.value.passTxt == (it.data!!.password ?: "")
                     } else toggleError(true, "Unexpected error, try again later")
                 }
             } else if (identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.PUBLIC_USER)) {
                 getPublicUserById(uiState.value.userId!!).last().let {
                     if (it is Resource.Success) {
-                        isVerified = uiState.value.oldPassTxt == (it.data!!.password ?: "")
+                        isVerified = uiState.value.passTxt == (it.data!!.password ?: "")
                     } else toggleError(true, "Unexpected error, try again later")
                 }
             } else {
@@ -147,13 +223,13 @@ class ChangePhoneVM @Inject constructor(
         }
     }
 
-    fun updateOldPassTxt(newvalue: String) {
+    fun updatePasswordTxt(newvalue: String) {
         _uiState.update {
-            it.copy(oldPassTxt = newvalue)
+            it.copy(passTxt = newvalue)
         }
     }
 
-    fun updateNewPassTxt(newvalue: String) {
+    fun updateNewPhoneTxt(newvalue: String) {
         _uiState.update {
             it.copy(newPhoneTxt = newvalue)
         }
@@ -182,10 +258,11 @@ class ChangePhoneVM @Inject constructor(
 }
 
 data class ChangePhoneScreenUiState(
+    val oldPhone: String? = null,
     val isError: Boolean = false,
     val isLoading: Boolean = false,
     val userId: String? = null,
-    val oldPassTxt: String = "",
+    val passTxt: String = "",
     val newPhoneTxt: String = "",
     val errorTxt: String = "",
     val verificationId: String? = null,

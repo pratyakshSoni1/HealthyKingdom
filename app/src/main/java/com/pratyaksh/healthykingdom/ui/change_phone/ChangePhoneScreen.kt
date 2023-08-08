@@ -12,12 +12,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +41,7 @@ import com.pratyaksh.healthykingdom.ui.utils.SimpleTopBar
 import com.pratyaksh.healthykingdom.utils.Resource
 import com.pratyaksh.healthykingdom.utils.Routes
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun ChangePhoneScreen(
@@ -46,7 +49,7 @@ fun ChangePhoneScreen(
     getCurrentUser: Flow<Resource<String?>>,
     navController: NavHostController,
     setSuccessOtpVerification: (onVerify: () -> Unit) -> Unit,
-    setResendToken: ( resendToken: PhoneAuthProvider.ForceResendingToken ) -> Unit
+    setResendToken: (resendToken: PhoneAuthProvider.ForceResendingToken) -> Unit
 ) {
 
     val viewModel: ChangePhoneVM = hiltViewModel()
@@ -61,7 +64,12 @@ fun ChangePhoneScreen(
             SimpleTopBar(onBackPress = { navController.popBackStack() }, title = "Change Password")
         }
     ) {
-        Box(Modifier.padding(it), contentAlignment = Alignment.Center) {
+        Box(
+            Modifier
+                .padding(it)
+                .padding(horizontal = 14.dp, vertical = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -70,14 +78,14 @@ fun ChangePhoneScreen(
                 Spacer(Modifier.height(8.dp))
                 AppTextField(
                     value = uiState.newPhoneTxt,
-                    onValueChange = { viewModel.updateOldPassTxt(it) },
+                    onValueChange = { viewModel.updateNewPhoneTxt(it) },
                     hint = "New Phone Number",
                     keyboard = KeyboardType.Phone
                 )
                 Spacer(Modifier.height(6.dp))
                 AppTextField(
-                    value = uiState.oldPassTxt,
-                    onValueChange = { viewModel.updateNewPassTxt(it) },
+                    value = uiState.passTxt,
+                    onValueChange = { viewModel.updatePasswordTxt(it) },
                     hint = "Password",
                     keyboard = KeyboardType.Password
                 )
@@ -88,75 +96,109 @@ fun ChangePhoneScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            viewModel.sendOtpSendUseCase(
-                                phone= uiState.newPhoneTxt,
-                                activity= activity,
-                                onVerificationComplete = {
-                                    navController.navigate(Routes.FORGOT_PASSWORD_SCREEN.route)
-                                },
-                                onVerificationFailed = {
-                                    viewModel.toggleError(true, "Phone number can't be verified")
-                                },
-                                onCodeSent = { verId, resendToken ->
-                                    setResendToken(resendToken)
-                                    viewModel.updateVerificationId(verId)
-                                    setSuccessOtpVerification{
-                                        navController.navigate(Routes.FORGOT_PASSWORD_SCREEN.route)
-                                    }
-                                    navController.navigate(Routes.OTP_VERIFICATION_SCREEN.route+"/${uiState.newPhoneTxt}/${uiState.verificationId}")
+                            runBlocking {
+                                if (uiState.oldPhone != null || viewModel.updateoldPhoneUiState(
+                                        uiState.userId!!
+                                    )
+                                ) {
+                                    viewModel.sendOtpSendUseCase(
+                                        phone = uiState.oldPhone!!,
+                                        activity = activity,
+                                        onVerificationComplete = {
+                                            navController.navigate(Routes.FORGOT_PASSWORD_SCREEN.route)
+                                        },
+                                        onVerificationFailed = {
+                                            viewModel.toggleError(
+                                                true,
+                                                "Phone number can't be verified"
+                                            )
+                                        },
+                                        onCodeSent = { verId, resendToken ->
+                                            setResendToken(resendToken)
+                                            viewModel.updateVerificationId(verId)
+                                            setSuccessOtpVerification {
+                                                navController.navigate(Routes.FORGOT_PASSWORD_SCREEN.route)
+                                            }
+                                            navController.navigate(Routes.OTP_VERIFICATION_SCREEN.route + "/${uiState.oldPhone}/${uiState.verificationId}")
+                                        }
+                                    )
                                 }
-                            )
+                            }
 
                         },
                     textAlign = TextAlign.Center
                 )
 
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .weight(1f), verticalAlignment = Alignment.CenterVertically
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    contentAlignment = Alignment.BottomCenter
                 ) {
-
-                    Text("cancel", modifier = Modifier.weight(1f), color = Color.Red)
-
-                    Button(
-                        onClick = {
-                            viewModel.validateNewPhone()
-                            if (viewModel.verifyPassword()) {
-                                viewModel.sendOtpSendUseCase(
-                                    phone = uiState.newPhoneTxt,
-                                    activity = activity,
-                                    onVerificationFailed = {
-                                        viewModel.toggleError(
-                                            true,
-                                            "Phone number verification failed"
-                                        )
-                                    },
-                                    onVerificationComplete = {
-                                        viewModel.changePhone()
-                                    },
-                                    onCodeSent = { verId, resendToken ->
-                                        viewModel.updateVerificationId(verId)
-                                        setResendToken( resendToken )
-                                        setSuccessOtpVerification{
-                                            viewModel.changePhone()
-                                        }
-                                        navController.navigate(Routes.OTP_VERIFICATION_SCREEN.route+"/${uiState.newPhoneTxt}/$verId")
-                                    }
-                                )
-                            } else {
-                                viewModel.toggleError(true, "Wrong Password")
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color(0xFF0027FF)
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .padding(bottom = 14.dp)
+                    Row(
+                        Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Change Password", color = Color.White)
+
+                        Text(
+                            "cancel",
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth(),
+                            color = Color.Red,
+                            textAlign = TextAlign.Center
+                        )
+
+                        Button(
+                            onClick = {
+                                viewModel.validateNewPhone()
+                                if (viewModel.verifyPassword()) {
+                                    viewModel.sendOtpSendUseCase(
+                                        phone = uiState.newPhoneTxt,
+                                        activity = activity,
+                                        onVerificationFailed = {
+                                            viewModel.toggleError(
+                                                true,
+                                                "Phone number verification failed"
+                                            )
+                                        },
+                                        onVerificationComplete = {
+                                            viewModel.changePhone()
+                                        },
+                                        onCodeSent = { verId, resendToken ->
+                                            viewModel.updateVerificationId(verId)
+                                            setResendToken(resendToken)
+                                            setSuccessOtpVerification {
+                                                viewModel.changePhone()
+                                            }
+                                            val phone = viewModel.getCurrentPhone()
+                                            navController.navigate(Routes.OTP_VERIFICATION_SCREEN.route + "/${uiState.newPhoneTxt}/$verId")
+                                        }
+                                    )
+                                } else {
+                                    viewModel.toggleError(true, "Wrong Password")
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color(0xFF0027FF)
+                            ),
+                            shape = RoundedCornerShape(100.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .padding(bottom = 14.dp)
+                        ) {
+                            Text(
+                                "Continue", color = Color.White, modifier =
+                                Modifier.padding(vertical = 2.dp)
+                            )
+                            Icon(
+                                imageVector = Icons.Rounded.KeyboardArrowRight,
+                                contentDescription = null,
+                                tint = Color.White
+                            )
+                        }
                     }
                 }
 

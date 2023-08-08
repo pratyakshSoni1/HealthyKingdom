@@ -12,6 +12,7 @@ import com.pratyaksh.healthykingdom.utils.AccountTypes
 import com.pratyaksh.healthykingdom.utils.Resource
 import com.pratyaksh.healthykingdom.utils.identifyUserTypeFromId
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -76,9 +77,9 @@ class ChangePasswordVM @Inject constructor(
         }
     }
 
-    fun onChangePassword(isOtpVerified: Boolean = false) {
+    fun onChangePassword(isOtpVerified: Boolean = false): Job {
         toggleLoading(true)
-        viewModelScope.launch {
+        return viewModelScope.launch {
             if (identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.AMBULANCE)) {
                 getAmbulance.getAmbulanceByUserId(uiState.value.userId!!).last().let {
                     if (it is Resource.Success) {

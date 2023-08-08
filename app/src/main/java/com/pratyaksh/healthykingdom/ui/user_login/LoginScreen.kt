@@ -145,6 +145,7 @@ fun LoginScreen(
                                             .collectLatest { resp ->
                                                 viewModel.toggleLoadingCmp(true)
                                                 if(resp is Resource.Success){
+                                                    viewModel.addLocalSettings(it.data)
                                                     navController.navigate(Routes.HOME_NAVGRAPH.route) {
                                                         popUpTo(Routes.SIGNUP_NAVGRAPH.route) { inclusive = true }
                                                     }
