@@ -87,7 +87,6 @@ class ProfileScreenVM @Inject constructor(
                         location = it.data.location,
                         accountType = AccountTypes.HOSPITAL,
                         mail = it.data.mail,
-                        showLocationChooser = true,
                         phone = it.data.phone,
                     )
                 else
@@ -102,7 +101,6 @@ class ProfileScreenVM @Inject constructor(
                         providesLocation = it.data.providesLocation ?: false,
                         accountType = AccountTypes.PUBLIC_USER,
                         mail = it.data.mail ?: "",
-                        showLocationChooser = it.data.providesLocation ?: false,
                         location = it.data.location ?: GeoPoint(0.0, 0.0),
                         age = it.data.age.toString(),
                         phone = it.data.phone!!
@@ -251,7 +249,9 @@ class ProfileScreenVM @Inject constructor(
                         uiState.name,
                         mail = uiState.mail,
                         location = uiState.location,
-                        providesLocation = uiState.providesLocation
+                        providesLocation = uiState.providesLocation,
+                        gender= uiState.gender,
+                        age = uiState.age.toInt()
                     )
                     updateUserUseCase.updatePublicUser(user!!).last().let {
                         if (it is Resource.Success) {
