@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,38 +26,30 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.pratyaksh.healthykingdom.R
 import com.pratyaksh.healthykingdom.domain.model.getQuantityMap
+import com.pratyaksh.healthykingdom.ui.utils.ErrorDialog
 import com.pratyaksh.healthykingdom.ui.utils.FluidInfoDialog
 import com.pratyaksh.healthykingdom.ui.utils.GroupLabel
-import com.pratyaksh.healthykingdom.ui.utils.IconButton
 import com.pratyaksh.healthykingdom.ui.utils.LifeFluidTitle
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
 import com.pratyaksh.healthykingdom.ui.utils.MapLocationPreview
 import com.pratyaksh.healthykingdom.ui.utils.RequestsDisplayComponent
 import com.pratyaksh.healthykingdom.ui.utils.SimpleTopBar
-import com.pratyaksh.healthykingdom.utils.BloodGroups
-import com.pratyaksh.healthykingdom.utils.BloodGroupsInfo
 import com.pratyaksh.healthykingdom.utils.LifeFluids
-import com.pratyaksh.healthykingdom.utils.Plasma
-import com.pratyaksh.healthykingdom.utils.PlasmaGroupInfo
-import com.pratyaksh.healthykingdom.utils.PlateletsGroupInfo
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -92,11 +84,9 @@ fun HospitalDetailsScreen(
                         .verticalScroll(rememberScrollState())
                 ) {
                     if (uiState.value.isError) {
-                        Text(
-                            "Unexpected Error\n Try again later.",
-                            modifier = Modifier.fillMaxSize(),
-                            textAlign = TextAlign.Center
-                        )
+                        ErrorDialog(text = uiState.value.errorTxt) {
+                            navController.popBackStack()
+                        }
                     } else if (uiState.value.hospital != null) {
 
                         Column(
@@ -177,13 +167,13 @@ fun HospitalDetailsScreen(
                             requests = uiState.value.requests,
                             onBloodGroupClick = {
                                 viewModel.showFluidInfoDialog(
-                                    fluidType= LifeFluids.BLOOD,
+                                    fluidType = LifeFluids.BLOOD,
                                     fluidBloodGroup = it,
                                 )
                             },
                             onPlateletsGroupClick = {
                                 viewModel.showFluidInfoDialog(
-                                    fluidType= LifeFluids.PLATELETS,
+                                    fluidType = LifeFluids.PLATELETS,
                                     fluidPlateletsGroup = it,
                                 )
                             },
@@ -221,7 +211,7 @@ fun HospitalDetailsScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 val availBlood = uiState.value.bloods.getQuantityMap()
-                                if (availBlood.values.any { qty -> qty > 0 }){
+                                if (availBlood.values.any { qty -> qty > 0 }) {
                                     for (group in availBlood) {
                                         if (group.value > 0) {
                                             Box(
@@ -241,7 +231,7 @@ fun HospitalDetailsScreen(
                                             }
                                         }
                                     }
-                                }else{
+                                } else {
                                     FluidNotAvailableTag()
                                     Spacer(modifier = Modifier.height(12.dp))
                                 }
@@ -269,7 +259,7 @@ fun HospitalDetailsScreen(
                             ) {
 
                                 val availPlasma = uiState.value.plasma.getQuantityMap()
-                                if (availPlasma.values.any { qty -> qty > 0 }){
+                                if (availPlasma.values.any { qty -> qty > 0 }) {
                                     for (group in availPlasma) {
                                         if (group.value > 0) {
                                             Box(
@@ -288,7 +278,7 @@ fun HospitalDetailsScreen(
                                             }
                                         }
                                     }
-                                }else{
+                                } else {
                                     FluidNotAvailableTag()
                                     Spacer(modifier = Modifier.height(12.dp))
                                 }
@@ -304,7 +294,10 @@ fun HospitalDetailsScreen(
                                 .padding(8.dp)
                         ) {
 
-                            LifeFluidTitle(fluidType = LifeFluids.PLATELETS, titlePrefix = "Available")
+                            LifeFluidTitle(
+                                fluidType = LifeFluids.PLATELETS,
+                                titlePrefix = "Available"
+                            )
 
                             FlowRow(
                                 maxItemsInEachRow = 4,
@@ -365,7 +358,8 @@ fun HospitalDetailsScreen(
                     else uiState.value.dialogBloodGroup?.canReceiveFrom ?: emptyList(),
 
                     onDismissReq = { viewModel.dismissFluidDialog() },
-                    canRecPlasmaFrom = uiState.value.dialogPlasmaGroup?.canReceiveFrom ?: emptyList(),
+                    canRecPlasmaFrom = uiState.value.dialogPlasmaGroup?.canReceiveFrom
+                        ?: emptyList(),
                     canDonPlasmaTo = uiState.value.dialogPlasmaGroup?.canDonateTo ?: emptyList(),
                     bloodGroup = uiState.value.dialogBloodGroup,
                     plasmaGroup = uiState.value.dialogPlasmaGroup,
@@ -376,12 +370,14 @@ fun HospitalDetailsScreen(
         }
 
         if (uiState.value.isLoading) {
-            Box(
-                Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                LoadingComponent(modifier = Modifier.size(80.dp))
-            }
+            LoadingComponent(
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.White)
+            )
+
         }
 
     }

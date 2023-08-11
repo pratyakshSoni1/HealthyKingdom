@@ -1,6 +1,7 @@
 package com.pratyaksh.healthykingdom.ui.change_password
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -32,9 +34,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.pratyaksh.healthykingdom.ui.utils.AppTextField
+import com.pratyaksh.healthykingdom.ui.utils.ErrorDialog
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
 import com.pratyaksh.healthykingdom.ui.utils.SimpleTopBar
 import com.pratyaksh.healthykingdom.utils.Resource
+import com.pratyaksh.healthykingdom.utils.Routes
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -80,7 +84,8 @@ fun ForgotPasswordScreen(
                 ) {
                     Row(
                         Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .padding(bottom = 14.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
@@ -88,16 +93,32 @@ fun ForgotPasswordScreen(
                             "cancel",
                             modifier = Modifier
                                 .weight(1f)
-                                .fillMaxWidth(),
+                                .fillMaxWidth()
+                                .clickable {
+                                           navController.navigate(Routes.SETTINGS_SCREEN.route){
+                                               popUpTo(Routes.OTP_VERIFICATION_SCREEN.route){
+                                                   inclusive = true
+                                               }
+                                           }
+                                },
                             color = Color.Red,
                             textAlign = TextAlign.Center
                         )
 
                         Button(
                             onClick = {
-                                viewModel.onChangePassword().invokeOnCompletion {
-                                    navController.popBackStack()
-                                    navController.popBackStack()
+                                if(viewModel.verifyPasswordPattern()){
+                                    viewModel.onChangePassword().invokeOnCompletion {
+                                        navController.popBackStack()
+                                        navController.popBackStack()
+                                    }
+                                }else{
+                                    viewModel.toggleError(
+                                        true,
+                                        "Please strong password, with a small, capital case alphabet, a number and a special symbol."
+                                    ){
+                                        viewModel.toggleError(false)
+                                    }
                                 }
                             },
                             colors = ButtonDefaults.buttonColors(
@@ -105,8 +126,7 @@ fun ForgotPasswordScreen(
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .weight(1f)
-                                .padding(bottom = 14.dp),
+                                .weight(1f),
                             shape = RoundedCornerShape(100.dp)
                         ) {
                             Text(
@@ -124,22 +144,14 @@ fun ForgotPasswordScreen(
                     modifier = Modifier
                         .fillMaxWidth(0.85f)
                         .aspectRatio(1f)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.White)
                 )
             }
 
             if (uiState.isError) {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .background(Color.White)
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Warning,
-                        contentDescription = null,
-                        tint = Color.Red
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Text(text = uiState.errorTxt, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                ErrorDialog(text = uiState.errorTxt) {
+                    uiState.onErrorCloseAction()
                 }
             }
         }

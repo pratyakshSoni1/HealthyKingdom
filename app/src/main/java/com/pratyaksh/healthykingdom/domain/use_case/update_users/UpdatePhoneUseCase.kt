@@ -21,9 +21,10 @@ class UpdatePhoneUseCase @Inject constructor(
     val localSettingsRepo: LocalUserSettingRepo
 ){
     fun updateAmbulancePhone(userId: String, newPhone: String) = flow<Resource<Unit>>{
+        emit(Resource.Loading("Updating..."))
         try{
             var doc = ambulanceFbRepo.getAmbulanceById(userId)
-            val newUserId: String = "${userId.split(" - ")[0]}-${newPhone.substring(8..11)}"
+            val newUserId: String = "${userId.split("-")[0]}-${newPhone.substring(8..11)}"
             doc = doc?.copy(
                 phone = newPhone,
                 userId = newUserId
@@ -39,7 +40,9 @@ class UpdatePhoneUseCase @Inject constructor(
                         doc.online
                     )
                 )
+                emit(Resource.Success(Unit))
             }else{
+                emit(Resource.Error("No such user file found"))
                 throw NoSuchFieldException()
             }
 
@@ -51,9 +54,10 @@ class UpdatePhoneUseCase @Inject constructor(
     }
 
     fun updatePublicUserPhone(userId: String, newPhone: String) = flow<Resource<Unit>>{
+        emit(Resource.Loading("Updating..."))
         try{
             var doc = publicUserFbRepo.getUserWithId(userId)
-            val newUserId = "${userId.split(" - ")[0]}-${newPhone.substring(8..11)}"
+            val newUserId = "${userId.split("-")[0]}-${newPhone.substring(8..11)}"
             doc = doc?.copy(
                 phone = newPhone,
                 userId = newUserId
@@ -69,7 +73,9 @@ class UpdatePhoneUseCase @Inject constructor(
                         false
                     )
                 )
+                emit(Resource.Success(Unit))
             }else{
+                emit(Resource.Error("No such user file found"))
                 throw NoSuchFieldException()
             }
 
@@ -81,8 +87,9 @@ class UpdatePhoneUseCase @Inject constructor(
     }
 
     fun updateHospitalPhone(userId: String, newPhone: String) = flow<Resource<Unit>>{
+        emit(Resource.Loading("Updating..."))
         try{
-            val newUserId = "${userId.split(" - ")[0]}-${newPhone.substring(8..11)}"
+            val newUserId = "${userId.split("-")[0]}-${newPhone.substring(8..11)}"
             var doc = hospitalFbRepo.getHospitalById(userId)
             doc = doc?.copy(
                 phone = newPhone,
@@ -115,11 +122,15 @@ class UpdatePhoneUseCase @Inject constructor(
                             false
                         )
                     )
+
+                    emit(Resource.Success(Unit))
                 }else{
+                    emit(Resource.Error("No such lifefluid file found"))
                     throw NoSuchFieldException()
                 }
 
             }else{
+                emit(Resource.Error("No such user file found"))
                 throw NoSuchFieldException()
             }
 

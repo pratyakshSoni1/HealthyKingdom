@@ -49,7 +49,7 @@ fun Navigation(
             startDestination = Routes.LOGIN_SCREEN,
             activity = activity,
             navController = navController,
-            updateCurrentLoggedUser = { updateCurrentLoggedUser(it) }
+            updateCurrentLoggedUser = updateCurrentLoggedUser
         )
 
         fluidsUpdationNavGraph(

@@ -107,9 +107,9 @@ class HomeScreenViewModel @Inject constructor(
         )
     }
 
-    fun toggleError(setVisible: Boolean) {
+    fun toggleError(setVisible: Boolean, errorTxt: String ) {
         homeScreenUiState.value =
-            homeScreenUiState.value.copy(isError = setVisible, isLoading = false)
+            homeScreenUiState.value.copy(isError = setVisible, isLoading = false, errorText = errorTxt)
     }
 
     private fun getAllHospitals() {
@@ -326,7 +326,7 @@ class HomeScreenViewModel @Inject constructor(
                 )
             } else {
                 Log.d("DEBUG", "Found ${it.msg}")
-                toggleError(true)
+                toggleError(true, "Unable to apply filter")
                 toggleLoadingScr(false)
             }
         }
@@ -345,7 +345,7 @@ class HomeScreenViewModel @Inject constructor(
                 Log.d("DEBUG", "Got fluids")
                 when (it) {
                     is Resource.Error -> {
-                        toggleError(true)
+                        toggleError(true, "Unable to fetch fluids")
                         toggleLoadingScr(false)
                     }
 
@@ -438,7 +438,7 @@ class HomeScreenViewModel @Inject constructor(
                     if(it is Resource.Success && it.data != null){
                         searchRes = it.data
                     }else{
-                        toggleError(true)
+                        toggleError(true, "Unable to retrieve hospital")
                     }
                 }
             }

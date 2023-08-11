@@ -47,21 +47,21 @@ fun ErrorDialog(
             }
             Column(
                 modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-
+                Spacer(Modifier.height(8.dp))
                 Icon(
                     imageVector = Icons.Rounded.Warning,
                     tint = Color.Red,
-                    modifier = Modifier.fillMaxSize(0.4f),
+                    modifier = Modifier.fillMaxSize(0.33f),
                     contentDescription = text
                 )
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(6.dp))
 
                 Text(
                     text = text,
                     color = Color.Black,
-                    textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 4.dp)

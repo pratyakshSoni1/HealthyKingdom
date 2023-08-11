@@ -24,7 +24,8 @@ data class HomeScreenUiState(
     val selectedFilter: MarkerFilters,
     val requests: List<Requests> = emptyList(),
     val liveAmbulances: List<Users.Ambulance> = emptyList() ,
-    val isSyncingAmbulance: Boolean = false
+    val isSyncingAmbulance: Boolean = false,
+    val errorText: String = "Unexpected error"
 
 ){
 

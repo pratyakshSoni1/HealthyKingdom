@@ -23,6 +23,7 @@ data class HospitalDetailsUiState (
     val dialogBloodGroup: BloodGroupsInfo? = null,
     val dialogPlateletsGroup: PlateletsGroupInfo? = null,
     val dialogPlasmaGroup: PlasmaGroupInfo? = null,
-    val requests: Requests? = null
+    val requests: Requests? = null,
+    val errorTxt: String = ""
 
 )

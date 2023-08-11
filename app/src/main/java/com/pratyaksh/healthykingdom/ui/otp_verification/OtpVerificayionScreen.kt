@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -45,7 +46,12 @@ import com.pratyaksh.healthykingdom.ui.utils.OtpTextDisplay
 import com.pratyaksh.healthykingdom.ui.utils.SimpleTopBar
 import com.pratyaksh.healthykingdom.utils.Resource
 import com.pratyaksh.healthykingdom.utils.Routes
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun OtpVerificationScreen(
@@ -140,7 +146,16 @@ fun OtpVerificationScreen(
                                     },
                                     onVerificationFailed = {
                                         Log.d("VerificationLogs", "Can't verify otp${it.message}")
-                                        viewModel.toggleErrorDialog(true, "Failed to verify")
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            viewModel.toggleErrorDialog(
+                                                true,
+                                                "Verification failed try again later"
+                                            )
+                                            delay(3000L)
+                                            withContext(Dispatchers.Main) {
+                                                navController.popBackStack()
+                                            }
+                                        }
                                     },
                                     onCodeSent = viewModel::updateVerificationIdAndToken
                                 )
@@ -175,13 +190,21 @@ fun OtpVerificationScreen(
                                     onVerify()
                                 },
                                 onVerificationFailed = {
-                                    viewModel.toggleErrorDialog(
-                                        true,
-                                        "Verification failed, try later"
-                                    )
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        viewModel.toggleErrorDialog(
+                                            true,
+                                            "Verification failed try again later"
+                                        )
+                                        delay(3000L)
+                                        withContext(Dispatchers.Main) {
+                                            navController.popBackStack()
+                                        }
+                                    }
                                 },
                                 onInvalidCoe = {
-                                    viewModel.toggleErrorDialog(true, "Invalid Code")
+                                    viewModel.toggleErrorDialog(true, "Invalid Code"){
+                                        viewModel.toggleErrorDialog(false)
+                                    }
                                 }
 
                             )
@@ -203,25 +226,20 @@ fun OtpVerificationScreen(
                 ErrorDialog(
                     text = viewModel.uiState.errorText,
                     onClose= {
-                        viewModel.toggleErrorDialog(true)
+                        viewModel.uiState.onErrorCloseAction()
                     }
                 )
             }
 
             if(viewModel.uiState.isLoading){
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .background(Color(0x32000000)), contentAlignment= Alignment.Center) {
-                    LoadingComponent(
-                        modifier = Modifier
-                            .fillMaxSize(0.5f)
+                LoadingComponent(
+                        modifier = Modifier.fillMaxWidth(0.5f)
+                            .aspectRatio(1f)
                             .clip(RoundedCornerShape(12.dp))
                             .background(Color.White),
                         text = "Please Wait"
                     )
                 }
-            }
 
         }
     }

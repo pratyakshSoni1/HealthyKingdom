@@ -19,7 +19,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.osmdroid.util.GeoPoint
 import javax.inject.Inject
 
@@ -42,7 +41,7 @@ class ProfileScreenVM @Inject constructor(
 
     fun initScreenState(getUserId: Flow<Resource<String?>>) {
         toggleLoadingScr(true)
-        runBlocking {
+        viewModelScope.launch {
             getUserId.last().let {
                 if (it is Resource.Success) {
                     uiState = uiState.copy(
@@ -72,7 +71,8 @@ class ProfileScreenVM @Inject constructor(
                         accountType = AccountTypes.AMBULANCE,
                         age = it.data.driverAge.toString(),
                         mail = it.data.mail ?: "",
-                        vehicleNumber = it.data.vehicleNumber
+                        vehicleNumber = it.data.vehicleNumber,
+                        phone = it.data.phone!!
 
                     )
                 else
@@ -82,25 +82,31 @@ class ProfileScreenVM @Inject constructor(
         } else if (identifyUserTypeFromId(userId)!!.equals(AccountTypes.HOSPITAL)) {
             getHospital(userId).last().let {
                 if (it is Resource.Success)
-                        uiState = uiState.copy(
-                            name = it.data!!.name,
-                            location = it.data.location,
-                            accountType = AccountTypes.HOSPITAL,
-                            mail = it.data!!.mail
-                        )
+                    uiState = uiState.copy(
+                        name = it.data!!.name,
+                        location = it.data.location,
+                        accountType = AccountTypes.HOSPITAL,
+                        mail = it.data.mail,
+                        showLocationChooser = true,
+                        phone = it.data.phone,
+                    )
                 else
                     toggleErrorDialog(true, "Can't Retrieve details from database")
             }
         } else if (identifyUserTypeFromId(userId)!!.equals(AccountTypes.PUBLIC_USER)) {
             getPublicUser(userId).last().let {
                 if (it is Resource.Success)
-                        uiState = uiState.copy(
-                            gender = it.data!!.gender,
-                            name = it.data.userName!!,
-                            providesLocation = it.data.providesLocation ?: false,
-                            accountType = AccountTypes.PUBLIC_USER,
-                            mail = it.data.mail ?: ""
-                        )
+                    uiState = uiState.copy(
+                        gender = it.data!!.gender,
+                        name = it.data.userName!!,
+                        providesLocation = it.data.providesLocation ?: false,
+                        accountType = AccountTypes.PUBLIC_USER,
+                        mail = it.data.mail ?: "",
+                        showLocationChooser = it.data.providesLocation ?: false,
+                        location = it.data.location ?: GeoPoint(0.0, 0.0),
+                        age = it.data.age.toString(),
+                        phone = it.data.phone!!
+                    )
                 else
                     toggleErrorDialog(true, "Can't Retrieve details from database")
             }
@@ -128,13 +134,14 @@ class ProfileScreenVM @Inject constructor(
     }
 
     fun toggleErrorDialog(
-        setToVisible: Boolean, text: String = "Something went wrong, try later"
+        setToVisible: Boolean, text: String = "Something went wrong, try later", onErrorClose: ()->Unit = { Unit }
     ) {
         uiState = uiState.copy(
             errorText = text,
             showError = setToVisible,
             isLoading = false,
-            showLocationChooser = false
+            showLocationChooser = false,
+            onErrorCloseAction= onErrorClose
         )
     }
 
@@ -265,4 +272,31 @@ class ProfileScreenVM @Inject constructor(
         )
     }
 
+    fun verifyDetails(): Boolean {
+
+        val namePattern = Regex("^[\\p{L} .'-]+$")
+
+        return if (uiState.name.isEmpty() || !uiState.name.contains(namePattern)) {
+            toggleErrorDialog(
+                true,
+                "Invalid Name, please enter a valid name without any number or special symbols"
+            ) {
+                toggleErrorDialog(false)
+            }
+            false
+        } else if (!uiState.age.contains(Regex("[0-9]")) && uiState.age.toInt() < 150) {
+            toggleErrorDialog(true, "Invalid age") {
+                toggleErrorDialog(false)
+            }
+            false
+        } else if (identifyUserTypeFromId(uiState.currentUserId!!)!!.equals(AccountTypes.AMBULANCE) && uiState.vehicleNumber.isNullOrEmpty()) {
+            toggleErrorDialog(true, "Add a valid vehicle number") {
+                toggleErrorDialog(false)
+            }
+            false
+        } else {
+            true
+        }
+
+    }
 }

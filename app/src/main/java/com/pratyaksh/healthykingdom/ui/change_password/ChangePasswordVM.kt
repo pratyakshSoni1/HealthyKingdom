@@ -77,6 +77,19 @@ class ChangePasswordVM @Inject constructor(
         }
     }
 
+    fun verifyPasswordPattern(): Boolean {
+        val alphaPattern = Regex("[a-zA-Z]+")
+        val numPattern = Regex("[0-9]+")
+        val symbolPattern = Regex("""[&|â€œ|`|Â´|}|{|Â°|>|<|:|.|;|#|'|)|(|@|_|$|"|!|?|*|=|^|-]+""")
+
+        return (
+                uiState.value.newPassTxt.contains(alphaPattern) &&
+                        uiState.value.newPassTxt.contains(numPattern) &&
+                        uiState.value.newPassTxt.contains(symbolPattern)
+                )
+
+    }
+
     fun onChangePassword(isOtpVerified: Boolean = false): Job {
         toggleLoading(true)
         return viewModelScope.launch {
@@ -91,10 +104,16 @@ class ChangePasswordVM @Inject constructor(
                                 if (it is Resource.Success)
                                     toggleLoading(false)
                                 else
-                                    toggleError(true, it.msg ?: "Error updating password")
+                                    toggleError(true, it.msg ?: "Error updating password"){
+                                        toggleError(false)
+                                    }
                             }
-                        }else toggleError(true, "Old password didn't match !")
-                    } else toggleError(true, "Unexpected error, try again later")
+                        }else toggleError(true, "Old password didn't match !"){
+                            toggleError(false)
+                        }
+                    } else toggleError(true, "Unexpected error, try again later"){
+                        toggleError(false)
+                    }
                 }
             } else if (identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.HOSPITAL)) {
                 getHospital(uiState.value.userId!!).last().let {
@@ -107,10 +126,16 @@ class ChangePasswordVM @Inject constructor(
                                 if (it is Resource.Success)
                                     toggleLoading(false)
                                 else
-                                    toggleError(true, it.msg ?: "Error updating password")
+                                    toggleError(true, it.msg ?: "Error updating password"){
+                                        toggleError(false)
+                                    }
                             }
-                        }else toggleError(true, "Old password didn't match !")
-                    } else toggleError(true, "Unexpected error, try again later")
+                        }else toggleError(true, "Old password didn't match !"){
+                            toggleError(false)
+                        }
+                    } else toggleError(true, "Unexpected error, try again later"){
+                        toggleError(false)
+                    }
                 }
             } else if (identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.PUBLIC_USER)) {
                 getPublicUserById(uiState.value.userId!!).last().let {
@@ -123,24 +148,33 @@ class ChangePasswordVM @Inject constructor(
                                 if (it is Resource.Success)
                                     toggleLoading(false)
                                 else
-                                    toggleError(true, it.msg ?: "Error updating password")
+                                    toggleError(true, it.msg ?: "Error updating password"){
+                                        toggleError(false)
+                                    }
                             }
-                        }else toggleError(true, "Old password didn't match !")
-                    } else toggleError(true, "Unexpected error, try again later")
+                        }else toggleError(true, "Old password didn't match !"){
+                            toggleError(false)
+                        }
+                    } else toggleError(true, "Unexpected error, try again later"){
+                        toggleError(false)
+                    }
                 }
             } else {
-                toggleError(true, "Unable to fetch user, try again later")
+                toggleError(true, "Unable to fetch user, try again later"){
+                    toggleError(false)
+                }
             }
 
         }
     }
 
-    fun toggleError(setToVisible: Boolean, errorTxt: String = "") {
+    fun toggleError(setToVisible: Boolean, errorTxt: String = "", onErrorClose:()->Unit = {Unit}) {
         _uiState.update {
             it.copy(
                 isLoading = if (setToVisible) false else it.isLoading,
                 isError = setToVisible,
-                errorTxt = errorTxt
+                errorTxt = errorTxt,
+                onErrorCloseAction = onErrorClose
             )
         }
     }
@@ -184,4 +218,5 @@ data class ChangePassScreenUiState(
     val verificationId: String? = null,
     val phone: String = "",
     val resendToken: PhoneAuthProvider.ForceResendingToken? = null,
+    val onErrorCloseAction: ()->Unit = { Unit }
 )

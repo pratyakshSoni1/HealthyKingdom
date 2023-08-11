@@ -10,11 +10,11 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,11 +31,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.pratyaksh.healthykingdom.ui.request_update.components.SelectableGroupLabel
+import com.pratyaksh.healthykingdom.ui.utils.ErrorDialog
 import com.pratyaksh.healthykingdom.ui.utils.FluidInfoDialog
 import com.pratyaksh.healthykingdom.ui.utils.IconButton
 import com.pratyaksh.healthykingdom.ui.utils.LifeFluidTitle
@@ -44,11 +44,9 @@ import com.pratyaksh.healthykingdom.ui.utils.SimpleTopBar
 import com.pratyaksh.healthykingdom.utils.BloodGroups
 import com.pratyaksh.healthykingdom.utils.LifeFluids
 import com.pratyaksh.healthykingdom.utils.Plasma
-import com.pratyaksh.healthykingdom.utils.Resource
 import com.pratyaksh.healthykingdom.utils.toBloodGroupInfo
 import com.pratyaksh.healthykingdom.utils.toPlasmaGroupInfo
 import com.pratyaksh.healthykingdom.utils.toPlateletsGroupInfo
-import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -78,9 +76,9 @@ fun RequestUpdationScreen(
                     EndButtons = {
                         Text(
                             text = "Update",
-                            color = if(uiState.isUpdationActive) Color.Blue else Color(0x230027FF),
+                            color = if (uiState.isUpdationActive) Color.Blue else Color(0x230027FF),
                             modifier = Modifier.clickable {
-                                if(uiState.isUpdationActive) {
+                                if (uiState.isUpdationActive) {
                                     Log.d("ClickLogs", "Clicked update")
                                     viewModel.updateRequests()
                                 }
@@ -110,13 +108,18 @@ fun RequestUpdationScreen(
                                     .background(Color(0xFFE4E4E4))
                                     .padding(8.dp),
                                 verticalAlignment = Alignment.CenterVertically
-                            ){
+                            ) {
 
-                                IconButton(icon = Icons.Rounded.Info, onClick = { Unit }, size = 8.dp, backgroundColor = Color(0xFFE4E4E4))
+                                IconButton(
+                                    icon = Icons.Rounded.Info,
+                                    onClick = { Unit },
+                                    size = 8.dp,
+                                    backgroundColor = Color(0xFFE4E4E4)
+                                )
                                 Spacer(Modifier.width(4.dp))
                                 Text(
-                                    modifier= Modifier.weight(1f),
-                                    text= "* Click to add/remove requests\n* Hold to view fluid info",
+                                    modifier = Modifier.weight(1f),
+                                    text = "* Click to add/remove requests\n* Hold to view fluid info",
                                     color = Color.Black
                                 )
                             }
@@ -127,7 +130,7 @@ fun RequestUpdationScreen(
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(12.dp))
                                     .background(Color(0x4DFCC60E))
-                                    .padding( start= 8.dp, end= 8.dp, bottom= 8.dp)
+                                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
                             ) {
                                 LifeFluidTitle(
                                     fluidType = LifeFluids.BLOOD,
@@ -135,7 +138,9 @@ fun RequestUpdationScreen(
                                 )
                                 FlowRow(
                                     maxItemsInEachRow = 4,
-                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp),
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {
                                     for (group in BloodGroups.values()) {
@@ -167,7 +172,7 @@ fun RequestUpdationScreen(
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(12.dp))
                                     .background(Color(0x3BDD0000))
-                                    .padding( start= 8.dp, end= 8.dp, bottom= 8.dp)
+                                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
                             ) {
                                 LifeFluidTitle(
                                     fluidType = LifeFluids.PLASMA,
@@ -175,7 +180,9 @@ fun RequestUpdationScreen(
                                 )
                                 FlowRow(
                                     maxItemsInEachRow = 4,
-                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp),
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {
                                     for (group in Plasma.values()) {
@@ -200,7 +207,7 @@ fun RequestUpdationScreen(
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(12.dp))
                                     .background(Color(0x33FF6060))
-                                    .padding( start= 8.dp, end= 8.dp, bottom= 8.dp)
+                                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
                             ) {
                                 LifeFluidTitle(
                                     fluidType = LifeFluids.PLATELETS,
@@ -208,7 +215,9 @@ fun RequestUpdationScreen(
                                 )
                                 FlowRow(
                                     maxItemsInEachRow = 4,
-                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp),
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {
                                     for (group in BloodGroups.values()) {
@@ -235,13 +244,9 @@ fun RequestUpdationScreen(
                         }
 
                     } else {
-                        Text(
-                            "Unexpected Error\n Try again later.",
-                            modifier = Modifier.fillMaxSize(),
-                            textAlign = TextAlign.Center
-                        )
-
-                        Spacer(modifier = Modifier.height(32.dp))
+                        ErrorDialog(text = uiState.errorTxt) {
+                            navController.popBackStack()
+                        }
                     }
                     Spacer(Modifier.height(12.dp))
 
@@ -274,13 +279,14 @@ fun RequestUpdationScreen(
             }
         }
 
-        if (uiState.isLoading || uiState.hospitalId.isNullOrEmpty() ) {
-            Box(
-                Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                LoadingComponent(modifier = Modifier.size(80.dp))
-            }
+        if (uiState.isLoading || uiState.hospitalId.isNullOrEmpty()) {
+            LoadingComponent(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.White)
+            )
         }
     }
 

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -81,12 +82,15 @@ fun ProfileScreen(
                     {
                         Text(
                             if (viewModel.uiState.isEditingMode) "Update" else "Edit",
-                            color = Color.Blue,
-                            modifier = Modifier.clickable {
-                                if (viewModel.uiState.isEditingMode)
+                            color = if (viewModel.uiState.isUpdateBtnActive) Color.Blue else Color.LightGray,
+                            modifier = Modifier.clickable(
+                                enabled = viewModel.uiState.isUpdateBtnActive
+                            ) {
+                                if (viewModel.uiState.isEditingMode && viewModel.verifyDetails()) {
                                     viewModel.updateDetails()
-                                else
+                                } else {
                                     viewModel.toggleEditingMode(true)
+                                }
                             },
                         )
                     }
@@ -127,8 +131,7 @@ fun ProfileScreen(
             }
         }
 
-
-        FloatingComponents(viewModel = viewModel)
+        FloatingComponents(viewModel = viewModel) { viewModel.uiState.onErrorCloseAction() }
 
     }
 
@@ -190,7 +193,8 @@ private fun ColumnScope.NonHospitalUserUi(viewModel: ProfileScreenVM) {
         ) {
             GenderChooser(
                 onGenderChange = { viewModel.onGenderChange(it) },
-                viewModel.uiState.gender
+                viewModel.uiState.gender,
+                isClickable = viewModel.uiState.isEditingMode
             )
         }
         Spacer(Modifier.height(8.dp))
@@ -219,6 +223,16 @@ private fun ColumnScope.CommonUsersUi(viewModel: ProfileScreenVM) {
         },
         hint = if (viewModel.uiState.accountType == AccountTypes.HOSPITAL) "Hospital Name" else "Full Name"
     )
+    Spacer(Modifier.height(8.dp))
+
+    if (!viewModel.uiState.isEditingMode) {
+        AppTextField(
+            isEditable = false,
+            value = viewModel.uiState.phone, onValueChange = { Unit },
+            hint = "+11225489547",
+            keyboard = KeyboardType.Number
+        )
+    }
     Spacer(Modifier.height(8.dp))
 
     AppTextField(
@@ -255,21 +269,23 @@ private fun ColumnScope.LocationComponent(viewModel: ProfileScreenVM) {
             )
             Spacer(Modifier.height(8.dp))
 
-            Button(
-                onClick = {
-                    viewModel.toggleLocationChooser(true)
-                },
-                shape = RoundedCornerShape(100.dp),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = Color.White
-                )
-            ) {
-                Text(
-                    text = "Choose Location",
-                    color = Color(0x80007BFF),
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
+            if(viewModel.uiState.isEditingMode){
+                Button(
+                    onClick = {
+                        viewModel.toggleLocationChooser(true)
+                    },
+                    shape = RoundedCornerShape(100.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.White
+                    )
+                ) {
+                    Text(
+                        text = "Choose Location",
+                        color = Color(0x80007BFF),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
 
         }
@@ -279,7 +295,7 @@ private fun ColumnScope.LocationComponent(viewModel: ProfileScreenVM) {
 }
 
 @Composable
-private fun BoxScope.FloatingComponents(viewModel: ProfileScreenVM) {
+private fun BoxScope.FloatingComponents(viewModel: ProfileScreenVM, onErrorClose: () -> Unit) {
     if (viewModel.uiState.showLocationChooser) {
         LocationChooserDialog(
             onSelectLocation = {
@@ -295,24 +311,18 @@ private fun BoxScope.FloatingComponents(viewModel: ProfileScreenVM) {
     if (viewModel.uiState.showError) {
         ErrorDialog(
             text = viewModel.uiState.errorText,
-            onClose = { viewModel.toggleErrorDialog(false) }
+            onClose = { onErrorClose() }
         )
     }
 
     if (viewModel.uiState.isLoading) {
-        Box(
+        LoadingComponent(
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0x12000000))
-        ) {
-            LoadingComponent(
-                modifier = Modifier
-                    .fillMaxWidth(0.7f)
-                    .fillMaxHeight(0.6f)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color.White)
-            )
-        }
+                .fillMaxWidth(0.9f)
+                .aspectRatio(1f)
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color.White)
+        )
     }
 }
 

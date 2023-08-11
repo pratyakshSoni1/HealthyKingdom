@@ -30,7 +30,6 @@ class HospitalDetailsVM @Inject constructor(
     private val getRequestByHospitalUseCase: GetRequestByHospitalUseCase
 ): ViewModel() {
 
-//    val hospital: MutableState<Users.Hospital?> = mutableStateOf(null)
     var uiState: MutableState<HospitalDetailsUiState> = mutableStateOf(HospitalDetailsUiState())
         private set
 
@@ -38,7 +37,7 @@ class HospitalDetailsVM @Inject constructor(
             getHospitalById(hospitalId).onEach {
                 when(it){
                     is Resource.Error -> {
-                        toggleError(true)
+                        toggleError(true, "Error getting logged user, please login again")
                     }
                     is Resource.Loading -> {
                         toggleLoading(true)
@@ -53,7 +52,7 @@ class HospitalDetailsVM @Inject constructor(
         viewModelScope.launch {
             getHospitalFluidUseCase(hospitalId).collectLatest {
                 when(it){
-                    is Resource.Error -> toggleError(true)
+                    is Resource.Error -> toggleError(true, "Error fetching fluid")
                     is Resource.Loading -> toggleLoading(true)
                     is Resource.Success -> {
                         if( it.data != null ) {
@@ -65,7 +64,7 @@ class HospitalDetailsVM @Inject constructor(
                             toggleLoading(false)
                             Log.d("DetailScreen", "Data Loading success + loading set false")
                         }else{
-                            toggleError(true)
+                            toggleError(true, "Unexpected Error while fetching fluids")
                         }
                     }
                 }
@@ -79,7 +78,7 @@ class HospitalDetailsVM @Inject constructor(
                         requests = it.data
                     )
                 }else{
-                    toggleError(true)
+                    toggleError(true, "Unable fetch requests")
                 }
             }
         }
@@ -87,8 +86,8 @@ class HospitalDetailsVM @Inject constructor(
 
     }
 
-    fun toggleError(isError: Boolean){
-        uiState.value = uiState.value.copy(isError = isError, isLoading = false)
+    fun toggleError(isError: Boolean, errorTxt: String){
+        uiState.value = uiState.value.copy(isError = isError, isLoading = false, errorTxt = errorTxt)
     }
     fun toggleLoading(isLoading: Boolean){
         uiState.value = uiState.value.copy(isLoading = isLoading)

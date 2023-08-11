@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -47,7 +48,7 @@ import com.pratyaksh.healthykingdom.utils.Resource
 import com.pratyaksh.healthykingdom.utils.Routes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -55,18 +56,18 @@ import kotlinx.coroutines.withContext
 @Composable
 fun OtpVerifyScreen(
     activity: Activity,
-    onVerify: ()->Unit,
-    phone:String,
+    onVerify: () -> Unit,
+    phone: String,
     verificationId: String,
     resendToken: PhoneAuthProvider.ForceResendingToken,
     viewModel: OtpValidationVM = hiltViewModel(),
     navController: NavHostController,
     user: Users,
     updateCurrentLoggedUser: (userId: String) -> Flow<Resource<Boolean>>
-){
+) {
 
-    LaunchedEffect(Unit){
-        viewModel.initScreen( verificationId, phone, resendToken, user )
+    LaunchedEffect(Unit) {
+        viewModel.initScreen(verificationId, phone, resendToken, user)
     }
     Scaffold(
         topBar = {
@@ -80,7 +81,8 @@ fun OtpVerifyScreen(
         Box(
             Modifier
                 .padding(it)
-                .fillMaxSize(), contentAlignment= Alignment.Center) {
+                .fillMaxSize(), contentAlignment = Alignment.Center
+        ) {
             Column(
                 Modifier
                     .fillMaxSize()
@@ -90,14 +92,18 @@ fun OtpVerifyScreen(
                 Spacer(Modifier.height(6.dp))
                 Text(
                     text = "Enter Verification code",
-                    modifier=Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp),
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp
                 )
 
                 Text(
                     text = "sent to +${viewModel.uiState.phone}",
-                    modifier=Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp),
                     fontSize = 14.sp
                 )
 
@@ -136,25 +142,42 @@ fun OtpVerifyScreen(
                     Text(
                         text = "Resend",
                         color = if (viewModel.uiState.isResendAvail) Color.Blue else Color.LightGray,
-                        modifier = Modifier.clickable(MutableInteractionSource(), indication = null) {
+                        modifier = Modifier.clickable(
+                            MutableInteractionSource(),
+                            indication = null
+                        ) {
                             if (viewModel.uiState.isResendAvail) {
                                 viewModel.otpSendUseCase(
                                     viewModel.uiState.phone,
                                     activity,
                                     resendToken = viewModel.uiState.resendToken!!,
                                     onVerificationComplete = {
-                                        CoroutineScope(Dispatchers.IO).launch{
-                                            viewModel.addUserToFB { updateCurrentLoggedUser(it) }
-                                            if( viewModel.afterVerificationDest == OtpValidationVM.VerificationDestinations.HOMESCREEN ){
-                                                onVerify()
-                                            }else{
-                                                navController.navigate(Routes.LOGIN_SCREEN.route)
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            viewModel.addUserToFB { newUserId ->
+                                                updateCurrentLoggedUser(newUserId)
+                                            }
+                                        }.invokeOnCompletion {
+                                            CoroutineScope(Dispatchers.Main).launch {
+                                                if (viewModel.afterVerificationDest == OtpValidationVM.VerificationDestinations.HOMESCREEN) {
+                                                    onVerify()
+                                                } else {
+                                                    navController.navigate(Routes.LOGIN_SCREEN.route)
+                                                }
                                             }
                                         }
                                     },
                                     onVerificationFailed = {
                                         Log.d("VerificationLogs", "Can't verify otp${it.message}")
-                                        viewModel.toggleErrorDialog(true, "Failed to verify")
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            viewModel.toggleErrorDialog(
+                                                true,
+                                                "Verification failed try again later"
+                                            )
+                                            delay(3000L)
+                                            withContext(Dispatchers.Main) {
+                                                navController.popBackStack()
+                                            }
+                                        }
                                     },
                                     onCodeSent = viewModel::updateVerificationIdAndToken
                                 )
@@ -174,37 +197,70 @@ fun OtpVerifyScreen(
                 }
 
                 Box(
-                    Modifier.weight(1f).fillMaxSize(),
+                    Modifier
+                        .weight(1f)
+                        .fillMaxSize(),
                     contentAlignment = Alignment.BottomCenter
-                ){
+                ) {
                     Button(
                         onClick = {
-                            viewModel.otpSignInUseCase(
-                                activity,
-                                PhoneAuthProvider.getCredential(viewModel.uiState.verificationId, viewModel.uiState.code),
-                                onVerifySuccess= {
-                                    CoroutineScope(Dispatchers.IO).launch{
-                                        viewModel.addUserToFB { updateCurrentLoggedUser(it) }
-                                        if( viewModel.afterVerificationDest == OtpValidationVM.VerificationDestinations.HOMESCREEN ){
-                                            withContext(Dispatchers.Main){
-                                                onVerify()
+                            if (viewModel.uiState.code.length == 6 && viewModel.uiState.code.contains(
+                                    Regex("^[0-9]")
+                                )
+                            ) {
+                                viewModel.otpSignInUseCase(
+                                    activity,
+                                    PhoneAuthProvider.getCredential(
+                                        viewModel.uiState.verificationId,
+                                        viewModel.uiState.code
+                                    ),
+                                    onVerifySuccess = {
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            viewModel.addUserToFB { newUserId ->
+                                                updateCurrentLoggedUser(newUserId)
                                             }
-                                        }else{
-                                            navController.navigate(Routes.LOGIN_SCREEN.route)
+                                        }.invokeOnCompletion {
+                                            CoroutineScope(Dispatchers.Main).launch {
+                                                if (viewModel.afterVerificationDest == OtpValidationVM.VerificationDestinations.HOMESCREEN) {
+                                                    onVerify()
+                                                } else {
+                                                    navController.navigate(Routes.LOGIN_SCREEN.route)
+                                                }
+                                            }
+                                        }
+                                    },
+                                    onVerificationFailed = {
+                                        viewModel.toggleErrorDialog(
+                                            true,
+                                            "Verification failed, try later"
+                                        ) {
+                                            CoroutineScope(Dispatchers.IO).launch {
+                                                viewModel.toggleErrorDialog(
+                                                    true,
+                                                    "Verification failed try again later"
+                                                )
+                                                delay(3000L)
+                                                withContext(Dispatchers.Main) {
+                                                    navController.popBackStack()
+                                                }
+                                            }
+                                        }
+                                    },
+                                    onInvalidCoe = {
+                                        viewModel.toggleErrorDialog(true, "Invalid Code") {
+                                            viewModel.toggleErrorDialog(false)
                                         }
                                     }
-                                },
-                                onVerificationFailed = {
-                                    viewModel.toggleErrorDialog(true, "Verification failed, try later")
-                                },
-                                onInvalidCoe= {
-                                    viewModel.toggleErrorDialog(true, "Invalid Code")
-                                }
 
-                            )
+                                )
+                            } else {
+                                viewModel.toggleErrorDialog(true, "Enter a valid 6 digit OTP") {
+                                    viewModel.toggleErrorDialog(false)
+                                }
+                            }
                         },
                         modifier = Modifier.fillMaxWidth(0.75f),
-                        shape= RoundedCornerShape(100.dp),
+                        shape = RoundedCornerShape(100.dp),
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color(0xFF0166FF),
                         )
@@ -216,28 +272,24 @@ fun OtpVerifyScreen(
                 }
             }
 
-            if(viewModel.uiState.showError){
+            if (viewModel.uiState.showError) {
                 ErrorDialog(
                     text = viewModel.uiState.errorText,
-                    onClose= {
-                        viewModel.toggleErrorDialog(true)
+                    onClose = {
+                        viewModel.uiState.onErrorCloseAction()
                     }
                 )
             }
 
-            if(viewModel.uiState.isLoading){
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .background(Color(0x32000000)), contentAlignment= Alignment.Center) {
-                    LoadingComponent(
-                        modifier = Modifier
-                            .fillMaxSize(0.5f)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color.White),
-                        text = "Please Wait"
-                    )
-                }
+            if (viewModel.uiState.isLoading) {
+                LoadingComponent(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.White),
+                    text = "Please Wait"
+                )
             }
 
         }

@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pratyaksh.healthykingdom.ui.utils.AppTextField
@@ -76,7 +77,8 @@ fun VerifyPasswordDialog(
                 Text(text = "cancel", modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .clickable { onCancel() }, color = Color.DarkGray
+                    .clickable { onCancel() }, color = Color.DarkGray,
+                    textAlign = TextAlign.Center
                 )
                 Button(
                     onClick = { onDelete() },

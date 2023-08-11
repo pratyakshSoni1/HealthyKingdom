@@ -7,5 +7,6 @@ data class SettingsUiState (
     val goLive: Boolean = false,
     val verifyDialogPassTxt: String ="",
     val showLiveLocPermit: Boolean = false,
-    val showVerifyPassDialog: Boolean = false
+    val showVerifyPassDialog: Boolean = false,
+    val errorTxt: String = ""
 )

@@ -15,26 +15,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.firebase.auth.PhoneAuthProvider
 import com.pratyaksh.healthykingdom.ui.utils.AppTextField
+import com.pratyaksh.healthykingdom.ui.utils.ErrorDialog
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
 import com.pratyaksh.healthykingdom.ui.utils.SimpleTopBar
 import com.pratyaksh.healthykingdom.utils.Resource
@@ -123,23 +120,34 @@ fun ChangePasswordScreen(
                 ) {
                     Row(
                         Modifier
-                            .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+                            .fillMaxWidth()
+                            .padding(bottom = 14.dp), verticalAlignment = Alignment.CenterVertically
                     ) {
 
                         Text(
                             "cancel",
                             modifier = Modifier
                                 .weight(1f)
-                                .fillMaxWidth(),
+                                .fillMaxWidth()
+                                .clickable { navController.popBackStack() },
                             color = Color.Red,
                             textAlign = TextAlign.Center
                         )
 
                         Button(
                             onClick = {
-                                viewModel.onChangePassword().invokeOnCompletion {
-                                    navController.popBackStack()
-                                    navController.popBackStack()
+                                if(viewModel.verifyPasswordPattern()){
+                                    viewModel.onChangePassword().invokeOnCompletion {
+                                        navController.popBackStack()
+                                        navController.popBackStack()
+                                    }
+                                }else{
+                                    viewModel.toggleError(
+                                        true,
+                                        "Please enter a strong password with a small, capital case alphabet, a number and a special symbol."
+                                    ){
+                                        viewModel.toggleError(false)
+                                    }
                                 }
                             },
                             colors = ButtonDefaults.buttonColors(
@@ -147,8 +155,7 @@ fun ChangePasswordScreen(
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .weight(1f)
-                                .padding(bottom = 14.dp),
+                                .weight(1f),
                             shape = RoundedCornerShape(100.dp)
                         ) {
                             Text(
@@ -166,22 +173,14 @@ fun ChangePasswordScreen(
                     modifier = Modifier
                         .fillMaxWidth(0.85f)
                         .aspectRatio(1f)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.White)
                 )
             }
 
             if (uiState.isError) {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .background(Color.White)
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Warning,
-                        contentDescription = null,
-                        tint = Color.Red
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Text(text = uiState.errorTxt, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                ErrorDialog(text = uiState.errorTxt) {
+                    uiState.onErrorCloseAction()
                 }
             }
         }

@@ -5,7 +5,9 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -39,6 +41,7 @@ import com.pratyaksh.healthykingdom.ui.homepage.components.MapComponent
 import com.pratyaksh.healthykingdom.ui.homepage.components.hospital_detail_sheet.HospitalDetailsSheet
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.FilterOption
 import com.pratyaksh.healthykingdom.ui.homepage.components.marker_filters.MarkerFilters
+import com.pratyaksh.healthykingdom.ui.utils.ErrorDialog
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
 import com.pratyaksh.healthykingdom.utils.AccountTypes
 import com.pratyaksh.healthykingdom.utils.Resource
@@ -124,14 +127,29 @@ fun HomeScreen(
 
         getLoggedUser().collectLatest {
             when (it) {
-                is Resource.Error -> viewModel.toggleError(true)
+                is Resource.Error -> viewModel.toggleError(true, "Error getting current logged user")
                 is Resource.Loading -> viewModel.toggleLoadingScr(true)
                 is Resource.Success -> {
                     if (it.data != null) {
                         viewModel.initScreen(it.data, getFilters())
                         viewModel.toggleLoadingScr(false)
                     } else {
-                        viewModel.toggleError(true)
+                        viewModel.toggleError(true, "Please login again, Invalid user")
+                        logoutUser().collectLatest {
+                            if (it.data == true) {
+                                viewModel.deleteSettingsDb()
+                                withContext(Dispatchers.Main) {
+                                    viewModel.toggleLoadingScr(false)
+                                    navController.navigate(Routes.SIGNUP_NAVGRAPH.route) {
+                                        popUpTo(Routes.HOME_NAVGRAPH.route) {
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                            } else {
+                                viewModel.toggleLoadingScr(false)
+                            }
+                        }
                         delay(2000L)
                         navController.navigate(Routes.SIGNUP_NAVGRAPH.route) {
                             popUpTo(Routes.HOME_NAVGRAPH.route) { inclusive = true }
@@ -266,34 +284,19 @@ fun HomeScreen(
 
                 }
 
-                if (viewModel.homeScreenUiState.value.isLoading) {
-                    Box(
-                        Modifier
-                            .fillMaxSize()
-                            .background(Color(0x2D000000)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        LoadingComponent(
+                if (viewModel.homeScreenUiState.value.isLoading) {LoadingComponent(
                             modifier = Modifier
-                                .fillMaxSize(0.35f)
+                                .fillMaxWidth(0.5f)
+                                .aspectRatio(1f)
                                 .clip(RoundedCornerShape(12.dp))
                                 .background(Color.White)
                         )
-                    }
                 }
             }
         }
     } else {
-        Box(
-            Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                "Unexpected Error :(\n Comeback Later",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Black,
-                textAlign = TextAlign.Center
-            )
+        ErrorDialog(text = viewModel.homeScreenUiState.value.errorText) {
+            navController.popBackStack()
         }
     }
 

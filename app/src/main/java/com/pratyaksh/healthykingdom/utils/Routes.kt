@@ -8,7 +8,7 @@ sealed class Routes(val route: String) {
     object SIGNUP_NAVGRAPH : Routes("signup_navgraph")
     object HOSPITAL_REGITER_SCREEN : Routes("hospital_regitration_screen")
     object HOSPITAL_DETAILS_SCREEN : Routes("hospital_details_screen")
-    object OTP_VALIDATION_SCREEN : Routes("otp_validation_screen")
+    object REG_OTP_VALIDATION_SCREEN : Routes("otp_validation_screen")
 
     object FLUIDS_UPDATION_NAVGRAPH: Routes("fluids_updation_navgraph")
     object FLUIDS_SELECTION_SCREEN: Routes("fluids_selection_screen")

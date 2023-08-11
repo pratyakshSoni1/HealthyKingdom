@@ -12,7 +12,8 @@ data class PublicUserDto(
     val location: GeoPoint? = null,
     val password: String? = null,
     val mail: String = "",
-    val gender: String = ""
+    val gender: String = "",
+    val age: Int? = null
 )
 
 fun PublicUserDto.toPublicUser(): Users.PublicUser = Users.PublicUser(
@@ -23,6 +24,7 @@ fun PublicUserDto.toPublicUser(): Users.PublicUser = Users.PublicUser(
     location?.toMapsGeopoint(),
     password,
     mail,
+    age= age,
     gender = when(gender){
         "M" -> Gender.MALE
         "F" -> Gender.FEMALE

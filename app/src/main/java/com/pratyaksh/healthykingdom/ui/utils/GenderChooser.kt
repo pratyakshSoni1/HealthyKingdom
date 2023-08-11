@@ -27,7 +27,8 @@ fun GenderChooser(
     onGenderChange: (type: Gender) -> Unit,
     selected: Gender,
     textColor: Color = Color.White,
-    backgroundColor: Color = Color(0x80007BFF)
+    backgroundColor: Color = Color(0x80007BFF),
+    isClickable: Boolean = true
 ) {
 
     Box(
@@ -54,23 +55,31 @@ fun GenderChooser(
             Spacer(Modifier.width(8.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clip(RoundedCornerShape(100.dp)).background(backgroundColor)
+                modifier = Modifier
+                    .clip(RoundedCornerShape(100.dp))
+                    .background(backgroundColor)
             ) {
                 GenderOption(
-                    onClick = onGenderChange,
+                    onClick = {
+                        if (isClickable) onGenderChange(it) else { Unit }
+                    },
                     type = Gender.MALE,
                     txtColor = if (selected == Gender.MALE) backgroundColor else textColor,
                     bgColor = if (selected == Gender.MALE) textColor else Color.Transparent
                 )
 
                 GenderOption(
-                    onClick = onGenderChange,
+                    onClick = {
+                        if (isClickable) onGenderChange(it) else { Unit }
+                    },
                     type = Gender.FEMALE,
                     txtColor = if (selected == Gender.FEMALE) backgroundColor else textColor,
                     bgColor = if (selected == Gender.FEMALE) textColor else Color.Transparent
                 )
                 GenderOption(
-                    onClick = onGenderChange,
+                    onClick = {
+                        if (isClickable) onGenderChange(it) else { Unit }
+                    },
                     type = Gender.OTHERS,
                     txtColor = if (selected == Gender.OTHERS) backgroundColor else textColor,
                     bgColor = if (selected == Gender.OTHERS) textColor else Color.Transparent

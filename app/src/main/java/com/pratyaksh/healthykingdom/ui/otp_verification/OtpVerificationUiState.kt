@@ -14,5 +14,6 @@ data class OtpVerificationUiState(
     val showError: Boolean = false,
     val errorText: String= "",
     val isLoading: Boolean = false,
+    val onErrorCloseAction :()->Unit = { Unit }
 
     )

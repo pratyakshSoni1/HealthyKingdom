@@ -16,6 +16,7 @@ data class ProfileScreenUiState (
     val isEditingMode: Boolean = false,
     val accountType: AccountTypes? = null,
     val isUpdateBtnActive: Boolean = false,
+    val onErrorCloseAction:()->Unit = { Unit },
 
 
     val name: String = "",

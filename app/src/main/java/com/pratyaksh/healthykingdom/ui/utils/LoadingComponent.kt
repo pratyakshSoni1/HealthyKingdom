@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -27,30 +28,34 @@ fun LoadingComponent(modifier: Modifier, text: String? = null){
         spec = LottieCompositionSpec.Url("https://assets10.lottiefiles.com/packages/lf20_W5Sk67.json")
     )
 
-    Box(
-        modifier= modifier,
-        contentAlignment = Alignment.Center,
+    Dialog(
+        onDismissRequest = { Unit }
     ){
-        Column(
-            Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        Box(
+            modifier= modifier,
+            contentAlignment = Alignment.Center,
         ){
-            LottieAnimation(
-                composition = lottieComposition, iterations = LottieConstants.IterateForever,
-                modifier= Modifier.fillMaxSize(0.4f)
-            )
-
-            text?.let{
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text= it,
-                    modifier=Modifier.fillMaxWidth(0.8f),
-                    textAlign = TextAlign.Center,
-                    color= Color.Black
+            Column(
+                Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ){
+                LottieAnimation(
+                    composition = lottieComposition, iterations = LottieConstants.IterateForever,
+                    modifier= Modifier.fillMaxSize(0.4f)
                 )
-            }
 
+                text?.let{
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text= it,
+                        modifier=Modifier.fillMaxWidth(0.8f),
+                        textAlign = TextAlign.Center,
+                        color= Color.Black
+                    )
+                }
+
+            }
         }
     }
 

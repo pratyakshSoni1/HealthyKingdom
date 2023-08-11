@@ -81,11 +81,12 @@ class OtpVerificationVM @Inject constructor(
 
     }
 
-    fun toggleErrorDialog(setToVisible: Boolean, text: String= "Something went wrong, try later"){
+    fun toggleErrorDialog(setToVisible: Boolean, text: String= "Something went wrong, try later", onErrorClose:()->Unit = { Unit }){
         uiState = uiState.copy(
             errorText = text,
             showError = setToVisible,
             isLoading = false,
+            onErrorCloseAction = onErrorClose
         )
     }
 

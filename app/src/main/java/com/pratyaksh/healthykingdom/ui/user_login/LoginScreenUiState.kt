@@ -13,6 +13,7 @@ data class LoginScreenUiState (
     val loginStatus: Flow<Resource<String?>>? = null,
     val isLoading: Boolean = false,
     val showError: Boolean = false,
-    val errorText: String = ""
+    val errorText: String = "",
+    val onErrorCloseAction:()->Unit = {Unit}
 
     )

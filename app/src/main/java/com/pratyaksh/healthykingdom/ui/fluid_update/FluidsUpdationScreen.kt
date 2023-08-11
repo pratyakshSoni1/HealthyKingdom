@@ -1,15 +1,18 @@
 package com.pratyaksh.healthykingdom.ui.fluid_update
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -18,10 +21,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.pratyaksh.healthykingdom.ui.utils.ErrorDialog
 import com.pratyaksh.healthykingdom.ui.utils.FluidQuantityUpdater
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
 import com.pratyaksh.healthykingdom.ui.utils.SimpleTopBar
@@ -61,9 +66,9 @@ fun FluidsUpdationScreen(
                 ) {
                     Text(
                         text = "Update",
-                        color = if(uiState.isUpdateBtnActive) Color.Blue else Color(0x230027FF),
+                        color = if (uiState.isUpdateBtnActive) Color.Blue else Color(0x230027FF),
                         modifier = Modifier.clickable {
-                            if(uiState.isUpdateBtnActive) {
+                            if (uiState.isUpdateBtnActive) {
                                 Log.d("ClickLogs", "Clicked update")
                                 viewModel.onUpdateFluidToFireStore()
                             }
@@ -119,7 +124,19 @@ fun FluidsUpdationScreen(
         }
 
         if (uiState.isLoading) {
-            LoadingComponent(modifier = Modifier.size(180.dp))
+            LoadingComponent(
+                modifier = Modifier
+                    .fillMaxWidth(0.85f)
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.White)
+            )
+        }
+
+        if (uiState.showErrorDialog) {
+            ErrorDialog(text = uiState.errorText) {
+                navController.popBackStack()
+            }
         }
 
     }

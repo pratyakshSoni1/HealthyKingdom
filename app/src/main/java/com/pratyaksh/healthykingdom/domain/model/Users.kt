@@ -9,7 +9,7 @@ import com.pratyaksh.healthykingdom.utils.Gender
 import org.osmdroid.util.GeoPoint
 
 
-sealed class Users(){
+sealed class Users() {
 
     data class Ambulance(
         val driverName: String,
@@ -25,7 +25,7 @@ sealed class Users(){
         val lastLocUpdated: Timestamp? = null,
         val mail: String?
 
-    ): Users()
+    ) : Users()
 
     data class Hospital(
         val name: String,
@@ -34,7 +34,7 @@ sealed class Users(){
         val location: GeoPoint,
         val userId: String,
         val password: String
-    ): Users()
+    ) : Users()
 
     data class PublicUser(
         val userName: String?,
@@ -44,15 +44,16 @@ sealed class Users(){
         val location: org.osmdroid.util.GeoPoint? = null,
         val password: String?,
         val mail: String?,
-        val gender: Gender
-    ): Users()
+        val gender: Gender,
+        val age: Int?
+    ) : Users()
 
 }
 
 fun Users.Ambulance.toAmbulanceDto(): AmbulanceDto {
     return AmbulanceDto(
         driverName, vehicleNumber,
-        driverAge, driverName, isVacant,
+        driverAge, driverGender, isVacant,
         isOnline, password, phone,
         vehicleLocation.toFBGeopoint(), userId, mail ?: ""
     )
@@ -60,9 +61,19 @@ fun Users.Ambulance.toAmbulanceDto(): AmbulanceDto {
 
 fun Users.PublicUser.toPublicUserDto(): PublicUserDto {
     return PublicUserDto(
-        userName, userId,
-        providesLocation, phone,
-        location?.toFBGeopoint(), password, mail ?: ""
+        userName,
+        userId,
+        providesLocation,
+        phone,
+        location?.toFBGeopoint(),
+        password,
+        mail ?: "",
+        when(gender){
+            Gender.MALE -> "M"
+            Gender.FEMALE -> "F"
+            Gender.OTHERS -> "OTH"
+        },
+        age
     )
 }
 

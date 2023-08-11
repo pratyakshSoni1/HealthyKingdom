@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Switch
@@ -32,6 +33,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -41,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.pratyaksh.healthykingdom.domain.use_case.share_ambulance_loc.ShareAmbulanceLocSerice
 import com.pratyaksh.healthykingdom.ui.fluid_update.NavMenuItem
+import com.pratyaksh.healthykingdom.ui.utils.ErrorDialog
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
 import com.pratyaksh.healthykingdom.ui.utils.SimpleTopBar
 import com.pratyaksh.healthykingdom.utils.AccountTypes
@@ -164,7 +167,7 @@ fun SettingsScreen(
                                     CoroutineScope(Dispatchers.IO).launch{
                                         logoutUser().collectLatest {
                                             when (it) {
-                                                is Resource.Error -> viewModel.toggleError(true)
+                                                is Resource.Error -> viewModel.toggleError(true, "Unexpected error while logging out")
                                                 is Resource.Loading -> viewModel.toggleLoading(true)
                                                 is Resource.Success -> {
                                                     if(identifyUserTypeFromId(uiState.userId)!!.equals(AccountTypes.AMBULANCE)) {
@@ -243,16 +246,12 @@ fun SettingsScreen(
                                                     popUpTo(Routes.HOME_NAVGRAPH.route, { inclusive = true })
                                                 }
                                             }else{
-                                                viewModel.toggleError(true)
+                                                viewModel.toggleError(true, "")
                                             }
                                         }
                                     }
-                                    is Resource.Error -> {
-                                        Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
-                                    }
-
-                                    is Resource.Loading -> {
-                                        Unit
+                                    else -> {
+                                        viewModel.toggleError(true, "Wrong password, User can't be verified")
                                     }
                                 }
 
@@ -268,17 +267,15 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .aspectRatio(1f)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.White)
             )
         }
 
         if (uiState.isError) {
-            Text(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White),
-                textAlign = TextAlign.Center,
-                text = "Unexpected Error, please comeback later !"
-            )
+            ErrorDialog(text = uiState.errorTxt) {
+                navController.popBackStack()
+            }
         }
 
     }

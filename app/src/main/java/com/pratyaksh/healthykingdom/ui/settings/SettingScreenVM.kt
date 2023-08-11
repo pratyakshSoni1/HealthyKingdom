@@ -50,7 +50,7 @@ class SettingScreenVM @Inject constructor(
 
         if (userId == null) {
             Log.d("INIT_SETTING_USER", "Got Id: $userId")
-            toggleError(true)
+            toggleError(true, "Can't retreive logged user, try logging in again")
             return Unit
         }
         viewModelScope.launch {
@@ -68,7 +68,7 @@ class SettingScreenVM @Inject constructor(
                 toggleLoading(false)
                 isInitialized = true
             } catch (e: Exception) {
-                toggleError(true)
+                toggleError(true, "Unable to sync user")
                 e.printStackTrace()
             }
         }
@@ -84,7 +84,7 @@ class SettingScreenVM @Inject constructor(
                             it.data!!.isOnline
                         )
                     }else{
-                        toggleError(true)
+                        toggleError(true, "Error fetching profile details")
                     }
                 }
             } else if(identifyUserTypeFromId(userId)!!.equals(AccountTypes.HOSPITAL)){
@@ -96,7 +96,7 @@ class SettingScreenVM @Inject constructor(
                             false
                         )
                     }else{
-                        toggleError(true)
+                        toggleError(true, "Error fetching profile details")
                     }
                 }
             }else if(identifyUserTypeFromId(userId)!!.equals(AccountTypes.PUBLIC_USER)){
@@ -108,7 +108,7 @@ class SettingScreenVM @Inject constructor(
                             false
                         )
                     }else{
-                        toggleError(true)
+                        toggleError(true, "Error fetching profile details")
                     }
                 }
             }
@@ -132,12 +132,12 @@ class SettingScreenVM @Inject constructor(
                 if (it is Resource.Success) {
                     updateLivePermitUseCase(uiState.value.userId!!, setToLive).last().let {
                         if (!(it is Resource.Success))
-                            toggleError(true)
+                            toggleError(true, "Setting can't be update, try again later")
                         else
                             Log.d("SETTINGS", "Updated fb settings")
                     }
                 } else
-                    toggleError(true)
+                    toggleError(true, "Unexpected error, make sure you are connected to interet")
             }
             refreshUiState()
         }
@@ -166,9 +166,9 @@ class SettingScreenVM @Inject constructor(
         }
     }
 
-    fun toggleError(isError: Boolean) {
+    fun toggleError(isError: Boolean, errorTxt: String) {
         _uiState.update {
-            it.copy(isError = isError, isLoading = false)
+            it.copy(isError = isError, isLoading = false, errorTxt = errorTxt)
         }
     }
 
@@ -216,7 +216,7 @@ class SettingScreenVM @Inject constructor(
                         }
                     }
                 } else {
-                    toggleError(true)
+                    toggleError(true, "Unexpected error, make sure you are connected to interet")
                 }
             }
         } else if (identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.HOSPITAL)) {
@@ -229,7 +229,7 @@ class SettingScreenVM @Inject constructor(
                         }
                     }
                 } else {
-                    toggleError(true)
+                    toggleError(true, "Unexpected error, make sure you are connected to interet")
                 }
             }
         } else if (identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.PUBLIC_USER)) {
@@ -242,7 +242,7 @@ class SettingScreenVM @Inject constructor(
                         }
                     }
                 } else {
-                    toggleError(true)
+                    toggleError(true, "Unexpected error, make sure you are connected to interet")
                 }
             }
         }

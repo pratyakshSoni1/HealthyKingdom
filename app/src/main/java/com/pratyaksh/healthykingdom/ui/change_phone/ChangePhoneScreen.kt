@@ -26,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,6 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.firebase.auth.PhoneAuthProvider
 import com.pratyaksh.healthykingdom.ui.utils.AppTextField
+import com.pratyaksh.healthykingdom.ui.utils.ErrorDialog
 import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
 import com.pratyaksh.healthykingdom.ui.utils.SimpleTopBar
 import com.pratyaksh.healthykingdom.utils.Resource
@@ -61,7 +63,7 @@ fun ChangePhoneScreen(
 
     Scaffold(
         topBar = {
-            SimpleTopBar(onBackPress = { navController.popBackStack() }, title = "Change Password")
+            SimpleTopBar(onBackPress = { navController.popBackStack() }, title = "Change Phone")
         }
     ) {
         Box(
@@ -97,7 +99,7 @@ fun ChangePhoneScreen(
                         .fillMaxWidth()
                         .clickable {
                             runBlocking {
-                                if (uiState.oldPhone != null || viewModel.updateoldPhoneUiState(
+                                if (uiState.oldPhone.isNotEmpty() || viewModel.updateoldPhoneUiState(
                                         uiState.userId!!
                                     )
                                 ) {
@@ -111,7 +113,9 @@ fun ChangePhoneScreen(
                                             viewModel.toggleError(
                                                 true,
                                                 "Phone number can't be verified"
-                                            )
+                                            ){
+                                                viewModel.toggleError(false)
+                                            }
                                         },
                                         onCodeSent = { verId, resendToken ->
                                             setResendToken(resendToken)
@@ -137,7 +141,8 @@ fun ChangePhoneScreen(
                 ) {
                     Row(
                         Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .padding(bottom = 14.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
@@ -145,7 +150,10 @@ fun ChangePhoneScreen(
                             "cancel",
                             modifier = Modifier
                                 .weight(1f)
-                                .fillMaxWidth(),
+                                .fillMaxWidth()
+                                .clickable {
+                                           navController.popBackStack()
+                                },
                             color = Color.Red,
                             textAlign = TextAlign.Center
                         )
@@ -154,28 +162,33 @@ fun ChangePhoneScreen(
                             onClick = {
                                 viewModel.validateNewPhone()
                                 if (viewModel.verifyPassword()) {
-                                    viewModel.sendOtpSendUseCase(
-                                        phone = uiState.newPhoneTxt,
-                                        activity = activity,
-                                        onVerificationFailed = {
-                                            viewModel.toggleError(
-                                                true,
-                                                "Phone number verification failed"
-                                            )
-                                        },
-                                        onVerificationComplete = {
-                                            viewModel.changePhone()
-                                        },
-                                        onCodeSent = { verId, resendToken ->
-                                            viewModel.updateVerificationId(verId)
-                                            setResendToken(resendToken)
-                                            setSuccessOtpVerification {
+                                    if(viewModel.verifyDetails()){
+                                        viewModel.sendOtpSendUseCase(
+                                            phone = uiState.newPhoneTxt,
+                                            activity = activity,
+                                            onVerificationFailed = {
+                                                viewModel.toggleError(
+                                                    true,
+                                                    "Phone number verification failed"
+                                                )
+                                            },
+                                            onVerificationComplete = {
                                                 viewModel.changePhone()
+                                            },
+                                            onCodeSent = { verId, resendToken ->
+                                                viewModel.updateVerificationId(verId)
+                                                setResendToken(resendToken)
+                                                setSuccessOtpVerification {
+                                                    viewModel.changePhone()
+                                                }
+                                                navController.navigate(Routes.OTP_VERIFICATION_SCREEN.route + "/${uiState.newPhoneTxt}/$verId")
                                             }
-                                            val phone = viewModel.getCurrentPhone()
-                                            navController.navigate(Routes.OTP_VERIFICATION_SCREEN.route + "/${uiState.newPhoneTxt}/$verId")
+                                        )
+                                    }else{
+                                        viewModel.toggleError(true, "Enter valid number with country code ( 91 for +91"){
+                                            viewModel.toggleError(false)
                                         }
-                                    )
+                                    }
                                 } else {
                                     viewModel.toggleError(true, "Wrong Password")
                                 }
@@ -187,7 +200,6 @@ fun ChangePhoneScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .weight(1f)
-                                .padding(bottom = 14.dp)
                         ) {
                             Text(
                                 "Continue", color = Color.White, modifier =
@@ -208,22 +220,14 @@ fun ChangePhoneScreen(
                     modifier = Modifier
                         .fillMaxWidth(0.85f)
                         .aspectRatio(1f)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.White)
                 )
             }
 
             if (uiState.isError) {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .background(Color.White)
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Warning,
-                        contentDescription = null,
-                        tint = Color.Red
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Text(text = uiState.errorTxt, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                ErrorDialog(text = uiState.errorTxt) {
+                    uiState.onErrorCloseAction()
                 }
             }
         }

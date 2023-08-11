@@ -18,6 +18,7 @@ data class RegistrationScreenUiState (
     val isLoading: Boolean = false,
     val accountType: AccountTypes = AccountTypes.PUBLIC_USER,
     val isAccMenuExpanded: Boolean = false,
+    val onErrorCloseAction: ()->Unit = { Unit },
 
 
     val name: String = "",
@@ -45,5 +46,6 @@ data class OtpValidationUiState(
     val showError: Boolean = false,
     val errorText: String= "",
     val isLoading: Boolean = false,
+    val onErrorCloseAction :()->Unit = { Unit }
 
     )

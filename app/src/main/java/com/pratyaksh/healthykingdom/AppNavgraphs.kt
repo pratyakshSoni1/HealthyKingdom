@@ -1,7 +1,6 @@
 package com.pratyaksh.healthykingdom
 
 import android.app.Activity
-import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -178,7 +177,7 @@ fun NavGraphBuilder.registrationNavgraph(
         }
 
         composable(
-            route = Routes.OTP_VALIDATION_SCREEN.route + "/{phone}/{verificationId}",
+            route = Routes.REG_OTP_VALIDATION_SCREEN.route + "/{phone}/{verificationId}",
             arguments = listOf(
                 navArgument(name = "phone") {
                     type = NavType.StringType
@@ -244,11 +243,6 @@ fun NavGraphBuilder.homeScreenNavGraph(
 
     }
 
-
-}
-
-@Composable
-fun NavGraphBuilder.SettingsNavGraph() {
 
 }
 

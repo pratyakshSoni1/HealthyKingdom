@@ -13,6 +13,7 @@ import com.pratyaksh.healthykingdom.domain.use_case.add_public_user.AddPublicUse
 import com.pratyaksh.healthykingdom.domain.use_case.number_verification.OtpSendUseCase
 import com.pratyaksh.healthykingdom.utils.AccountTypes
 import com.pratyaksh.healthykingdom.utils.Gender
+import com.pratyaksh.healthykingdom.utils.LoginSignupStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.osmdroid.util.GeoPoint
 import javax.inject.Inject
@@ -85,13 +86,14 @@ class RegisterScreenVM @Inject constructor(
     }
 
     fun toggleErrorDialog(
-        setToVisible: Boolean, text: String = "Something went wrong, try later"
+        setToVisible: Boolean, text: String="", onErrorAction: () -> Unit = { Unit }
     ){
         uiState = uiState.copy(
             errorText = text,
             showError = setToVisible,
             isLoading = false,
-            showLocationChooser = false
+            showLocationChooser = false,
+            onErrorCloseAction = onErrorAction
         )
     }
 
@@ -183,11 +185,34 @@ class RegisterScreenVM @Inject constructor(
                 userId= "${AccountTypes.PUBLIC_USER.type}-${userId}",
                 providesLocation = uiState.providesLocation,
                 password = uiState.password,
-                gender = uiState.gender
+                gender = uiState.gender,
+                age = uiState.age.toInt()
             )
 
         }
 
     }
+
+    fun verifySignUpDetails(): LoginSignupStatus {
+
+        val namePattern = Regex("^[\\p{L} .'-]+$")
+        val alphaPattern = Regex("[a-zA-Z]+")
+        val numPattern = Regex("[0-9]+")
+        val symbolPattern = Regex("""[&|â€œ|`|Â´|}|{|Â°|>|<|:|.|;|#|'|)|(|@|_|$|"|!|?|*|=|^|-]+""")
+
+        return if(uiState.name.isEmpty() || !uiState.name.contains(namePattern)){
+            LoginSignupStatus.STATUS_SIGNUP_INVALID_NAME
+        }else if(!uiState.phone.contains(Regex("[0-10]")) && uiState.phone.length == 12 ){
+            LoginSignupStatus.STATUS_SIGNUP_INVALID_NUMBER
+        }else if(!(uiState.password.contains(alphaPattern) && uiState.password.contains(numPattern) && uiState.password.contains(symbolPattern))){
+            LoginSignupStatus.STATUS_SIGNUP_INVALID_PASSWORD_PATTERN
+        }else if(uiState.password != uiState.confirmPassword){
+            LoginSignupStatus.STATUS_SIGNUP_PASSWORD_UNMATCHED
+        }else{
+            LoginSignupStatus.STATUS_SIGNUP_SUCCESS
+        }
+
+    }
+
 
 }

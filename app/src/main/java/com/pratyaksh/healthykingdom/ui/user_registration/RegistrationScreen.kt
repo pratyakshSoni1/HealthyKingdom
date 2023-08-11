@@ -9,8 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,7 +21,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Switch
-import androidx.compose.material.SwitchColors
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -48,16 +46,17 @@ import com.pratyaksh.healthykingdom.ui.utils.LoadingComponent
 import com.pratyaksh.healthykingdom.ui.utils.LocationChooserDialog
 import com.pratyaksh.healthykingdom.ui.utils.MapLocationPreview
 import com.pratyaksh.healthykingdom.utils.AccountTypes
+import com.pratyaksh.healthykingdom.utils.LoginSignupStatus
 import com.pratyaksh.healthykingdom.utils.Routes
 import org.osmdroid.util.GeoPoint
 
 @Composable
-fun RegisterHospital (
+fun RegisterHospital(
     activity: Activity,
-    viewModel : RegisterScreenVM = hiltViewModel(),
-    navController:NavHostController,
+    viewModel: RegisterScreenVM = hiltViewModel(),
+    navController: NavHostController,
     onResendTokenReceived: (PhoneAuthProvider.ForceResendingToken, Users) -> Unit
-){
+) {
     LaunchedEffect(key1 = Unit, block = {
         viewModel.initScreenState(
             RegistrationScreenUiState(
@@ -67,7 +66,7 @@ fun RegisterHospital (
     })
 
     Box(
-        contentAlignment= Alignment.Center
+        contentAlignment = Alignment.Center
     ) {
 
         Column(
@@ -84,7 +83,7 @@ fun RegisterHospital (
                 fontSize = 26.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
-                modifier= Modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 12.dp)
             )
@@ -93,7 +92,7 @@ fun RegisterHospital (
             CommonUsersUi(viewModel = viewModel)
             Spacer(Modifier.height(8.dp))
 
-            AmbulanceUserUi(viewModel= viewModel)
+            AmbulanceUserUi(viewModel = viewModel)
             Spacer(Modifier.height(8.dp))
 
             LocationComponent(viewModel = viewModel)
@@ -103,10 +102,10 @@ fun RegisterHospital (
 
             ActionButtons(
                 onLogin = {
-                    navController.navigate( route = Routes.LOGIN_SCREEN.route ){
+                    navController.navigate(route = Routes.LOGIN_SCREEN.route) {
                         launchSingleTop = true
                     }
-                          },
+                },
                 onRegister = {
                     onRegisterUser(
                         viewModel, activity,
@@ -128,40 +127,56 @@ private fun onRegisterUser(
     viewModel: RegisterScreenVM, activity: Activity,
     navController: NavHostController,
     onResendTokenReceived: (PhoneAuthProvider.ForceResendingToken, Users) -> Unit
-){
+) {
     viewModel.apply {
         toggleLoadingScr(true)
-        otpSendUseCase(
-            viewModel.uiState.phone,
-            activity,
-            onVerificationComplete = { credential ->
-                navController.navigate(Routes.HOME_NAVGRAPH.route){
-                    popUpTo(Routes.SIGNUP_NAVGRAPH.route){ inclusive = true }
-                }
-            },
-            onVerificationFailed = { e ->
-                toggleErrorDialog(true, "Failed to verify, tray again later")
-            },
-            onCodeSent = { verId, resendToken ->
-                saveResendTokenAndVerId(resendToken, verId)
-                onResendTokenReceived(
-                    resendToken,
-                    viewModel.getUser()
+        when(viewModel.verifySignUpDetails()){
+            LoginSignupStatus.STATUS_SIGNUP_SUCCESS -> {
+                otpSendUseCase(
+                    viewModel.uiState.phone,
+                    activity,
+                    onVerificationComplete = { credential ->
+                        navController.navigate(Routes.HOME_NAVGRAPH.route) {
+                            popUpTo(Routes.SIGNUP_NAVGRAPH.route) { inclusive = true }
+                        }
+                    },
+                    onVerificationFailed = { e ->
+                        toggleErrorDialog(true, "Failed to verify, tray again later") {
+                            viewModel.toggleErrorDialog(
+                                false
+                            )
+                        }
+                    },
+                    onCodeSent = { verId, resendToken ->
+                        saveResendTokenAndVerId(resendToken, verId)
+                        onResendTokenReceived(
+                            resendToken,
+                            viewModel.getUser()
+                        )
+                        toggleLoadingScr(false)
+                        navController.navigate(route = Routes.REG_OTP_VALIDATION_SCREEN.route + "/${viewModel.uiState.phone}/$verId")
+                    }
                 )
-                toggleLoadingScr(false)
-                navController.navigate( route = Routes.OTP_VALIDATION_SCREEN.route+"/${viewModel.uiState.phone}/$verId" )
             }
-        )
+            LoginSignupStatus.STATUS_INVALID_DETAILS -> toggleErrorDialog(true, "Invalid Details"){ toggleErrorDialog(false) }
+            LoginSignupStatus.STATUS_SIGNUP_FAILED -> toggleErrorDialog(true, "Signup failed"){ toggleErrorDialog(false) }
+            LoginSignupStatus.STATUS_SIGNUP_INVALID_NAME -> toggleErrorDialog(true, "Invalid Name, Please enter a valid name without any number or special character"){ toggleErrorDialog(false) }
+            LoginSignupStatus.STATUS_SIGNUP_INVALID_NUMBER -> toggleErrorDialog(true, "Invalid Number, Enter a valid 10 digit number with country code"){ toggleErrorDialog(false) }
+            LoginSignupStatus.STATUS_SIGNUP_PASSWORD_UNMATCHED -> toggleErrorDialog(true, "Password doesn't match with confirm password"){ toggleErrorDialog(false) }
+            LoginSignupStatus.STATUS_SIGNUP_INVALID_PASSWORD_PATTERN -> toggleErrorDialog(true, "Password must contain a small, capital case alphabet,a number and a special character"){ toggleErrorDialog(false) }
+            else -> Unit
+        }
+
     }
 
 }
 
 @Composable
-private fun ColumnScope.PublicUserUi(viewModel: RegisterScreenVM){
-    if(viewModel.uiState.accountType == AccountTypes.PUBLIC_USER){
+private fun ColumnScope.PublicUserUi(viewModel: RegisterScreenVM) {
+    if (viewModel.uiState.accountType == AccountTypes.PUBLIC_USER) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier= Modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(100.dp))
                 .background(Color(0xFFE4E4E4))
@@ -171,14 +186,17 @@ private fun ColumnScope.PublicUserUi(viewModel: RegisterScreenVM){
                 "Provide Your Location",
                 fontSize = 16.sp,
                 color = Color.Black,
-                modifier= Modifier.weight(1f)
+                modifier = Modifier.weight(1f)
             )
             Spacer(Modifier.width(8.dp))
 
             Switch(
                 checked = viewModel.uiState.providesLocation,
                 onCheckedChange = { viewModel.toggleProvideLoc(it) },
-                colors = SwitchDefaults.colors(checkedThumbColor = Color.Blue, checkedTrackColor = Color(0x80007BFF))
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = Color.Blue,
+                    checkedTrackColor = Color(0x80007BFF)
+                )
             )
         }
 
@@ -188,7 +206,7 @@ private fun ColumnScope.PublicUserUi(viewModel: RegisterScreenVM){
 
 @Composable
 private fun ColumnScope.AmbulanceUserUi(viewModel: RegisterScreenVM) {
-    if(viewModel.uiState.accountType == AccountTypes.AMBULANCE){
+    if (viewModel.uiState.accountType == AccountTypes.AMBULANCE) {
         AppTextField(
             value = viewModel.uiState.vehicleNumber, onValueChange = {
                 viewModel.onVehicleNumberChange(it)
@@ -199,8 +217,8 @@ private fun ColumnScope.AmbulanceUserUi(viewModel: RegisterScreenVM) {
 }
 
 @Composable
-private fun ColumnScope.NonHospitalUserUi(viewModel: RegisterScreenVM){
-    if(viewModel.uiState.accountType != AccountTypes.HOSPITAL){
+private fun ColumnScope.NonHospitalUserUi(viewModel: RegisterScreenVM) {
+    if (viewModel.uiState.accountType != AccountTypes.HOSPITAL) {
         Row(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
@@ -225,13 +243,13 @@ private fun ColumnScope.NonHospitalUserUi(viewModel: RegisterScreenVM){
 }
 
 @Composable
-private fun ColumnScope.CommonUsersUi(viewModel: RegisterScreenVM){
+private fun ColumnScope.CommonUsersUi(viewModel: RegisterScreenVM) {
     AccountTypeChooser(
-            isExpanded = viewModel.uiState.isAccMenuExpanded,
-            accountType = viewModel.uiState.accountType,
-            onToggleExpand = viewModel::toggleAccMenu,
-            onAccChange = viewModel::onAccChange,
-            onToggle = viewModel::toggleAccMenu
+        isExpanded = viewModel.uiState.isAccMenuExpanded,
+        accountType = viewModel.uiState.accountType,
+        onToggleExpand = viewModel::toggleAccMenu,
+        onAccChange = viewModel::onAccChange,
+        onToggle = viewModel::toggleAccMenu
     )
     Spacer(Modifier.height(8.dp))
 
@@ -242,7 +260,7 @@ private fun ColumnScope.CommonUsersUi(viewModel: RegisterScreenVM){
         value = viewModel.uiState.name, onValueChange = {
             viewModel.onNameValueChange(it)
         },
-        hint = if(viewModel.uiState.accountType == AccountTypes.HOSPITAL) "Hospital Name" else "Full Name"
+        hint = if (viewModel.uiState.accountType == AccountTypes.HOSPITAL) "Hospital Name" else "Full Name"
     )
     Spacer(Modifier.height(8.dp))
 
@@ -281,8 +299,8 @@ private fun ColumnScope.CommonUsersUi(viewModel: RegisterScreenVM){
 }
 
 @Composable
-private fun ColumnScope.LocationComponent(viewModel: RegisterScreenVM){
-    if(
+private fun ColumnScope.LocationComponent(viewModel: RegisterScreenVM) {
+    if (
         viewModel.uiState.accountType == AccountTypes.HOSPITAL ||
         (viewModel.uiState.providesLocation && viewModel.uiState.accountType == AccountTypes.PUBLIC_USER)
     ) {
@@ -327,65 +345,59 @@ private fun ColumnScope.LocationComponent(viewModel: RegisterScreenVM){
 }
 
 @Composable
-private fun BoxScope.FloatingComponents(viewModel: RegisterScreenVM){
-    if(viewModel.uiState.showLocationChooser){
+private fun BoxScope.FloatingComponents(viewModel: RegisterScreenVM) {
+    if (viewModel.uiState.showLocationChooser) {
         LocationChooserDialog(
             onSelectLocation = {
                 viewModel.onLocationValueChange(it)
                 viewModel.toggleLocationChooser(false)
-            } ,
+            },
             onCancel = {
                 viewModel.toggleLocationChooser(false)
             }
         )
     }
 
-    if(viewModel.uiState.showError){
+    if (viewModel.uiState.showError) {
         ErrorDialog(
             text = viewModel.uiState.errorText,
-            onClose = { viewModel.toggleErrorDialog(false )}
+            onClose = { viewModel.uiState.onErrorCloseAction() }
         )
     }
 
-    if(viewModel.uiState.isLoading){
-        Box(
-            modifier= Modifier
-                .fillMaxSize()
-                .background(Color(0x12000000))
-        ){
-            LoadingComponent(
-                modifier = Modifier
-                    .fillMaxWidth(0.7f)
-                    .fillMaxHeight(0.6f)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color.White)
-            )
-        }
+    if (viewModel.uiState.isLoading) {
+        LoadingComponent(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .aspectRatio(1f)
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color.White)
+        )
     }
 }
 
 @Composable
 private fun ActionButtons(
-    onLogin:()->Unit,
-    onRegister:()->Unit
-){
+    onLogin: () -> Unit,
+    onRegister: () -> Unit
+) {
     Button(
         onClick = {
             onRegister()
         },
-        shape= RoundedCornerShape(100.dp),
+        shape = RoundedCornerShape(100.dp),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color(0xFF0166FF),
         )
     ) {
         Text(
             text = "Register",
-            color= Color.White,
-            modifier= Modifier
+            color = Color.White,
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 2.dp),
             textAlign = TextAlign.Center,
-            fontSize= 16.sp
+            fontSize = 16.sp
         )
     }
 
@@ -393,19 +405,25 @@ private fun ActionButtons(
         onClick = {
             onLogin()
         },
-        shape= RoundedCornerShape(100.dp),
+        shape = RoundedCornerShape(100.dp),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.Transparent,
-        ), elevation = ButtonDefaults.elevation(0.dp , 0.dp, hoveredElevation =  0.dp, focusedElevation =  0.dp)
+        ),
+        elevation = ButtonDefaults.elevation(
+            0.dp,
+            0.dp,
+            hoveredElevation = 0.dp,
+            focusedElevation = 0.dp
+        )
     ) {
         Text(
             text = "Login",
-            color= Color(0xFF0166FF),
-            modifier= Modifier
+            color = Color(0xFF0166FF),
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 2.dp),
             textAlign = TextAlign.Center,
-            fontSize= 16.sp
+            fontSize = 16.sp
         )
     }
 

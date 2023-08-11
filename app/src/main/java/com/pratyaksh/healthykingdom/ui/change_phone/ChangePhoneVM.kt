@@ -61,7 +61,7 @@ class ChangePhoneVM @Inject constructor(
                 if(ambulance is Resource.Success){
                     _uiState.update {
                         it.copy(
-                            oldPhone = ambulance.data?.phone
+                            oldPhone = ambulance.data?.phone ?: ""
                         )
                     }
                     isUpdated = true
@@ -72,7 +72,7 @@ class ChangePhoneVM @Inject constructor(
                 if(hosp is Resource.Success){
                     _uiState.update {
                         it.copy(
-                            oldPhone = hosp.data?.phone
+                            oldPhone = hosp.data?.phone ?: ""
                         )
                     }
                     isUpdated = true
@@ -83,7 +83,7 @@ class ChangePhoneVM @Inject constructor(
                 if(user is Resource.Success){
                     _uiState.update {
                         it.copy(
-                            oldPhone = user.data?.phone
+                            oldPhone = user.data?.phone ?: ""
                         )
                     }
                     isUpdated = true
@@ -207,12 +207,13 @@ class ChangePhoneVM @Inject constructor(
         return isVerified
     }
 
-    fun toggleError(setToVisible: Boolean, errorTxt: String = "") {
+    fun toggleError(setToVisible: Boolean, errorTxt: String = "",onErrorClose:()->Unit = { Unit }) {
         _uiState.update {
             it.copy(
                 isLoading = if (setToVisible) false else it.isLoading,
                 isError = setToVisible,
-                errorTxt = errorTxt
+                errorTxt = errorTxt,
+                onErrorCloseAction = onErrorClose
             )
         }
     }
@@ -254,11 +255,17 @@ class ChangePhoneVM @Inject constructor(
         }
     }
 
+    fun verifyDetails(): Boolean {
+        return if(uiState.value.newPhoneTxt.isEmpty() || !uiState.value.newPhoneTxt.contains(Regex("^[0-9]")) || uiState.value.newPhoneTxt.length != 12){
+            false
+        }else !(uiState.value.oldPhone.isEmpty() || !uiState.value.oldPhone.contains(Regex("^[0-9]")) || uiState.value.oldPhone.length != 12)
+    }
+
 
 }
 
 data class ChangePhoneScreenUiState(
-    val oldPhone: String? = null,
+    val oldPhone: String = "",
     val isError: Boolean = false,
     val isLoading: Boolean = false,
     val userId: String? = null,
@@ -267,4 +274,5 @@ data class ChangePhoneScreenUiState(
     val errorTxt: String = "",
     val verificationId: String? = null,
     val resendToken: PhoneAuthProvider.ForceResendingToken? = null,
+    val onErrorCloseAction:()->Unit = { Unit }
 )

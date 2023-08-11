@@ -2,7 +2,6 @@ package com.pratyaksh.healthykingdom.ui.change_password
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.PhoneAuthProvider
 import com.pratyaksh.healthykingdom.domain.use_case.getHospital.GetHospitalByIdUseCase
 import com.pratyaksh.healthykingdom.domain.use_case.get_ambulance.GetAmbulanceUserCase
 import com.pratyaksh.healthykingdom.domain.use_case.get_public_user.GetPublicUserById
@@ -32,21 +31,34 @@ class ForgotPasswordVM @Inject constructor(
     private val _uiState = MutableStateFlow(ForgotPhoneScreenUiState())
     val uiState = _uiState as StateFlow<ForgotPhoneScreenUiState>
 
-    fun initScreen( getCurrentUser: Flow<Resource<String?>>) {
+    fun initScreen(getCurrentUser: Flow<Resource<String?>>) {
         toggleLoading(true)
         runBlocking {
-            getCurrentUser.last().let{res ->
-                if( res is Resource.Success) {
+            getCurrentUser.last().let { res ->
+                if (res is Resource.Success) {
                     _uiState.update {
                         it.copy(userId = res.data!!)
                     }
                     toggleLoading(false)
-                }
-                else
+                } else
                     toggleError(true, "Can't retrieve user")
             }
         }
     }
+
+    fun verifyPasswordPattern(): Boolean {
+        val alphaPattern = Regex("[a-zA-Z]+")
+        val numPattern = Regex("[0-9]+")
+        val symbolPattern = Regex("""[&|â€œ|`|Â´|}|{|Â°|>|<|:|.|;|#|'|)|(|@|_|$|"|!|?|*|=|^|-]+""")
+
+        return (
+                uiState.value.newPassTxt.contains(alphaPattern) &&
+                        uiState.value.newPassTxt.contains(numPattern) &&
+                        uiState.value.newPassTxt.contains(symbolPattern)
+                )
+
+    }
+
 
     fun onChangePassword(): Job {
         toggleLoading(true)
@@ -55,57 +67,76 @@ class ForgotPasswordVM @Inject constructor(
                 getAmbulance.getAmbulanceByUserId(uiState.value.userId!!).last().let {
                     if (it is Resource.Success) {
                         updatePasswordUseCase.updateAmbulancePassword(
-                                userId = uiState.value.userId!!,
-                                uiState.value.newPassTxt
-                            ).last().let {
-                                if (it is Resource.Success)
-                                    toggleLoading(false)
-                                else
-                                    toggleError(true, it.msg ?: "Error updating password")
-                            }
-                    } else toggleError(true, "Unexpected error, try again later")
+                            userId = uiState.value.userId!!,
+                            uiState.value.newPassTxt
+                        ).last().let {
+                            if (it is Resource.Success)
+                                toggleLoading(false)
+                            else
+                                toggleError(true, it.msg ?: "Error updating password"){
+                                    toggleError(false)
+                                }
+                        }
+                    } else toggleError(true, "Unexpected error, try again later"){
+                        toggleError(false)
+                    }
                 }
             } else if (identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.HOSPITAL)) {
                 getHospital(uiState.value.userId!!).last().let {
                     if (it is Resource.Success) {
                         updatePasswordUseCase.updateHospitalPassword(
-                                userId = uiState.value.userId!!,
-                                uiState.value.newPassTxt
-                            ).last().let {
-                                if (it is Resource.Success)
-                                    toggleLoading(false)
-                                else
-                                    toggleError(true, it.msg ?: "Error updating password")
-                            }
-                    } else toggleError(true, "Unexpected error, try again later")
+                            userId = uiState.value.userId!!,
+                            uiState.value.newPassTxt
+                        ).last().let {
+                            if (it is Resource.Success)
+                                toggleLoading(false)
+                            else
+                                toggleError(true, it.msg ?: "Error updating password"){
+                                    toggleError(false)
+                                }
+                        }
+                    } else toggleError(true, "Unexpected error, try again later"){
+                        toggleError(false)
+                    }
                 }
             } else if (identifyUserTypeFromId(uiState.value.userId!!)!!.equals(AccountTypes.PUBLIC_USER)) {
                 getPublicUserById(uiState.value.userId!!).last().let {
                     if (it is Resource.Success) {
                         updatePasswordUseCase.updatePublicUserPassword(
-                                userId = uiState.value.userId!!,
-                                uiState.value.newPassTxt
-                            ).last().let {
-                                if (it is Resource.Success)
-                                    toggleLoading(false)
-                                else
-                                    toggleError(true, it.msg ?: "Error updating password")
-                            }
-                    } else toggleError(true, "Unexpected error, try again later")
+                            userId = uiState.value.userId!!,
+                            uiState.value.newPassTxt
+                        ).last().let {
+                            if (it is Resource.Success)
+                                toggleLoading(false)
+                            else
+                                toggleError(true, it.msg ?: "Error updating password"){
+                                    toggleError(false)
+                                }
+                        }
+                    } else toggleError(true, "Unexpected error, try again later") {
+                        toggleError(false)
+                    }
                 }
             } else {
-                toggleError(true, "Unable to fetch user, try again later")
+                toggleError(true, "Unable to fetch user, try again later") {
+                    toggleError(false)
+                }
             }
 
         }
     }
 
-    fun toggleError(setToVisible: Boolean, errorTxt: String = "") {
+    fun toggleError(
+        setToVisible: Boolean,
+        errorTxt: String = "",
+        onErrorClose: () -> Unit = { Unit }
+    ) {
         _uiState.update {
             it.copy(
                 isLoading = if (setToVisible) false else it.isLoading,
                 isError = setToVisible,
-                errorTxt = errorTxt
+                errorTxt = errorTxt,
+                onErrorCloseAction = onErrorClose
             )
         }
     }
@@ -129,5 +160,6 @@ data class ForgotPhoneScreenUiState(
     val isLoading: Boolean = false,
     val userId: String? = null,
     val newPassTxt: String = "",
-    val errorTxt: String = ""
+    val errorTxt: String = "",
+    val onErrorCloseAction: () -> Unit = { Unit }
 )

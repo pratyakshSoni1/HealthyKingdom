@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -83,7 +84,9 @@ fun LoginScreen(
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
-                modifier= Modifier.fillMaxWidth().padding(start=12.dp)
+                modifier= Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp)
             )
             Spacer(Modifier.height(32.dp))
 
@@ -99,7 +102,8 @@ fun LoginScreen(
             AppTextField(
                 value = viewModel.uiState.phone,
                 onValueChange = viewModel::onPhoneChange,
-                hint = "Phone: +1 12345..."
+                hint = "Phone: +1 12345...",
+                keyboard = KeyboardType.Number
             )
             Spacer(Modifier.height(8.dp))
 
@@ -116,47 +120,62 @@ fun LoginScreen(
                     backgroundColor = Color(0xFF007BFF)
                 ),
                 onClick = {
-                    viewModel.onLogin()
-                    CoroutineScope(Dispatchers.IO).launch {
-                        viewModel.uiState.loginStatus?.collectLatest {
-                            when (it) {
-                                is Resource.Error -> withContext(Dispatchers.Main) {
-                                    Toast.makeText(
-                                        context,
-                                        "No user found, Login Failed",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    viewModel.toggleLoadingCmp(false)
-                                }
-
-                                is Resource.Loading -> withContext(Dispatchers.Main) {
-                                    Toast.makeText(context, "Processing...", Toast.LENGTH_SHORT).show()
-                                    viewModel.toggleLoadingCmp(true)
-                                }
-
-                                is Resource.Success -> {
-                                    withContext(Dispatchers.Main) {
+                    if(viewModel.uiState.phone.contains(Regex("^[0-9]")) || viewModel.uiState.phone.length == 12){
+                        viewModel.onLogin()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            viewModel.uiState.loginStatus?.collectLatest {
+                                when (it) {
+                                    is Resource.Error -> withContext(Dispatchers.Main) {
                                         Toast.makeText(
                                             context,
-                                            "Login Successfull",
+                                            "No user found, Login Failed",
                                             Toast.LENGTH_SHORT
                                         ).show()
-                                        updateCurrentLoggedUser(it.data!!)
-                                            .collectLatest { resp ->
-                                                viewModel.toggleLoadingCmp(true)
-                                                if(resp is Resource.Success){
-                                                    viewModel.addLocalSettings(it.data)
-                                                    navController.navigate(Routes.HOME_NAVGRAPH.route) {
-                                                        popUpTo(Routes.SIGNUP_NAVGRAPH.route) { inclusive = true }
-                                                    }
-                                                }else{
-                                                    viewModel.toggleErrorDialog(true, resp.msg!!)
-                                                }
-                                            }
+                                        viewModel.toggleLoadingCmp(false)
                                     }
-                                    viewModel.toggleLoadingCmp(false)
+
+                                    is Resource.Loading -> withContext(Dispatchers.Main) {
+                                        Toast.makeText(context, "Processing...", Toast.LENGTH_SHORT).show()
+                                        viewModel.toggleLoadingCmp(true)
+                                    }
+
+                                    is Resource.Success -> {
+                                        withContext(Dispatchers.Main) {
+                                            Toast.makeText(
+                                                context,
+                                                "Login Successfull",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            updateCurrentLoggedUser(it.data!!)
+                                                .collectLatest { resp ->
+                                                    viewModel.toggleLoadingCmp(true)
+                                                    when(resp){
+                                                        is Resource.Success -> {
+                                                            viewModel.addLocalSettings(it.data)
+                                                            viewModel.toggleLoadingCmp(false)
+                                                            navController.navigate(Routes.HOME_NAVGRAPH.route) {
+                                                                popUpTo(Routes.SIGNUP_NAVGRAPH.route) { inclusive = true }
+                                                            }
+                                                        }
+                                                        is Resource.Error -> {
+                                                            viewModel.toggleErrorDialog(true, resp.msg!!){
+                                                                viewModel.toggleErrorDialog(false)
+                                                            }
+                                                        }
+                                                        is Resource.Loading -> {
+                                                            viewModel.toggleLoadingCmp(true)
+                                                        }
+                                                    }
+                                                }
+                                        }
+                                        viewModel.toggleLoadingCmp(false)
+                                    }
                                 }
                             }
+                        }
+                    }else{
+                        viewModel.toggleErrorDialog(true, "Enter a valid number with country code ( like 91<Your Phone> for +91"){
+                            viewModel.toggleErrorDialog(false)
                         }
                     }
                 },
@@ -188,7 +207,7 @@ fun LoginScreen(
         if( viewModel.uiState.isLoading ){
             LoadingComponent(
                 modifier = Modifier
-                    .fillMaxSize(0.5f)
+                    .fillMaxWidth(0.9f).aspectRatio(1f)
                     .clip(RoundedCornerShape(12.dp))
                     .background(Color.White),
                 text= "Please Wait"
@@ -199,7 +218,7 @@ fun LoginScreen(
             ErrorDialog(
                 text = viewModel.uiState.errorText,
                 onClose= {
-                    viewModel.toggleErrorDialog(true)
+                    viewModel.uiState.onErrorCloseAction()
                 }
             )
         }
